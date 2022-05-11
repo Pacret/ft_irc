@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/03/21 15:18:18 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/11 13:46:28 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,11 @@ class Client
 {
     private:
         int fd;
+		bool _registered;
         std::string buffer;
+		std::string _nick;
+		std::string _username;
+		struct sockaddr_in _address;
 
     public:
         Client(int fd, struct sockaddr_in address);
@@ -32,4 +36,8 @@ class Client
 
         void get_message();
         void send_message();
+
+		int	get_fd();
+		bool get_registered();
+		void set_registered(bool status);
 };

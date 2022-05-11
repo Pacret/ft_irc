@@ -3,27 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/03/20 17:39:19 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/11 10:08:23 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
-#include <iostream>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <netinet/in.h>
-#include <stdlib.h>
-#include <poll.h>
-#include <map>
-#include <vector>
+# include <iostream>
+# include <fstream>
+# include <sstream>
+# include <sys/socket.h>
+# include <sys/types.h>
+# include <fcntl.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <stdlib.h>
+# include <poll.h>
+# include <map>
+# include <vector>
 
-#include "../Utils/Utils.hpp"
-#include "../Client/Client.hpp"
+# ifndef DEBUG
+#  define DEBUG 0
+# endif
+
+# include "../Utils/Utils.hpp"
+# include "../Client/Client.hpp"
+# include "../Utils/defines.h"
 
 class Server
 {
@@ -35,6 +44,8 @@ class Server
 
         std::string port;
         std::string password;
+
+		std::ofstream log_file;
     public:
         Server();
         Server(const std::string &port, const std::string &password);
@@ -44,7 +55,12 @@ class Server
         void    process();
         void    addClient();
 
+		void	send_message(Client& client, const std::string& msg);
+		void	register_client(Client& client, const std::string& msg_rcv);
+
         void    setPort(const std::string &port);
         void    setPassword(const std::string &password);
 
 };
+
+#endif
