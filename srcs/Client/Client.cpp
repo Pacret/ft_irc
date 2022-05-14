@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:23:56 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/11 13:46:38 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/14 19:46:14 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 #include "../Server/Server.hpp"
 
-		Client::Client(int fd, struct sockaddr_in address) : fd(fd), _address(address), _registered(false)
+		Client::Client(int fd, struct sockaddr_in address) : fd(fd), _address(address), _statut(REGISTERED)
 {
 	return;
 }
@@ -23,13 +23,34 @@
     close(fd);
 }
 
-void    Client::send_message() //Fonction juste pour montrer comment envoyer un message
+void    Client::parse_command(const std::string &command)
 {
-    std::string message = "blip bloup\n";
+    if (_statut == REGISTERED)
+    {
+        size_t  pos = command.find(" ");
 
+        if (!command.find("NICK"))
+            _nick = command.substr(5);
+        else if (!command.find("USER"))
+        {
+            _username = command.substr(5, (command.find(" ", pos + 1)) - 5);
+            if (_nick != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
+            {
+                // Verifie t'on le hostname du client ?
+                // send_message(":paco.com NOTICE * :*** Looking up your hostname...\r\n");
+                send_message(std::string(":paco.com 001 ") + _nick + std::string(" :Welcome to the Internet Relay Network ") + _nick + std::string("!") + _nick + std::string("@127.0.0.1\r\n"));
+                set_statut(CONNECTED);
+                // envois du MOTD et de toutes les autres merdes
+            }
+        }
+    }
+}
+
+void    Client::send_message(const std::string &message) //Fonction juste pour montrer comment envoyer un message
+{
+    std::cout << "Envois :" << message << std::endl;
     if (send(fd, message.c_str(), message.size(), 0) == -1)
         std::cout << "Error: envois message" << std::endl;
-
 }
 
 void    Client::get_message()
@@ -51,8 +72,9 @@ void    Client::get_message()
         buffer.erase(0, rn + 2);
         if (command.size())
         {
-            std::cout << "In get message " << command << std::endl;
-            send_message(); // test de la fonction send_message()
+            parse_command(command);
+            //std::cout << "In get message " << command << "|" << std::endl;
+            //send_message(); // test de la fonction send_message()
             // Traiter la commande, a voir comment, quels structures etc...
         } 
     }
@@ -63,8 +85,9 @@ int		Client::get_fd()
 	return (this->fd);
 }
 
-bool	Client::get_registered() {return (_registered);}
-void	Client::set_registered(bool status)
+Statut	Client::get_statut() {return (_statut);}
+
+void	Client::set_statut(Statut statut)
 {
-	_registered = status;
+	_statut = statut;
 }
