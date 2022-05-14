@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/11 10:08:23 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/12 16:42:49 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,9 @@
 # include "../Utils/Utils.hpp"
 # include "../Client/Client.hpp"
 # include "../Utils/defines.h"
+# include "../Channel/Channel.hpp"
+
+class Channel;
 
 class Server
 {
@@ -41,6 +44,7 @@ class Server
         std::vector<struct pollfd> pollfds;
 
         std::map<int, Client *> clients;
+        std::vector<Channel> channels;
 
         std::string port;
         std::string password;

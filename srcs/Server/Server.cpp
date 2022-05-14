@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/11 14:32:25 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/12 16:38:08 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,13 +117,13 @@ void	Server::register_client(Client& client, const std::string& msg_rcv)
 		client.set_registered(true);
 		return;
 	}
-	if (())
+	//if (())
 }
 
 void	Server::send_message(Client& client, const std::string& message)
 {
 	if (send(client.get_fd(), message.c_str(), message.size(), MSG_DONTWAIT))
 	{
-
+        std::cout << std::endl;
 	}
 }
