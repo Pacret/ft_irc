@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:23:56 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/14 19:46:14 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/14 20:00:23 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,11 @@ void    Client::parse_command(const std::string &command)
             _username = command.substr(5, (command.find(" ", pos + 1)) - 5);
             if (_nick != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
             {
-                // Verifie t'on le hostname du client ?
+                // Verifie t'on le hostname du client comme inspircd ?
                 // send_message(":paco.com NOTICE * :*** Looking up your hostname...\r\n");
                 send_message(std::string(":paco.com 001 ") + _nick + std::string(" :Welcome to the Internet Relay Network ") + _nick + std::string("!") + _nick + std::string("@127.0.0.1\r\n"));
                 set_statut(CONNECTED);
-                // envois du MOTD et de toutes les autres merdes
+                // todo: envois du MOTD et de toutes les autres merdes
             }
         }
     }
