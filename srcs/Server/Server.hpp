@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/14 19:50:31 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/17 13:16:54 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ class Server
 
 		std::ofstream log_file;
     public:
-        Server();
         Server(const std::string &port, const std::string &password);
         ~Server();
 

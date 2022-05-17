@@ -6,14 +6,14 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:23:56 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/14 20:00:23 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/17 13:21:09 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 #include "../Server/Server.hpp"
 
-		Client::Client(int fd, struct sockaddr_in address) : fd(fd), _address(address), _statut(REGISTERED)
+		Client::Client(Server &server, int fd, struct sockaddr_in address) : _server(server), fd(fd), _address(address), _statut(REGISTERED)
 {
 	return;
 }
@@ -44,6 +44,10 @@ void    Client::parse_command(const std::string &command)
             }
         }
     }
+    //if (_statut == CONNECTED)
+    //{
+        
+    //}
 }
 
 void    Client::send_message(const std::string &message) //Fonction juste pour montrer comment envoyer un message

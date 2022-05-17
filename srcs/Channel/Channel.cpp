@@ -6,13 +6,13 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/14 13:58:12 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/17 13:19:07 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 
-		Channel::Channel(const Client &owner, const std::string &channel_name): _owner(owner), _channel_name(channel_name)
+		Channel::Channel(Server &server, const Client &owner, const std::string &channel_name): _server(server), _owner(owner), _channel_name(channel_name)
 {
 	return;
 }

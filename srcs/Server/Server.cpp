@@ -6,16 +6,11 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/14 19:42:29 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/17 13:17:00 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-
-		Server::Server()
-{
-
-}
 
 		Server::Server(const std::string &port, const std::string &password) : port(port), password(password)
 {
