@@ -6,13 +6,16 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/17 14:12:10 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/17 14:36:14 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
+
 
 #include <netinet/in.h>
+//#include "../Server/Server.hpp"
 #include "../Utils/Utils.hpp"
 #include <iostream>
 #include <unistd.h>
@@ -46,3 +49,5 @@ class Client
 		Statut get_statut();
 		void set_statut(Statut statut);
 };
+
+#endif

@@ -6,12 +6,11 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:23:56 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/17 14:10:38 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/17 16:14:53 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
-#include "../Server/Server.hpp"
 
 		Client::Client(int fd, struct sockaddr_in address) : fd(fd), _address(address), _statut(REGISTERED)
 {
@@ -38,15 +37,25 @@ void    Client::parse_command(const std::string &command)
             {
                 // Verifie t'on le hostname du client comme inspircd ?
                 // send_message(":paco.com NOTICE * :*** Looking up your hostname...\r\n");
-                send_message(std::string(":paco.com 001 ") + _nick + std::string(" :Welcome to the Internet Relay Network ") + _nick + std::string("!") + _nick + std::string("@127.0.0.1\r\n"));
                 set_statut(CONNECTED);
-                // todo: envois du MOTD et de toutes les autres merdes
+                send_message(std::string(":paco.com 001 ") + _nick + std::string(" :Welcome to the Internet Relay Network ") + _nick + std::string("!") + _nick + std::string("@127.0.0.1\r\n"));
+                send_message(std::string(":paco.com 251 ") + _nick + std::string(" :There a users\r\n"));
+                send_message(std::string(":paco.com 253 ") + _nick + std::string(" :There a users\r\n"));
+                send_message(std::string(":paco.com 254 ") + _nick + std::string(" :There a users\r\n"));
+                send_message(std::string(":paco.com 255 ") + _nick + std::string(" :There a users\r\n"));
+                send_message(std::string(":paco.com 265 ") + _nick + std::string(" :There a users\r\n"));
+                send_message(std::string(":paco.com 266 ") + _nick + std::string(" :There a users\r\n"));
+                send_message(std::string(":paco.com 375 ") + _nick + std::string(" :paco.com message of the day\r\n"));
+                send_message(std::string(":paco.com 372 ") + _nick + std::string(" :message of the day\r\n"));
+                send_message(std::string(":paco.com 372 ") + _nick + std::string(" :message of the day\r\n"));
+                send_message(std::string(":paco.com 376 ") + _nick + std::string(" :End of message of the day\r\n"));
             }
         }
     }
-    //if (_statut == CONNECTED)
-    //{
-    //}
+    if (_statut == CONNECTED)
+    {
+        std::cout << command << std::endl;
+    }
 }
 
 void    Client::send_message(const std::string &message) //Fonction juste pour montrer comment envoyer un message

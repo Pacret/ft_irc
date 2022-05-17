@@ -6,11 +6,13 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:51:49 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/14 19:35:22 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/17 14:36:45 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef UTILS_HPP
+# define UTILS_HPP
+
 #include <iostream>
 #include <stdlib.h>
 
@@ -21,3 +23,5 @@ enum Statut
 };
 
 void    close_server(const std::string &msg_error);
+
+#endif
