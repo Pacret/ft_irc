@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/14 19:42:29 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/17 14:49:39 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 		Server::Server()
 {
-
+    
 }
 
 		Server::Server(const std::string &port, const std::string &password) : port(port), password(password)
@@ -24,8 +24,10 @@
 
 		Server::~Server()
 {
+    std::cout << "Fermeture du serveur" << std::endl;
     for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
         delete it->second;
+    close(fd_socket);
 }
 
 void    Server::addClient()
@@ -95,6 +97,7 @@ void    Server::process()
                 if ((*it).revents == POLLIN)
                 	clients[(*it).fd]->get_message();
         }
+        std::cout << pollfds[0].revents << std::endl;
 		std::cout << "here\n" << std::endl;
     }
 }

@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/18 08:54:34 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/18 13:42:36 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,13 @@
 # include "../Client/Client.hpp"
 # include "../Utils/defines.h"
 
+class Server;
+
 class Channel
 {
     private:
+        Server &_server;
+
         Client _owner;
         std::string _channel_name;
 
@@ -34,8 +38,12 @@ class Channel
 
 
     public:
-        Channel(const Client &owner, const std::string &channel_name);
+        Channel(Server &server, const Client &owner, const std::string &channel_name);
         ~Channel();
+
+        
+        int get_users_count();
+        int get_ops_count();
 
         void demote(Client& client);
         void promote(Client& client);

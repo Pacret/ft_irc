@@ -6,13 +6,16 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/18 09:28:01 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/18 13:41:39 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
+
 
 #include <netinet/in.h>
+//#include "../Server/Server.hpp"
 #include "../Utils/Utils.hpp"
 #include <iostream>
 #include <unistd.h>
@@ -21,6 +24,7 @@
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE 1024
 #endif
+
 
 class Client
 {
@@ -52,3 +56,5 @@ class Client
 		Statut get_statut();
 		void set_statut(Statut statut);
 };
+
+#endif
