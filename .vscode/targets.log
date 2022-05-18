@@ -8,7 +8,7 @@ make: *** No rule to make target 'srcs/main.o', needed by 'ircserv'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Wed May 18 07:14:45 2022
+# Make data base, printed on Wed May 18 14:15:28 2022
 
 # Variables
 
@@ -63,7 +63,7 @@ XDG_RUNTIME_DIR = /mnt/wslg/runtime-dir
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-47925d94-bdd3-42da-b8d3-2ab25dbaa612.sock
+VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-4c1252e4-7f3f-424d-a0df-a5d30db888c8.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -91,7 +91,7 @@ LESSCLOSE = /usr/bin/lesspipe %s %s
 # environment
 LOGNAME = tmerrien
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
@@ -277,8 +277,8 @@ srcs/Channel/Channel.o:
 srcs/main.o:
 #  Implicit rule search has been done.
 #  File does not exist.
-#  File has not been updated.
  
+#  File has not been updated.
 
 # Not a target:
 srcs/Client/Client.o:
@@ -300,6 +300,6 @@ srcs/Client/Client.o:
 # strcache performance: lookups = 47 / hit rate = 46%
 # hash-table stats:
 # Load=25/8192=0%, Rehash=0, Collisions=1/47=2%
-# Finished Make data base on Wed May 18 07:14:45 2022
+# Finished Make data base on Wed May 18 14:15:28 2022
 
  

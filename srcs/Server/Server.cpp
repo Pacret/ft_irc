@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/18 14:12:15 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/18 14:33:10 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,35 @@ void    Server::send_message(int fd, const std::string &message) //Fonction just
         std::cout << "Error: envois message" << std::endl;
 }
 
+std::string	Server::get_pwd()
+{
+	return (password);
+}
+
+void	Server::check_passwd(Client &client, const std::string &command)
+{
+	size_t pos = command.find(" ");
+	std::string	pass_sent;
+
+	if (!command.find("PASS"))
+		pass_sent = command.substr(5);
+	else
+		return;
+	if (pass_sent != get_pwd())
+	{
+		kill_connection(client);
+		return;
+	}
+	client.set_statut(REGISTERED);
+	
+	return ;
+}
+
 void    Server::parse_command(Client *client, const std::string &command)
 {
-    if (client->_statut == REGISTERED)
+	if (client->get_statut() == NONE)
+		check_passwd(*client, command);
+    else if (client->_statut == REGISTERED)
     {
         size_t  pos = command.find(" ");
 
@@ -181,6 +207,18 @@ void    Server::setPort(const std::string &port)
 void    Server::setPassword(const std::string &password)
 {
     this->password = password;
+}
+
+void	Server::kill_connection(Client& client)
+{
+	std::vector<struct pollfd>::iterator it = pollfds.begin();
+
+	while ((*it).fd != client.get_fd())
+		++it;
+	pollfds.erase(it);
+	close(client.get_fd());
+	client.~Client();
+	return;
 }
 
 void	Server::register_client(Client& client, const std::string& msg_rcv)

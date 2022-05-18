@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/18 14:13:19 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/18 14:23:16 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,10 @@ class Server
 
         void    setPort(const std::string &port);
         void    setPassword(const std::string &password);
+		std::string	get_pwd();
+
+		void	kill_connection(Client &client);
+		void	check_passwd(Client &client, const std::string &command);
 
 		std::string get_name();
 		std::string get_info();
