@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/18 14:13:20 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/18 14:17:03 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ class Client
         int fd;
 		struct sockaddr_in _address;
 
-        void parse_command(const std::string &command);
 		void check_passwd(const std::string &command);
 
     public:
@@ -44,9 +43,6 @@ class Client
 
         Client(int fd, struct sockaddr_in address);
         ~Client();
-
-        void get_message();
-        void send_message(const std::string &message);
 
 		int	get_fd();
 		std::string get_nick();
