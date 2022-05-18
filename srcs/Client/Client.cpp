@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:23:56 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/14 20:00:23 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/18 13:02:13 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 #include "../Server/Server.hpp"
 
-		Client::Client(int fd, struct sockaddr_in address) : fd(fd), _address(address), _statut(REGISTERED)
+		Client::Client( int fd, struct sockaddr_in address) : fd(fd), _address(address), _statut(REGISTERED)
 {
 	return;
 }
@@ -23,9 +23,27 @@
     close(fd);
 }
 
+void		Client::check_passwd(const std::string &command)
+{
+	size_t pos = command.find(" ");
+	std::string	pass_sent;
+
+	if (!command.find("PASS"))
+		pass_sent = command.substr(5);
+	else
+		return;
+	if (pass_sent != )
+		return;
+	_statut = REGISTERED;
+	
+	return ;
+}
+
 void    Client::parse_command(const std::string &command)
 {
-    if (_statut == REGISTERED)
+	if (_statut == NONE)
+		return (check_passwd(command));
+    else if (_statut == REGISTERED)
     {
         size_t  pos = command.find(" ");
 

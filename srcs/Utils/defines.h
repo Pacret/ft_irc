@@ -3,163 +3,276 @@
 /*                                                        :::      ::::::::   */
 /*   defines.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/05/14 17:08:29 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/18 08:54:00 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_IRC_PROTOCOL_DEFINES_H
 # define FT_IRC_PROTOCOL_DEFINES_H
 
+using namespace std;
+
+# include "../Channel/Channel.hpp"
+# include "../Client/Client.hpp"
+# include "../Server/Server.hpp"
+
 /*
 ** Error numeric codes
 */
 
-# define ERR_NOSUCHNICK 401
-# define ERR_NOSUCHSERV 402
-# define ERR_NOSUCHCHANNEL 403
-# define ERR_CANNOTSENDTOCHAN 404
-# define ERR_TOOMANYCHANNELS 405
-# define ERR_WASNOSUCHNICK 406
-# define ERR_TOOMANYTARGETS 407
-# define ERR_NOORIGIN 409
-# define ERR_NORECIPIENT 411
-# define ERR_NOTEXTTOSEND 412
-# define ERR_NOTOPLEVEL 413
-# define ERR_WILDTOPLEVEL 414
-# define RR_UNKNOWNCOMMAND 421
-# define ERR_NOMOTD 422
-# define ERR_NOADMININFO 423
-# define ERR_FILEERROR 424
-# define ERR_NONICKNAMEGIVEN 431
-# define ERR_ERRONEUSNICKNAME 432
-# define ERR_NICKNAMEINUSE 433
-# define ERR_NICKCOLLISION 436
-# define ERR_USERNOTINCHANNEL 441
-# define ERR_NOTONCHANNEL 442
-# define ERR_USERONCHANNEL 443
-# define ERR_NOLOGIN 444
-# define ERR_SUMMONDISABLED 445
-# define ERR_USERSDISABLED 446
-# define ERR_NOTREGISTERED 451
-# define ERR_NEEDMOREPARAMS 461
-# define ERR_ALREADYREGISTRED 462
-# define ERR_NOPERMFORHOST 463
-# define ERR_PASSWDMISMATCH 464
-# define ERR_YOUREBANNEDCREEP 465
-# define ERR_KEYSET 467
-# define ERR_CHANNELISFUL 471
-# define ERR_UNKNOWNMODE 472
-# define ERR_INVITEONLYCHAN 473
-# define ERR_BANNEDFROMCHAN 474
-# define ERR_BADCHANNELKEY 475
-# define ERR_NOPRIVILEGES 481
-# define ERR_CHANOPRIVSNEEDED 482
-# define ERR_CANTKILLSERVER 483
-# define ERR_NOOPERHOST 491
-# define ERR_UMODEUNKNOWNFLAG 501
-# define ERR_USERSDONTMATCH 502
-
+enum numeric_replies_e
+{
+	ERR_NOSUCHNICK = 401,
+	ERR_NOSUCHSERV = 402,
+	ERR_NOSUCHCHANNEL = 403,
+	ERR_CANNOTSENDTOCHAN = 404,
+	ERR_TOOMANYCHANNELS = 405,
+	ERR_WASNOSUCHNICK = 406,
+	ERR_TOOMANYTARGETS = 407,
+	ERR_NOORIGIN = 409,
+	ERR_NORECIPIENT = 411,
+	ERR_NOTEXTTOSEND = 412,
+	ERR_NOTOPLEVEL = 413,
+	ERR_WILDTOPLEVEL = 414,
+	RR_UNKNOWNCOMMAND = 421,
+	ERR_NOMOTD = 422,
+	ERR_NOADMININFO = 423,
+	ERR_FILEERROR = 424,
+	ERR_NONICKNAMEGIVEN = 431,
+	ERR_ERRONEUSNICKNAME = 432,
+	ERR_NICKNAMEINUSE = 433,
+	ERR_NICKCOLLISION = 436,
+	ERR_USERNOTINCHANNEL = 441,
+	ERR_NOTONCHANNEL = 442,
+	ERR_USERONCHANNEL = 443,
+	ERR_NOLOGIN = 444,
+	ERR_SUMMONDISABLED = 445,
+	ERR_USERSDISABLED = 446,
+	ERR_NOTREGISTERED = 451,
+	ERR_NEEDMOREPARAMS = 461,
+	ERR_ALREADYREGISTRED = 462,
+	ERR_NOPERMFORHOST = 463,
+	ERR_PASSWDMISMATCH = 464,
+	ERR_YOUREBANNEDCREEP = 465,
+	ERR_KEYSET = 467,
+	ERR_CHANNELISFUL = 471,
+	ERR_UNKNOWNMODE = 472,
+	ERR_INVITEONLYCHAN = 473,
+	ERR_BANNEDFROMCHAN = 474,
+	ERR_BADCHANNELKEY = 475,
+	ERR_NOPRIVILEGES = 481,
+	ERR_CHANOPRIVSNEEDED = 482,
+	ERR_CANTKILLSERVER = 483,
+	ERR_NOOPERHOST = 491,
+	ERR_UMODEUNKNOWNFLAG = 501,
+	ERR_USERSDONTMATCH = 502,
+	
 /*
-** Command numeric responses
+**	Command numeric responses
 */
 
-# define RPL_NONE 300
-# define RPL_USERHOST 302
-# define RPL_ISON 303
-# define RPL_AWAY 301
-# define RPL_UNAWAY 305
-# define RPL_NOWAWAY 306
-# define RPL_WHOISUSER 311
-# define RPL_WHOISSERVER 312
-# define RPL_WHOISOPERATOR 313
-# define RPL_WHOISIDLE 317
-# define RPL_ENDOFWHOIS 318
-# define RPL_WHOISCHANNELS 319
-# define RPL_WHOWASUSER 314
-# define RPL_ENDOFWHOWAS 369
-# define RPL_LISTSTART 321
-# define RPL_LIST 322
-# define RPL_LISTEND 323
-# define RPL_CHANNELMODEIS 324
-# define RPL_NOTOPIC 331
-# define RPL_TOPIC 332
-# define RPL_INVITING 341
-# define RPL_SUMMONING 342
-# define RPL_VERSION 351
-# define RPL_WHOREPLY 352
-# define RPL_ENDOFWHO 315
-# define RPL_NAMREPLY 353
-# define RPL_ENDOFNAMES 366
-# define RPL_LINKS 364
-# define RPL_ENDOFLINKS 365
-# define RPL_BANLIST 367
-# define RPL_ENDOFBANLIST 368
-# define RPL_INFO 371
-# define RPL_ENDOFINFO 374
-# define RPL_MOTDSTART 375
-# define RPL_MOTD 372
-# define RPL_ENDOFMOTD 376
-# define RPL_YOUREOPER 381
-# define RPL_REHASHING 382
-# define RPL_TIME 391
-# define RPL_USERSSTART 392
-# define RPL_USERS 393
-# define RPL_ENDOFUSERS 394
-# define RPL_NOUSERS 395
-# define RPL_TRACELINK 200
-# define RPL_TRACECONNECTING 201
-# define RPL_TRACEHANDSHAKE 202
-# define RPL_TRACEUNKNOWN 203
-# define RPL_TRACEOPERATOR 204
-# define RPL_TRACEUSER 205
-# define RPL_TRACESERVER 206
-# define RPL_TRACENEWTYPE 208
-# define RPL_TRACELOG 261
-# define RPL_STATSLINKINFO 211
-# define RPL_STATSCOMMANDS 212
-# define RPL_STATSCLINE 213
-# define RPL_STATSNLINE 214
-# define RPL_STATSILINE 215
-# define RPL_STATSKLINE 216
-# define RPL_STATSYLINE 218
-# define RPL_ENDOFSTATS 219
-# define RPL_STATSLLINE 241
-# define RPL_STATSUPTIME 242
-# define RPL_STATSOLINE 243
-# define RPL_STATSHLINE 244
-# define RPL_UMODEIS 221
-# define RPL_LUSERCLIENT 251
-# define RPL_LUSEROP 252
-# define RPL_LUSERUNKNOWN 253
-# define RPL_LUSERCHANNELS 254
-# define RPL_LUSERME 255
-# define RPL_ADMINME 256
-# define RPL_ADMINLOC1 257
-# define RPL_ADMINLOC2 258
-# define RPL_ADMINEMAIL 259
-
+	RPL_NONE = 300,
+	RPL_USERHOST = 302,
+	RPL_ISON = 303,
+	RPL_AWAY = 301,
+	RPL_UNAWAY = 305,
+	RPL_NOWAWAY = 306,
+	RPL_WHOISUSER = 311,
+	RPL_WHOISSERVER = 312,
+	RPL_WHOISOPERATOR = 313,
+	RPL_WHOISIDLE = 317,
+	RPL_ENDOFWHOIS = 318,
+	RPL_WHOISCHANNELS = 319,
+	RPL_WHOWASUSER = 314,
+	RPL_ENDOFWHOWAS = 369,
+	RPL_LISTSTART = 321,
+	RPL_LIST = 322,
+	RPL_LISTEND = 323,
+	RPL_CHANNELMODEIS = 324,
+	RPL_NOTOPIC = 331,
+	RPL_TOPIC = 332,
+	RPL_INVITING = 341,
+	RPL_SUMMONING = 342,
+	RPL_VERSION = 351,
+	RPL_WHOREPLY = 352,
+	RPL_ENDOFWHO = 315,
+	RPL_NAMREPLY = 353,
+	RPL_ENDOFNAMES = 366,
+	RPL_LINKS = 364,
+	RPL_ENDOFLINKS = 365,
+	RPL_BANLIST = 367,
+	RPL_ENDOFBANLIST = 368,
+	RPL_INFO = 371,
+	RPL_ENDOFINFO = 374,
+	RPL_MOTDSTART = 375,
+	RPL_MOTD = 372,
+	RPL_ENDOFMOTD = 376,
+	RPL_YOUREOPER = 381,
+	RPL_REHASHING = 382,
+	RPL_TIME = 391,
+	RPL_USERSSTART = 392,
+	RPL_USERS = 393,
+	RPL_ENDOFUSERS = 394,
+	RPL_NOUSERS = 395,
+	RPL_TRACELINK = 200,
+	RPL_TRACECONNECTING = 201,
+	RPL_TRACEHANDSHAKE = 202,
+	RPL_TRACEUNKNOWN = 203,
+	RPL_TRACEOPERATOR = 204,
+	RPL_TRACEUSER = 205,
+	RPL_TRACESERVER = 206,
+	RPL_TRACENEWTYPE = 208,
+	RPL_TRACELOG = 261,
+	RPL_STATSLINKINFO = 211,
+	RPL_STATSCOMMANDS = 212,
+	RPL_STATSCLINE = 213,
+	RPL_STATSNLINE = 214,
+	RPL_STATSILINE = 215,
+	RPL_STATSKLINE = 216,
+	RPL_STATSYLINE = 218,
+	RPL_ENDOFSTATS = 219,
+	RPL_STATSLLINE = 241,
+	RPL_STATSUPTIME = 242,
+	RPL_STATSOLINE = 243,
+	RPL_STATSHLINE = 244,
+	RPL_UMODEIS = 221,
+	RPL_LUSERCLIENT = 251,
+	RPL_LUSEROP = 252,
+	RPL_LUSERUNKNOWN = 253,
+	RPL_LUSERCHANNELS = 254,
+	RPL_LUSERME = 255,
+	RPL_ADMINME = 256,
+	RPL_ADMINLOC1 = 257,
+	RPL_ADMINLOC2 = 258,
+	RPL_ADMINEMAIL = 259,
+	
 /*
-** Reserved numerics
+**	Reserved numerics
 */
+	
+	RPL_TRACECLASS = 209,
+	RPL_SERVICEINFO = 231,
+	RPL_SERVICE = 233,
+	RPL_SERVLISTEND = 235,
+	RPL_WHOISCHANOP = 316,
+	RPL_CLOSING = 362,
+	RPL_INFOSTART = 373,
+	ERR_YOUWILLBEBANNED = 466,
+	ERR_NOSERVICEHOST = 492,
+	RPL_STATSQLINE = 217,
+	RPL_ENDOFSERVICES = 232,
+	RPL_SERVLIST = 234,
+	RPL_KILLDONE = 361,
+	RPL_CLOSEEND = 363,
+	RPL_MYPORTIS = 384,
+	ERR_BADCHANMASK = 476
+};
 
-# define RPL_TRACECLASS 209
-# define RPL_SERVICEINFO 231
-# define RPL_SERVICE 233
-# define RPL_SERVLISTEND 235
-# define RPL_WHOISCHANOP 316
-# define RPL_CLOSING 362
-# define RPL_INFOSTART 373
-# define ERR_YOUWILLBEBANNED 466
-# define ERR_NOSERVICEHOST 492
-# define RPL_STATSQLINE 217
-# define RPL_ENDOFSERVICES 232
-# define RPL_SERVLIST 234
-# define RPL_KILLDONE 361
-# define RPL_CLOSEEND 363
-# define RPL_MYPORTIS 384
-# define ERR_BADCHANMASK 476
+namespace ft_irc
+{
+	string ERR_NOSUCHNICK(string nick) {return (nick + " :No such nick/channel");}
+	string ERR_NOSUCHSERVER(string serv) {return (serv + " :No such server");}
+	string ERR_NOSUCHCHANNEL(string chan) {return (chan + " :No such channel");}
+	string ERR_CANNOTSENDTOCHAN(string chan) {return (chan + " :Cannot send to channel");}
+
+	string ERR_TOOMANYCHANNELS(string chan) {return (chan + " :You have joined too many channels");}
+	string ERR_WASNOSUCHNICK(string nick) {return (nick + " :There was no such nickname");}
+	string ERR_TOOMANYTARGETS(string target) {return (target + " :Duplicate recipients. No message delivered");} 
+	string ERR_NOORIGIN() {return (":No origin specified");}
+	string ERR_NORECIPIENT(string cmd) {return (":No recipient given (" + cmd + ")");}
+	string ERR_NOTEXTTOSEND() {return (":No text to send");}
+	string ERR_NOTOPLEVEL(string mask) {return (mask + " :No toplevel domain specified");}
+	string ERR_WILDTOPLEVEL(string mask) {return (mask + " :Wildcard in toplevel domain");}
+
+	string ERR_UNKNOWNCOMMAND(string cmd) {return (cmd + " :Unknown command");}
+	string ERR_NOMOTD(string chan) {return (":MOTD File is missing");}
+	string ERR_NOADMININFO(string serv) {return (serv + " :No administrative info available");}
+	string ERR_FILEERROR(string& file_op, string& file) {return (":File error doing "+ file_op + " on " + file);}
+	string ERR_NONICKNAMEGIVEN() {return (":No nickname given");}
+	string ERR_NICKNAMEINUSE(string nick) {return (nick + " :Nickname is already in use");}
+	string ERR_NICKCOLLISION(string nick) {return (nick + " :Nickname collision KILL");}
+	string ERR_USERNOTINCHANNEL(string nick, string chan) {return (nick + " " + chan + " :They aren't on that channel");}
+	string ERR_NOTONCHANNEL(string chan) {return (chan + " :You're not on that channel");}
+
+	string ERR_USERONCHANNEL(string nick, string chan) {return (nick + " " + chan + " :is already on channel");}
+	string ERR_NOLOGIN(string user) {return (user + " :User not logged in");}
+	string ERR_SUMMONDISABLED() {return (":SUMMON has been disabled");}
+	string ERR_USERSDISABLED() {return (":USERS has been disabled");}
+	string ERR_NOTREGISTERED() {return (":You have not registered");}
+	string ERR_NEEDMOREPARAMS(string cmd) {return (cmd + " :Not enough parameters");}
+	string ERR_ALREADYREGISTRED() {return (":You may not reregister");}
+	string ERR_NOPERMFORHOST() {return (":Your host isn't among the privileged");}
+	string ERR_PASSWDMISMATCH() {return (":Password incorrect");}
+	string ERR_YOUREBANNEDCREEP() {return (":You are banned from this server");}
+	string ERR_KEYSET(string chan) {return (chan + " :Channel key already set");}
+
+	string ERR_CHANNELISFULL(string chan) {return (chan + " :Cannot join channel (+l)");}
+	string ERR_UNKNOWNMODE(string charac) {return (charac + " :is unknown mode char to me");}
+	string ERR_INVITEONLYCHAN(string chan) {return (chan + " :Cannot join channel (+i)");}
+	string ERR_BANNEDFROMCHAN(string chan) {return (chan + " :Cannot join channel (+b)");}
+	string ERR_BADCHANNELKEY(string chan) {return (chan + " :Cannot join channel (+k)");}
+	string ERR_NOPRIVILEGES() {return (":Permission Denied- You're not an IRC operator");}
+	string ERR_CHANOPRIVSNEEDED(string chan) {return (chan + " :You're not channel operator");}
+	string ERR_CANTKILLSERVER() {return (":You cant kill a server!");}
+	string ERR_NOOPERHOST() {return (":No O-lines for your host");}
+	string ERR_UMODEUNKNOWNFLAG() {return (":Unknown MODE flag");}
+	string ERR_USERSDONTMATCH() {return (":Cant change mode for other users");}
+
+	//
+	//
+	//
+
+	string RPL_NONE() {return ("");}
+	string RPL_USERHOST(string reply) {return (":" + reply);}
+	string RPL_ISON(string reply) {return (":" + reply);}
+	string RPL_AWAY(string nick, string msg) {return (nick + " :" + msg);}
+	
+	string RPL_UNAWAY() {return (":You are no longer marked as being away");}
+	string RPL_NOWAWAY() {return (":You have been marked as being away");}
+	string RPL_WHOISUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_user() + " " + host + " * :" + cli.get_rn());}
+	string RPL_WHOISSERVER(string nick, Server& serv) {return (nick + " " + serv.get_name() + " :" + serv.get_info());}
+	string RPL_WHOISOPERATOR(string nick) {return (nick + " :is an IRC operator");}
+	string RPL_WHOISIDLE(string nick, string sec) {return (nick + " " + sec + " :seconds idle");}
+	string RPL_ENDOFWHOIS(string nick) {return (nick + " :End of /WHOIS list");}
+	string RPL_WHOISCHANNELS(string nick, string chan_info) {return (nick + " :" + chan_info);}
+	string RPL_WHOWASUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_user() + " " + host + " * " + " :" + cli.get_rn());}
+	string RPL_ENDOFWHOWAS(string nick) {return (nick + " :End of WHOWAS");}
+	string RPL_LISTSTART() {return ("Channel :Users  Name");}
+	string RPL_LIST(Channel& chan) {return (chan.get_name() + " " + chan.get_nbrUsr() + " :" + chan.get_topic());}
+	string RPL_LISTEND() {return (":End of /LIST");}
+	string RPL_CHANNELMODEIS(Channel& chan) {return (chan.get_name() + " " + chan.get_mode() + " " + chan.get_mode_params() + " :Cannot send to channel");}
+	string RPL_NOTOPIC(string chan) {return (chan + " :No topic is set");}
+	string RPL_TOPIC(Channel& chan) {return (chan.get_name() + " :" + chan.get_topic());}
+	string RPL_INVITING(string chan, string nick) {return (chan + " " + nick);}
+	string RPL_SUMMONING(string user) {return (user + " :Summoning user to IRC");}
+	string RPL_VERSION(string version, string debug_lvl, string server, string comment) {return (version + "." + debug_lvl + " " + server + " :" + comment);}
+	string RPL_WHOREPLY(string chan, string user, string host, string server, string nick, string status, string hopCount, string rn) {return (chan + " " + user + " " + host + " " + server + " " + nick + " " + status + " :" + hopCount + " " + rn);}
+	string RPL_ENDOFWHO(string name) {return (name + " :End of /WHO list");}
+	string RPL_NAMREPLY(string channelWithType, string nicknames) {return (channelWithType + " " + nicknames);}
+	string RPL_ENDOFNAMES(string chan) {return (chan + " :End of /NAMES list");}
+	string RPL_LINKS(string mask, string server, string hopCount, string serverInfo) {return (mask + " " + server + " " + " :" + hopCount + " " + serverInfo);}
+	string RPL_ENDOFLINKS(string mask) {return (mask + " :End of /LINKS list");}
+	
+	string RPL_BANLIST(string chan, string banid) {return (chan + " " + banid);}
+	string RPL_ENDOFBANLIST(string chan) {return (chan + " :End of channel ban list");}
+	string RPL_INFO(string info) {return (":" + info);}
+	string RPL_ENDOFINFO() {return (":End of /INFO list");}
+	string RPL_MOTDSTART(string server) {return (":- " + server + " Message of the day");}
+	string RPL_MOTD(string text) {return (":- " + text);}
+	string RPL_ENDOFMOTD() {return (":End of /MOTD commandl");}
+	string RPL_YOUREOPER() {return (":You are now an IRC operator");}
+	string RPL_REHASHING(string configFile) {return (configFile + " :Rehashing");}
+	string RPL_TIME(string server, string time) {return (server + " :" + time);}
+	string RPL_USERSSTART() {return (":UserID   Terminal  Host");}
+	string RPL_USERS(string username, string ttyline, string hostname) {return (":" + username + " " + ttyline + " " + hostname);}
+	string RPL_ENDOFUSERS() {return (":End of users");}
+	string RPL_NOUSERS() {return (":Nobody logged in");}
+	string RPL_TRACELINK(string versionDebugLvl, string destination, string nextServ) {return ("Link " + versionDebugLvl + " " + destination + " " + nextServ);}
+	string RPL_TRACECONNECTING(string class_, string server) {return ("Try. " + class_ + " " + server);}
+
+}
 
 #endif

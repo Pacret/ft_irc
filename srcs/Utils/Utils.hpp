@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:51:49 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/14 19:35:22 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/18 08:57:32 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 enum Statut
 {
+	NONE,
     REGISTERED,
     CONNECTED
 };

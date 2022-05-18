@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/14 19:51:32 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/18 08:54:34 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,11 @@ class Channel
         void demote(Client& client);
         void promote(Client& client);
 
-        std::string get_name();
+		std::string get_name();
+		std::string get_mode();
+		std::string get_mode_params();
+		std::string get_nbrUsr();
+		std::string get_topic();
 };
 
 #endif

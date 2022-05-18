@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/14 19:53:18 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/18 09:28:01 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,17 @@
 class Client
 {
     private:
+
         int fd;
 		Statut _statut;
         std::string buffer;
 		std::string _nick;
 		std::string _username;
+		std::string _real_name;
 		struct sockaddr_in _address;
 
         void parse_command(const std::string &command);
+		void check_passwd(const std::string &command);
 
     public:
         Client(int fd, struct sockaddr_in address);
@@ -42,6 +45,10 @@ class Client
         void send_message(const std::string &message);
 
 		int	get_fd();
+		std::string get_nick();
+		std::string get_user();
+		std::string get_rn();
+
 		Statut get_statut();
 		void set_statut(Statut statut);
 };
