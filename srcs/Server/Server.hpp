@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/17 14:37:26 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/18 14:02:55 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,10 @@ class Server
         void    process();
         void    addClient();
 
-		void	send_message(Client& client, const std::string& msg);
+        void    send_message(int fd, const std::string &message);
+        void    parse_command(Client *client, const std::string &command);
+        void    get_message(Client *client);
+
 		void	register_client(Client& client, const std::string& msg_rcv);
 
         void    setPort(const std::string &port);

@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/17 14:36:14 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/18 13:57:42 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,16 @@ class Client
 {
     private:
         int fd;
-		Statut _statut;
-        std::string buffer;
-		std::string _nick;
-		std::string _username;
 		struct sockaddr_in _address;
 
         void parse_command(const std::string &command);
 
     public:
+		Statut _statut;
+        std::string buffer;
+		std::string _nick;
+		std::string _username;
+
         Client(int fd, struct sockaddr_in address);
         ~Client();
 
