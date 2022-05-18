@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/17 14:49:39 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/18 14:12:15 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,76 @@ void    Server::init()
     pollfds.push_back(pfd);
 }
 
+void    Server::send_message(int fd, const std::string &message) //Fonction juste pour montrer comment envoyer un message
+{
+    std::cout << "Envois :" << message << std::endl;
+    if (send(fd, message.c_str(), message.size(), 0) == -1)
+        std::cout << "Error: envois message" << std::endl;
+}
+
+void    Server::parse_command(Client *client, const std::string &command)
+{
+    if (client->_statut == REGISTERED)
+    {
+        size_t  pos = command.find(" ");
+
+        if (!command.find("NICK"))
+            client->_nick = command.substr(5);
+        else if (!command.find("USER"))
+        {
+            client->_username = command.substr(5, (command.find(" ", pos + 1)) - 5);
+            if (client->_nick != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
+            {
+                // Verifie t'on le hostname du client comme inspircd ?
+                // send_message(":paco.com NOTICE * :*** Looking up your hostname...\r\n");
+                client->set_statut(CONNECTED);
+                send_message(client->get_fd(), std::string(":paco.com 001 ") + client->_nick + std::string(" :Welcome to the Internet Relay Network ") + client->_nick + std::string("!") + client->_nick + std::string("@127.0.0.1\r\n"));
+                send_message(client->get_fd(), std::string(":paco.com 251 ") + client->_nick + std::string(" :There a users\r\n"));
+                send_message(client->get_fd(), std::string(":paco.com 253 ") + client->_nick + std::string(" :There a users\r\n"));
+                send_message(client->get_fd(), std::string(":paco.com 254 ") + client->_nick + std::string(" :There a users\r\n"));
+                send_message(client->get_fd(), std::string(":paco.com 255 ") + client->_nick + std::string(" :There a users\r\n"));
+                send_message(client->get_fd(), std::string(":paco.com 265 ") + client->_nick + std::string(" :There a users\r\n"));
+                send_message(client->get_fd(), std::string(":paco.com 266 ") + client->_nick + std::string(" :There a users\r\n"));
+                send_message(client->get_fd(), std::string(":paco.com 375 ") + client->_nick + std::string(" :paco.com message of the day\r\n"));
+                send_message(client->get_fd(), std::string(":paco.com 372 ") + client->_nick + std::string(" :message of the day\r\n"));
+                send_message(client->get_fd(), std::string(":paco.com 372 ") + client->_nick + std::string(" :message of the day\r\n"));
+                send_message(client->get_fd(), std::string(":paco.com 376 ") + client->_nick + std::string(" :End of message of the day\r\n"));
+            }
+        }
+    }
+    if (client->_statut == CONNECTED)
+    {
+        std::cout << command << std::endl;
+    }
+}
+
+void    Server::get_message(Client *client)
+{
+    char    buff[BUFFER_SIZE + 1];
+    ssize_t    size;
+    size_t  rn;
+
+    std::cout << "crasp" << std::endl;
+    if ((size = recv(client->get_fd(), &buff, BUFFER_SIZE, 0)) == -1) //?? Should be a while? Need to check max size IRC REQUEST
+        return;
+    if (!size)
+        return;
+    buff[size] = 0;
+    client->buffer += buff;
+    std::cout << "crsdefklhjesadf" << std::endl;
+
+    while ((rn = client->buffer.find("\r\n")) != std::string::npos)
+    {
+        std::string command = client->buffer.substr(0, rn);
+        client->buffer.erase(0, rn + 2);
+        if (command.size())
+        {
+            std::cout << std::endl;
+            parse_command(client, command);
+        } 
+    }
+}
+
 void    Server::process()
 {
 	int test = 0;
@@ -95,7 +165,8 @@ void    Server::process()
         {
             for (std::vector<struct pollfd>::iterator it = pollfds.begin(); it != pollfds.end(); ++it)
                 if ((*it).revents == POLLIN)
-                	clients[(*it).fd]->get_message();
+                    get_message(clients[(*it).fd]);
+
         }
         std::cout << pollfds[0].revents << std::endl;
 		std::cout << "here\n" << std::endl;
@@ -121,12 +192,4 @@ void	Server::register_client(Client& client, const std::string& msg_rcv)
 		return;
 	}
 	//if (())
-}
-
-void	Server::send_message(Client& client, const std::string& message)
-{
-	if (send(client.get_fd(), message.c_str(), message.size(), MSG_DONTWAIT))
-	{
-        std::cout << std::endl;
-	}
 }

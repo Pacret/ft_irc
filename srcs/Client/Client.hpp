@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/18 13:41:39 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/18 14:13:20 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,17 +31,17 @@ class Client
     private:
 
         int fd;
-		Statut _statut;
-        std::string buffer;
-		std::string _nick;
-		std::string _username;
-		std::string _real_name;
 		struct sockaddr_in _address;
 
         void parse_command(const std::string &command);
 		void check_passwd(const std::string &command);
 
     public:
+		Statut _statut;
+        std::string buffer;
+		std::string _nick;
+		std::string _username;
+
         Client(int fd, struct sockaddr_in address);
         ~Client();
 
