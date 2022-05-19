@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/05/18 08:54:00 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/19 12:45:42 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,10 @@
 
 using namespace std;
 
+# include "../Server/Server.hpp"
 # include "../Channel/Channel.hpp"
 # include "../Client/Client.hpp"
-# include "../Server/Server.hpp"
+
 
 /*
 ** Error numeric codes
@@ -168,11 +169,12 @@ enum numeric_replies_e
 	RPL_KILLDONE = 361,
 	RPL_CLOSEEND = 363,
 	RPL_MYPORTIS = 384,
-	ERR_BADCHANMASK = 476
+	ERR_BADCHANMASK = 476,
 };
 
 namespace ft_irc
 {
+	
 	string ERR_NOSUCHNICK(string nick) {return (nick + " :No such nick/channel");}
 	string ERR_NOSUCHSERVER(string serv) {return (serv + " :No such server");}
 	string ERR_NOSUCHCHANNEL(string chan) {return (chan + " :No such channel");}
@@ -188,7 +190,7 @@ namespace ft_irc
 	string ERR_WILDTOPLEVEL(string mask) {return (mask + " :Wildcard in toplevel domain");}
 
 	string ERR_UNKNOWNCOMMAND(string cmd) {return (cmd + " :Unknown command");}
-	string ERR_NOMOTD(string chan) {return (":MOTD File is missing");}
+	string ERR_NOMOTD() {return (":MOTD File is missing");}
 	string ERR_NOADMININFO(string serv) {return (serv + " :No administrative info available");}
 	string ERR_FILEERROR(string& file_op, string& file) {return (":File error doing "+ file_op + " on " + file);}
 	string ERR_NONICKNAMEGIVEN() {return (":No nickname given");}
@@ -271,7 +273,7 @@ namespace ft_irc
 	string RPL_ENDOFUSERS() {return (":End of users");}
 	string RPL_NOUSERS() {return (":Nobody logged in");}
 	string RPL_TRACELINK(string versionDebugLvl, string destination, string nextServ) {return ("Link " + versionDebugLvl + " " + destination + " " + nextServ);}
-	string RPL_TRACECONNECTING(string class_, string server) {return ("Try. " + class_ + " " + server);}
+	string RPL_TRACECONNECTING(string class_, string server) {return ("Try. " + class_ + " " + server);};
 
 }
 

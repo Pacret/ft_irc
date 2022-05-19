@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:23:56 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/18 14:34:16 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/18 14:34:51 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,22 +20,6 @@
 		Client::~Client()
 {
     close(fd);
-}
-
-void		Client::check_passwd(const std::string &command)
-{
-	size_t pos = command.find(" ");
-	std::string	pass_sent;
-
-	if (!command.find("PASS"))
-		pass_sent = command.substr(5);
-	else
-		return;
-	if (pass_sent != )
-		return;
-	_statut = REGISTERED;
-	
-	return ;
 }
 
 int		Client::get_fd()

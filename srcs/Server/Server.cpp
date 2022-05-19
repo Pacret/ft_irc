@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/18 14:33:10 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/19 13:26:01 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void    Server::addClient()
 
 void    Server::init()
 {
-	log_file = std::ofstream("log");
+	log_file.open("lol");
 	if (!log_file)
 		close_server("Error: Log file couldn't be created");
     if ((fd_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)
@@ -95,7 +95,7 @@ std::string	Server::get_pwd()
 
 void	Server::check_passwd(Client &client, const std::string &command)
 {
-	size_t pos = command.find(" ");
+	//size_t pos = command.find(" ");
 	std::string	pass_sent;
 
 	if (!command.find("PASS"))
@@ -179,7 +179,7 @@ void    Server::get_message(Client *client)
 
 void    Server::process()
 {
-	int test = 0;
+	// int test = 0;
 
     while (1)
     {
@@ -221,13 +221,13 @@ void	Server::kill_connection(Client& client)
 	return;
 }
 
-void	Server::register_client(Client& client, const std::string& msg_rcv)
-{
+// void	Server::register_client(Client& client, const std::string& msg_rcv)
+// {
 	
-	if (password.length() == 0)
-	{
-		client.set_statut(REGISTERED);
-		return;
-	}
-	//if (())
-}
+// 	if (password.length() == 0)
+// 	{
+// 		client.set_statut(REGISTERED);
+// 		return;
+// 	}
+// 	//if (())
+// }

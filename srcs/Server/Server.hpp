@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/18 14:23:16 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/19 13:27:07 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,8 @@
 
 # include "../Utils/Utils.hpp"
 # include "../Client/Client.hpp"
-# include "../Utils/defines.h"
 # include "../Channel/Channel.hpp"
 
-class Channel;
 
 class Server
 {

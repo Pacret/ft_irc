@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+         #
+#    By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/18 20:59:10 by pbonilla          #+#    #+#              #
-#    Updated: 2022/05/12 16:40:01 by pbonilla         ###   ########.fr        #
+#    Updated: 2022/05/19 12:40:21 by tmerrien         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,9 @@ COMP		= c++
 FLAGS		= -Wall -Wextra -Werror -std=c++98
 
 OBJS		= $(SRCS:.cpp=.o)
+
+.cpp.o:
+			$(COMP) -c $(FLAGS) $(FLAG) $< -o $(<:.cpp=.o)
 
 RM			= rm -rf
 
