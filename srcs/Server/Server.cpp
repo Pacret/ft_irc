@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/19 13:26:01 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/20 00:30:40 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,14 @@ void	Server::check_passwd(Client &client, const std::string &command)
 	return ;
 }
 
+void    Server::join_channel(Client *client, const std::string &channel_name)
+{
+    if (channels.find(channel_name) == channels.end())
+    {
+        channels[channel_name] = new Channel(client, channel_name);
+    }
+}
+
 void    Server::parse_command(Client *client, const std::string &command)
 {
 	if (client->get_statut() == NONE)
@@ -120,9 +128,9 @@ void    Server::parse_command(Client *client, const std::string &command)
     {
         size_t  pos = command.find(" ");
 
-        if (!command.find("NICK"))
+        if (!command.find("NICK "))
             client->_nick = command.substr(5);
-        else if (!command.find("USER"))
+        else if (!command.find("USER "))
         {
             client->_username = command.substr(5, (command.find(" ", pos + 1)) - 5);
             if (client->_nick != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
@@ -146,6 +154,11 @@ void    Server::parse_command(Client *client, const std::string &command)
     }
     if (client->_statut == CONNECTED)
     {
+        if (!command.find("PING "))
+            std::cout << std::endl;
+        else if (!command.find("JOIN "))
+            join_channel(client, command.substr(5));
+
         std::cout << command << std::endl;
     }
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/19 13:27:45 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/20 00:28:18 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,11 @@
 # include "../Utils/Utils.hpp"
 # include "../Client/Client.hpp"
 
-//class Server;
-
-
 class Channel
 {
     private:
 
-        Client _owner;
+        Client *_owner;
         std::string _channel_name;
 
         std::vector<Client *> operators;
@@ -36,7 +33,7 @@ class Channel
 
 
     public:
-        Channel(const Client &owner, const std::string &channel_name);
+        Channel(Client *owner, const std::string &channel_name);
         ~Channel();
 
         
@@ -49,7 +46,7 @@ class Channel
 		std::string get_name();
 		std::string get_mode();
 		std::string get_mode_params();
-		std::string get_nbrUsr();
+		int get_nbrUsers();
 		std::string get_topic();
 };
 
