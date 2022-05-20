@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/20 00:30:40 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/20 14:05:51 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,13 @@ void    Server::join_channel(Client *client, const std::string &channel_name)
     if (channels.find(channel_name) == channels.end())
     {
         channels[channel_name] = new Channel(client, channel_name);
+        std::vector<Client *> usrs = channels[channel_name]->get_Users();
+    
+        for(unsigned long int i = 0; i < usrs.size(); i++)
+        {
+            send_message(usrs[i]->get_fd(), std::string(":" + client->_nick + "!" +  client->_nick + "@127.0.0.1 JOIN :" + channel_name + "\r\n"));
+        }
+
     }
 }
 

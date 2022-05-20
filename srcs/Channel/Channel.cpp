@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/20 00:29:00 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/05/20 13:31:05 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,24 @@ std::string		Channel::get_name()
 	return (_channel_name);
 }
 
+int		Channel::get_nbrClients()
+{
+	return (clients.size());
+}
+
+int		Channel::get_nbrOps()
+{
+	return (operators.size());
+}
 int		Channel::get_nbrUsers()
 {
-	return (operators.size() + clients.size() + 1);
+	return (get_nbrOps() + get_nbrClients() + 1);
+}
+
+std::vector<Client *>	Channel::get_Users()
+{
+	std::vector<Client *> users = clients;
+	users.insert(users.end(), operators.begin(), operators.end());
+	users.push_back(_owner);
+	return (users);
 }
