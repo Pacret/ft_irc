@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/21 13:48:55 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/22 10:49:45 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,9 @@ class Client
 		std::string get_ip();
 		Statut get_statut();
 		
+		void	set_nick(std::string nick);
+		void	set_user(std::string user);
+		void	set_rn(std::string rn);
 		void set_statut(Statut statut);
 };
 

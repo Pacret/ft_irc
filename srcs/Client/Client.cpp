@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:23:56 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/22 02:04:20 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/22 10:51:03 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,21 @@ using namespace std;
 		Client::~Client()
 {
     close(fd);
+}
+
+void	Client::set_nick(std::string nick)
+{
+	_nick = nick;
+}
+
+void	Client::set_user(std::string user)
+{
+	_username = user;
+}
+
+void	Client::set_rn(std::string rn)
+{
+	_real_name = rn;
 }
 
 int		Client::get_fd() {return (this->fd);}

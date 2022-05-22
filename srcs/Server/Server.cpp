@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/22 02:15:06 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/22 10:52:43 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void	Server::check_passwd(Client &client, const std::string &command)
 {
 	//size_t pos = command.find(" ");
 	std::string	pass_sent;
-
+	
 	if (!command.find("PASS"))
 		pass_sent = command.substr(5);
 	else
@@ -146,11 +146,15 @@ void    Server::parse_command(Client *client, const std::string &command)
         size_t  pos = command.find(" ");
 
         if (!command.find("NICK"))
-            client->get_nick() = command.substr(5);
+		{
+            client->set_nick(command.substr(5));
+			std::cout << "NICK cmd found" << std::endl;
+		}
         else if (!command.find("USER"))
         {
 			std::cout << "USER cmd found" << std::endl;
-            client->get_user() = command.substr(5, (command.find(" ", pos + 1)) - 5);
+            client->set_user(command.substr(5, (command.find(" ", pos + 1)) - 5));
+			std::cout << client->get_user() << " <- user nick -> " << client->get_nick() << std::endl;
             if (client->get_nick() != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
             {
                 // Verifie t'on le hostname du client comme inspircd ?
