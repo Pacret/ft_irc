@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/22 02:10:20 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/22 02:15:06 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,21 @@ std::string format_msg(numeric_replies_e num, Client& client)
 	return (":paco.com " + ft_irc::to_string(num) + " " + client.get_nick());
 }
 
+void    Server::join_channel(Client *client, const std::string &channel_name)
+{
+    if (channels.find(channel_name) == channels.end())
+    {
+        channels[channel_name] = new Channel(client, channel_name);
+        std::vector<Client *> usrs = channels[channel_name]->get_Users();
+    
+        for(unsigned long int i = 0; i < usrs.size(); i++)
+        {
+            send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_nick() + "@127.0.0.1 JOIN :" + channel_name + "\r\n"));
+        }
+
+    }
+}
+
 void    Server::parse_command(Client *client, const std::string &command)
 {
 	if (client->get_statut() == NONE)
@@ -159,6 +174,11 @@ void    Server::parse_command(Client *client, const std::string &command)
     }
     else if (client->get_statut() == CONNECTED)
     {
+        if (!command.find("PING "))
+            std::cout << std::endl;
+        else if (!command.find("JOIN "))
+            join_channel(client, command.substr(5));
+
         std::cout << command << std::endl;
     }
 }

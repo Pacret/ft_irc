@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/05/22 02:01:06 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/22 02:17:45 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,6 +175,13 @@ enum numeric_replies_e
 
 namespace ft_irc
 {
+	inline string to_string(int code)
+	{
+		stringstream sstream;
+
+		sstream << code;
+		return (sstream.str());
+	};
 	
 	inline string ERR_NOSUCHNICK(string nick) {return (nick + " :No such nick/channel");}
 	inline string ERR_NOSUCHSERVER(string serv) {return (serv + " :No such server");}
@@ -245,7 +252,7 @@ namespace ft_irc
 	inline string RPL_WHOWASUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_user() + " " + host + " * " + " :" + cli.get_rn());}
 	inline string RPL_ENDOFWHOWAS(string nick) {return (nick + " :End of WHOWAS");}
 	inline string RPL_LISTSTART() {return ("Channel :Users  Name");}
-	inline string RPL_LIST(Channel& chan) {return (chan.get_name() + " " + chan.get_nbrUsr() + " :" + chan.get_topic());}
+	inline string RPL_LIST(Channel& chan) {return (chan.get_name() + " " + ft_irc::to_string(chan.get_nbrUsers()) + " :" + chan.get_topic());}
 	inline string RPL_LISTEND() {return (":End of /LIST");}
 	inline string RPL_CHANNELMODEIS(Channel& chan) {return (chan.get_name() + " " + chan.get_mode() + " " + chan.get_mode_params() + " :Cannot send to channel");}
 	inline string RPL_NOTOPIC(string chan) {return (chan + " :No topic is set");}
@@ -277,13 +284,7 @@ namespace ft_irc
 	inline string RPL_TRACELINK(string versionDebugLvl, string destination, string nextServ) {return ("Link " + versionDebugLvl + " " + destination + " " + nextServ);}
 	inline string RPL_TRACECONNECTING(string class_, string server) {return ("Try. " + class_ + " " + server);};
 
-	inline string to_string(int code)
-	{
-		stringstream sstream;
-
-		sstream << code;
-		return (sstream.str());
-	};
+	
 
 }
 

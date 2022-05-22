@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/19 13:27:07 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/20 00:23:32 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class Server
         std::vector<struct pollfd> pollfds;
 
         std::map<int, Client *> clients;
-        std::vector<Channel> channels;
+        std::map<std::string, Channel *> channels;
 
         std::string port;
         std::string password;
@@ -57,6 +57,7 @@ class Server
         void    process();
         void    addClient();
 
+        void    join_channel(Client *client, const std::string &channel_name);
         void    send_message(int fd, const std::string &message);
         void    parse_command(Client *client, const std::string &command);
         void    get_message(Client *client);
