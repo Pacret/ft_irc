@@ -6,11 +6,13 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/19 13:26:01 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/22 02:10:20 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include "../Utils/defines.h"
+#include <string>
 
 		Server::Server()
 {
@@ -28,6 +30,7 @@
     for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
         delete it->second;
     close(fd_socket);
+	log_file.close();
 }
 
 void    Server::addClient()
@@ -83,8 +86,9 @@ void    Server::init()
 
 void    Server::send_message(int fd, const std::string &message) //Fonction juste pour montrer comment envoyer un message
 {
-    std::cout << "Envois :" << message << std::endl;
-    if (send(fd, message.c_str(), message.size(), 0) == -1)
+	std::string msg(message + "\r\n");
+    std::cout << "Envois :" << msg << std::endl;
+    if (send(fd, msg.c_str(), msg.size(), 0) == -1)
         std::cout << "Error: envois message" << std::endl;
 }
 
@@ -104,47 +108,56 @@ void	Server::check_passwd(Client &client, const std::string &command)
 		return;
 	if (pass_sent != get_pwd())
 	{
-		kill_connection(client);
+		//kill_connection(client);
 		return;
 	}
 	client.set_statut(REGISTERED);
+	log_file << client.get_ip() << " has sent a valid password, statut changed to REGISTERED" << std::endl;
 	
 	return ;
+}
+
+std::string format_msg(numeric_replies_e num, Client& client)
+{
+	return (":paco.com " + ft_irc::to_string(num) + " " + client.get_nick());
 }
 
 void    Server::parse_command(Client *client, const std::string &command)
 {
 	if (client->get_statut() == NONE)
 		check_passwd(*client, command);
-    else if (client->_statut == REGISTERED)
+    else if (client->get_statut() == REGISTERED)
     {
         size_t  pos = command.find(" ");
 
         if (!command.find("NICK"))
-            client->_nick = command.substr(5);
+            client->get_nick() = command.substr(5);
         else if (!command.find("USER"))
         {
-            client->_username = command.substr(5, (command.find(" ", pos + 1)) - 5);
-            if (client->_nick != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
+			std::cout << "USER cmd found" << std::endl;
+            client->get_user() = command.substr(5, (command.find(" ", pos + 1)) - 5);
+            if (client->get_nick() != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
             {
                 // Verifie t'on le hostname du client comme inspircd ?
                 // send_message(":paco.com NOTICE * :*** Looking up your hostname...\r\n");
                 client->set_statut(CONNECTED);
-                send_message(client->get_fd(), std::string(":paco.com 001 ") + client->_nick + std::string(" :Welcome to the Internet Relay Network ") + client->_nick + std::string("!") + client->_nick + std::string("@127.0.0.1\r\n"));
-                send_message(client->get_fd(), std::string(":paco.com 251 ") + client->_nick + std::string(" :There a users\r\n"));
-                send_message(client->get_fd(), std::string(":paco.com 253 ") + client->_nick + std::string(" :There a users\r\n"));
-                send_message(client->get_fd(), std::string(":paco.com 254 ") + client->_nick + std::string(" :There a users\r\n"));
-                send_message(client->get_fd(), std::string(":paco.com 255 ") + client->_nick + std::string(" :There a users\r\n"));
-                send_message(client->get_fd(), std::string(":paco.com 265 ") + client->_nick + std::string(" :There a users\r\n"));
-                send_message(client->get_fd(), std::string(":paco.com 266 ") + client->_nick + std::string(" :There a users\r\n"));
-                send_message(client->get_fd(), std::string(":paco.com 375 ") + client->_nick + std::string(" :paco.com message of the day\r\n"));
-                send_message(client->get_fd(), std::string(":paco.com 372 ") + client->_nick + std::string(" :message of the day\r\n"));
-                send_message(client->get_fd(), std::string(":paco.com 372 ") + client->_nick + std::string(" :message of the day\r\n"));
-                send_message(client->get_fd(), std::string(":paco.com 376 ") + client->_nick + std::string(" :End of message of the day\r\n"));
+				std::cout << "Sending welcome message" << std::endl;
+				send_message(client->get_fd(), format_msg(RPL_WELCOME, *client) + ft_irc::RPL_WELCOME(client->get_nick(), "127.0.0.1"));
+                // send_message(client->get_fd(), std::string(":paco.com 001 ") + client->get_nick() + ft_irc::RPL_WELCOME() + client->get_nick() + std::string("!") + client->get_nick() + std::string("@127.0.0.1\r\n"));
+                // send_message(client->get_fd(), std::string(":paco.com 251 ") + client->get_nick() + std::string(" :There a users\r\n"));
+                // send_message(client->get_fd(), std::string(":paco.com 253 ") + client->get_nick() + std::string(" :There a users\r\n"));
+                // send_message(client->get_fd(), std::string(":paco.com 254 ") + client->get_nick() + std::string(" :There a users\r\n"));
+                // send_message(client->get_fd(), std::string(":paco.com 255 ") + client->get_nick() + std::string(" :There a users\r\n"));
+                // send_message(client->get_fd(), std::string(":paco.com 265 ") + client->get_nick() + std::string(" :There a users\r\n"));
+                // send_message(client->get_fd(), std::string(":paco.com 266 ") + client->get_nick() + std::string(" :There a users\r\n"));
+                // send_message(client->get_fd(), std::string(":paco.com 375 ") + client->get_nick() + std::string(" :paco.com message of the day\r\n"));
+                // send_message(client->get_fd(), std::string(":paco.com 372 ") + client->get_nick() + std::string(" :message of the day\r\n"));
+                // send_message(client->get_fd(), std::string(":paco.com 372 ") + client->get_nick() + std::string(" :message of the day\r\n"));
+                // send_message(client->get_fd(), std::string(":paco.com 376 ") + client->get_nick() + std::string(" :End of message of the day\r\n"));
             }
         }
     }
-    if (client->_statut == CONNECTED)
+    else if (client->get_statut() == CONNECTED)
     {
         std::cout << command << std::endl;
     }

@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/05/19 12:45:42 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/05/22 02:01:06 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ enum numeric_replies_e
 **	Command numeric responses
 */
 
+	RPL_WELCOME = 001,
 	RPL_NONE = 300,
 	RPL_USERHOST = 302,
 	RPL_ISON = 303,
@@ -175,105 +176,114 @@ enum numeric_replies_e
 namespace ft_irc
 {
 	
-	string ERR_NOSUCHNICK(string nick) {return (nick + " :No such nick/channel");}
-	string ERR_NOSUCHSERVER(string serv) {return (serv + " :No such server");}
-	string ERR_NOSUCHCHANNEL(string chan) {return (chan + " :No such channel");}
-	string ERR_CANNOTSENDTOCHAN(string chan) {return (chan + " :Cannot send to channel");}
+	inline string ERR_NOSUCHNICK(string nick) {return (nick + " :No such nick/channel");}
+	inline string ERR_NOSUCHSERVER(string serv) {return (serv + " :No such server");}
+	inline string ERR_NOSUCHCHANNEL(string chan) {return (chan + " :No such channel");}
+	inline string ERR_CANNOTSENDTOCHAN(string chan) {return (chan + " :Cannot send to channel");}
 
-	string ERR_TOOMANYCHANNELS(string chan) {return (chan + " :You have joined too many channels");}
-	string ERR_WASNOSUCHNICK(string nick) {return (nick + " :There was no such nickname");}
-	string ERR_TOOMANYTARGETS(string target) {return (target + " :Duplicate recipients. No message delivered");} 
-	string ERR_NOORIGIN() {return (":No origin specified");}
-	string ERR_NORECIPIENT(string cmd) {return (":No recipient given (" + cmd + ")");}
-	string ERR_NOTEXTTOSEND() {return (":No text to send");}
-	string ERR_NOTOPLEVEL(string mask) {return (mask + " :No toplevel domain specified");}
-	string ERR_WILDTOPLEVEL(string mask) {return (mask + " :Wildcard in toplevel domain");}
+	inline string ERR_TOOMANYCHANNELS(string chan) {return (chan + " :You have joined too many channels");}
+	inline string ERR_WASNOSUCHNICK(string nick) {return (nick + " :There was no such nickname");}
+	inline string ERR_TOOMANYTARGETS(string target) {return (target + " :Duplicate recipients. No message delivered");} 
+	inline string ERR_NOORIGIN() {return (":No origin specified");}
+	inline string ERR_NORECIPIENT(string cmd) {return (":No recipient given (" + cmd + ")");}
+	inline string ERR_NOTEXTTOSEND() {return (":No text to send");}
+	inline string ERR_NOTOPLEVEL(string mask) {return (mask + " :No toplevel domain specified");}
+	inline string ERR_WILDTOPLEVEL(string mask) {return (mask + " :Wildcard in toplevel domain");}
 
-	string ERR_UNKNOWNCOMMAND(string cmd) {return (cmd + " :Unknown command");}
-	string ERR_NOMOTD() {return (":MOTD File is missing");}
-	string ERR_NOADMININFO(string serv) {return (serv + " :No administrative info available");}
-	string ERR_FILEERROR(string& file_op, string& file) {return (":File error doing "+ file_op + " on " + file);}
-	string ERR_NONICKNAMEGIVEN() {return (":No nickname given");}
-	string ERR_NICKNAMEINUSE(string nick) {return (nick + " :Nickname is already in use");}
-	string ERR_NICKCOLLISION(string nick) {return (nick + " :Nickname collision KILL");}
-	string ERR_USERNOTINCHANNEL(string nick, string chan) {return (nick + " " + chan + " :They aren't on that channel");}
-	string ERR_NOTONCHANNEL(string chan) {return (chan + " :You're not on that channel");}
+	inline string ERR_UNKNOWNCOMMAND(string cmd) {return (cmd + " :Unknown command");}
+	inline string ERR_NOMOTD() {return (":MOTD File is missing");}
+	inline string ERR_NOADMININFO(string serv) {return (serv + " :No administrative info available");}
+	inline string ERR_FILEERROR(string& file_op, string& file) {return (":File error doing "+ file_op + " on " + file);}
+	inline string ERR_NONICKNAMEGIVEN() {return (":No nickname given");}
+	inline string ERR_NICKNAMEINUSE(string nick) {return (nick + " :Nickname is already in use");}
+	inline string ERR_NICKCOLLISION(string nick) {return (nick + " :Nickname collision KILL");}
+	inline string ERR_USERNOTINCHANNEL(string nick, string chan) {return (nick + " " + chan + " :They aren't on that channel");}
+	inline string ERR_NOTONCHANNEL(string chan) {return (chan + " :You're not on that channel");}
 
-	string ERR_USERONCHANNEL(string nick, string chan) {return (nick + " " + chan + " :is already on channel");}
-	string ERR_NOLOGIN(string user) {return (user + " :User not logged in");}
-	string ERR_SUMMONDISABLED() {return (":SUMMON has been disabled");}
-	string ERR_USERSDISABLED() {return (":USERS has been disabled");}
-	string ERR_NOTREGISTERED() {return (":You have not registered");}
-	string ERR_NEEDMOREPARAMS(string cmd) {return (cmd + " :Not enough parameters");}
-	string ERR_ALREADYREGISTRED() {return (":You may not reregister");}
-	string ERR_NOPERMFORHOST() {return (":Your host isn't among the privileged");}
-	string ERR_PASSWDMISMATCH() {return (":Password incorrect");}
-	string ERR_YOUREBANNEDCREEP() {return (":You are banned from this server");}
-	string ERR_KEYSET(string chan) {return (chan + " :Channel key already set");}
+	inline string ERR_USERONCHANNEL(string nick, string chan) {return (nick + " " + chan + " :is already on channel");}
+	inline string ERR_NOLOGIN(string user) {return (user + " :User not logged in");}
+	inline string ERR_SUMMONDISABLED() {return (":SUMMON has been disabled");}
+	inline string ERR_USERSDISABLED() {return (":USERS has been disabled");}
+	inline string ERR_NOTREGISTERED() {return (":You have not registered");}
+	inline string ERR_NEEDMOREPARAMS(string cmd) {return (cmd + " :Not enough parameters");}
+	inline string ERR_ALREADYREGISTRED() {return (":You may not reregister");}
+	inline string ERR_NOPERMFORHOST() {return (":Your host isn't among the privileged");}
+	inline string ERR_PASSWDMISMATCH() {return (":Password incorrect");}
+	inline string ERR_YOUREBANNEDCREEP() {return (":You are banned from this server");}
+	inline string ERR_KEYSET(string chan) {return (chan + " :Channel key already set");}
 
-	string ERR_CHANNELISFULL(string chan) {return (chan + " :Cannot join channel (+l)");}
-	string ERR_UNKNOWNMODE(string charac) {return (charac + " :is unknown mode char to me");}
-	string ERR_INVITEONLYCHAN(string chan) {return (chan + " :Cannot join channel (+i)");}
-	string ERR_BANNEDFROMCHAN(string chan) {return (chan + " :Cannot join channel (+b)");}
-	string ERR_BADCHANNELKEY(string chan) {return (chan + " :Cannot join channel (+k)");}
-	string ERR_NOPRIVILEGES() {return (":Permission Denied- You're not an IRC operator");}
-	string ERR_CHANOPRIVSNEEDED(string chan) {return (chan + " :You're not channel operator");}
-	string ERR_CANTKILLSERVER() {return (":You cant kill a server!");}
-	string ERR_NOOPERHOST() {return (":No O-lines for your host");}
-	string ERR_UMODEUNKNOWNFLAG() {return (":Unknown MODE flag");}
-	string ERR_USERSDONTMATCH() {return (":Cant change mode for other users");}
+	inline string ERR_CHANNELISFULL(string chan) {return (chan + " :Cannot join channel (+l)");}
+	inline string ERR_UNKNOWNMODE(string charac) {return (charac + " :is unknown mode char to me");}
+	inline string ERR_INVITEONLYCHAN(string chan) {return (chan + " :Cannot join channel (+i)");}
+	inline string ERR_BANNEDFROMCHAN(string chan) {return (chan + " :Cannot join channel (+b)");}
+	inline string ERR_BADCHANNELKEY(string chan) {return (chan + " :Cannot join channel (+k)");}
+	inline string ERR_NOPRIVILEGES() {return (":Permission Denied- You're not an IRC operator");}
+	inline string ERR_CHANOPRIVSNEEDED(string chan) {return (chan + " :You're not channel operator");}
+	inline string ERR_CANTKILLSERVER() {return (":You cant kill a server!");}
+	inline string ERR_NOOPERHOST() {return (":No O-lines for your host");}
+	inline string ERR_UMODEUNKNOWNFLAG() {return (":Unknown MODE flag");}
+	inline string ERR_USERSDONTMATCH() {return (":Cant change mode for other users");}
 
 	//
 	//
 	//
 
-	string RPL_NONE() {return ("");}
-	string RPL_USERHOST(string reply) {return (":" + reply);}
-	string RPL_ISON(string reply) {return (":" + reply);}
-	string RPL_AWAY(string nick, string msg) {return (nick + " :" + msg);}
+	inline string RPL_WELCOME(std::string nick, std::string host) {return (" :Welcome to the Internet Relay Network " + nick + "! " + nick + "@" + host);}
+	inline string RPL_NONE() {return ("");}
+	inline string RPL_USERHOST(string reply) {return (":" + reply);}
+	inline string RPL_ISON(string reply) {return (":" + reply);}
+	inline string RPL_AWAY(string nick, string msg) {return (nick + " :" + msg);}
 	
-	string RPL_UNAWAY() {return (":You are no longer marked as being away");}
-	string RPL_NOWAWAY() {return (":You have been marked as being away");}
-	string RPL_WHOISUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_user() + " " + host + " * :" + cli.get_rn());}
-	string RPL_WHOISSERVER(string nick, Server& serv) {return (nick + " " + serv.get_name() + " :" + serv.get_info());}
-	string RPL_WHOISOPERATOR(string nick) {return (nick + " :is an IRC operator");}
-	string RPL_WHOISIDLE(string nick, string sec) {return (nick + " " + sec + " :seconds idle");}
-	string RPL_ENDOFWHOIS(string nick) {return (nick + " :End of /WHOIS list");}
-	string RPL_WHOISCHANNELS(string nick, string chan_info) {return (nick + " :" + chan_info);}
-	string RPL_WHOWASUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_user() + " " + host + " * " + " :" + cli.get_rn());}
-	string RPL_ENDOFWHOWAS(string nick) {return (nick + " :End of WHOWAS");}
-	string RPL_LISTSTART() {return ("Channel :Users  Name");}
-	string RPL_LIST(Channel& chan) {return (chan.get_name() + " " + chan.get_nbrUsr() + " :" + chan.get_topic());}
-	string RPL_LISTEND() {return (":End of /LIST");}
-	string RPL_CHANNELMODEIS(Channel& chan) {return (chan.get_name() + " " + chan.get_mode() + " " + chan.get_mode_params() + " :Cannot send to channel");}
-	string RPL_NOTOPIC(string chan) {return (chan + " :No topic is set");}
-	string RPL_TOPIC(Channel& chan) {return (chan.get_name() + " :" + chan.get_topic());}
-	string RPL_INVITING(string chan, string nick) {return (chan + " " + nick);}
-	string RPL_SUMMONING(string user) {return (user + " :Summoning user to IRC");}
-	string RPL_VERSION(string version, string debug_lvl, string server, string comment) {return (version + "." + debug_lvl + " " + server + " :" + comment);}
-	string RPL_WHOREPLY(string chan, string user, string host, string server, string nick, string status, string hopCount, string rn) {return (chan + " " + user + " " + host + " " + server + " " + nick + " " + status + " :" + hopCount + " " + rn);}
-	string RPL_ENDOFWHO(string name) {return (name + " :End of /WHO list");}
-	string RPL_NAMREPLY(string channelWithType, string nicknames) {return (channelWithType + " " + nicknames);}
-	string RPL_ENDOFNAMES(string chan) {return (chan + " :End of /NAMES list");}
-	string RPL_LINKS(string mask, string server, string hopCount, string serverInfo) {return (mask + " " + server + " " + " :" + hopCount + " " + serverInfo);}
-	string RPL_ENDOFLINKS(string mask) {return (mask + " :End of /LINKS list");}
+	inline string RPL_UNAWAY() {return (":You are no longer marked as being away");}
+	inline string RPL_NOWAWAY() {return (":You have been marked as being away");}
+	inline string RPL_WHOISUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_user() + " " + host + " * :" + cli.get_rn());}
+	inline string RPL_WHOISSERVER(string nick, Server& serv) {return (nick + " " + serv.get_name() + " :" + serv.get_info());}
+	inline string RPL_WHOISOPERATOR(string nick) {return (nick + " :is an IRC operator");}
+	inline string RPL_WHOISIDLE(string nick, string sec) {return (nick + " " + sec + " :seconds idle");}
+	inline string RPL_ENDOFWHOIS(string nick) {return (nick + " :End of /WHOIS list");}
+	inline string RPL_WHOISCHANNELS(string nick, string chan_info) {return (nick + " :" + chan_info);}
+	inline string RPL_WHOWASUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_user() + " " + host + " * " + " :" + cli.get_rn());}
+	inline string RPL_ENDOFWHOWAS(string nick) {return (nick + " :End of WHOWAS");}
+	inline string RPL_LISTSTART() {return ("Channel :Users  Name");}
+	inline string RPL_LIST(Channel& chan) {return (chan.get_name() + " " + chan.get_nbrUsr() + " :" + chan.get_topic());}
+	inline string RPL_LISTEND() {return (":End of /LIST");}
+	inline string RPL_CHANNELMODEIS(Channel& chan) {return (chan.get_name() + " " + chan.get_mode() + " " + chan.get_mode_params() + " :Cannot send to channel");}
+	inline string RPL_NOTOPIC(string chan) {return (chan + " :No topic is set");}
+	inline string RPL_TOPIC(Channel& chan) {return (chan.get_name() + " :" + chan.get_topic());}
+	inline string RPL_INVITING(string chan, string nick) {return (chan + " " + nick);}
+	inline string RPL_SUMMONING(string user) {return (user + " :Summoning user to IRC");}
+	inline string RPL_VERSION(string version, string debug_lvl, string server, string comment) {return (version + "." + debug_lvl + " " + server + " :" + comment);}
+	inline string RPL_WHOREPLY(string chan, string user, string host, string server, string nick, string status, string hopCount, string rn) {return (chan + " " + user + " " + host + " " + server + " " + nick + " " + status + " :" + hopCount + " " + rn);}
+	inline string RPL_ENDOFWHO(string name) {return (name + " :End of /WHO list");}
+	inline string RPL_NAMREPLY(string channelWithType, string nicknames) {return (channelWithType + " " + nicknames);}
+	inline string RPL_ENDOFNAMES(string chan) {return (chan + " :End of /NAMES list");}
+	inline string RPL_LINKS(string mask, string server, string hopCount, string serverInfo) {return (mask + " " + server + " " + " :" + hopCount + " " + serverInfo);}
+	inline string RPL_ENDOFLINKS(string mask) {return (mask + " :End of /LINKS list");}
 	
-	string RPL_BANLIST(string chan, string banid) {return (chan + " " + banid);}
-	string RPL_ENDOFBANLIST(string chan) {return (chan + " :End of channel ban list");}
-	string RPL_INFO(string info) {return (":" + info);}
-	string RPL_ENDOFINFO() {return (":End of /INFO list");}
-	string RPL_MOTDSTART(string server) {return (":- " + server + " Message of the day");}
-	string RPL_MOTD(string text) {return (":- " + text);}
-	string RPL_ENDOFMOTD() {return (":End of /MOTD commandl");}
-	string RPL_YOUREOPER() {return (":You are now an IRC operator");}
-	string RPL_REHASHING(string configFile) {return (configFile + " :Rehashing");}
-	string RPL_TIME(string server, string time) {return (server + " :" + time);}
-	string RPL_USERSSTART() {return (":UserID   Terminal  Host");}
-	string RPL_USERS(string username, string ttyline, string hostname) {return (":" + username + " " + ttyline + " " + hostname);}
-	string RPL_ENDOFUSERS() {return (":End of users");}
-	string RPL_NOUSERS() {return (":Nobody logged in");}
-	string RPL_TRACELINK(string versionDebugLvl, string destination, string nextServ) {return ("Link " + versionDebugLvl + " " + destination + " " + nextServ);}
-	string RPL_TRACECONNECTING(string class_, string server) {return ("Try. " + class_ + " " + server);};
+	inline string RPL_BANLIST(string chan, string banid) {return (chan + " " + banid);}
+	inline string RPL_ENDOFBANLIST(string chan) {return (chan + " :End of channel ban list");}
+	inline string RPL_INFO(string info) {return (":" + info);}
+	inline string RPL_ENDOFINFO() {return (":End of /INFO list");}
+	inline string RPL_MOTDSTART(string server) {return (":- " + server + " Message of the day");}
+	inline string RPL_MOTD(string text) {return (":- " + text);}
+	inline string RPL_ENDOFMOTD() {return (":End of /MOTD commandl");}
+	inline string RPL_YOUREOPER() {return (":You are now an IRC operator");}
+	inline string RPL_REHASHING(string configFile) {return (configFile + " :Rehashing");}
+	inline string RPL_TIME(string server, string time) {return (server + " :" + time);}
+	inline string RPL_USERSSTART() {return (":UserID   Terminal  Host");}
+	inline string RPL_USERS(string username, string ttyline, string hostname) {return (":" + username + " " + ttyline + " " + hostname);}
+	inline string RPL_ENDOFUSERS() {return (":End of users");}
+	inline string RPL_NOUSERS() {return (":Nobody logged in");}
+	inline string RPL_TRACELINK(string versionDebugLvl, string destination, string nextServ) {return ("Link " + versionDebugLvl + " " + destination + " " + nextServ);}
+	inline string RPL_TRACECONNECTING(string class_, string server) {return ("Try. " + class_ + " " + server);};
+
+	inline string to_string(int code)
+	{
+		stringstream sstream;
+
+		sstream << code;
+		return (sstream.str());
+	};
 
 }
 
