@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/22 10:52:43 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/17 13:40:59 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,17 +124,17 @@ std::string format_msg(numeric_replies_e num, Client& client)
 
 void    Server::join_channel(Client *client, const std::string &channel_name)
 {
-    if (channels.find(channel_name) == channels.end())
-    {
-        channels[channel_name] = new Channel(client, channel_name);
-        std::vector<Client *> usrs = channels[channel_name]->get_Users();
-    
-        for(unsigned long int i = 0; i < usrs.size(); i++)
-        {
-            send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_nick() + "@127.0.0.1 JOIN :" + channel_name + "\r\n"));
-        }
+	if (channels.find(channel_name) == channels.end())
+		channels[channel_name] = new Channel(client, channel_name);
 
-    }
+	std::vector<Client *> usrs = channels[channel_name]->get_Users();
+	for(unsigned long int i = 0; i < usrs.size(); i++)
+		send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_user() + "@127.0.0.1 JOIN :" + channel_name + "\r\n"));
+	
+	send_message(client->get_fd(), std::string(format_msg(RPL_WHOREPLY, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
+	//send_message(client->get_fd(), std::string(format_msg(RPL_WHOREPLY, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
+
+	//inline string RPL_NAMREPLY(string channelWithType, string nicknames) {return (channelWithType + " " + nicknames);}
 }
 
 void    Server::parse_command(Client *client, const std::string &command)

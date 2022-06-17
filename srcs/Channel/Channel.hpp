@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/20 12:59:34 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/11 22:41:20 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ class Channel
 
         Client *_owner;
         std::string _channel_name;
+		std::string _topic;
 
         std::vector<Client *> operators;
         std::vector<Client *> clients;

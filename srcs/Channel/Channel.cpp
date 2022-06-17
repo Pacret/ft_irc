@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/20 13:31:05 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/11 22:41:08 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,9 @@ std::vector<Client *>	Channel::get_Users()
 	users.insert(users.end(), operators.begin(), operators.end());
 	users.push_back(_owner);
 	return (users);
+}
+
+std::string		Channel::get_topic()
+{
+	return (_topic);
 }
