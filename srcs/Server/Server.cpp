@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/23 14:27:19 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/23 18:01:46 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void    Server::join_channel(Client *client, const std::string &channel_name)
 		channels[channel_name] = new Channel(client, channel_name);
 	std::vector<Client *> usrs = channels[channel_name]->get_users();
 	for(unsigned long int i = 0; i < usrs.size(); i++)
-		send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_username() + "@127.0.0.1 JOIN :" + channel_name + "\r\n"));
+		send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_username() + "@127.0.0.1 JOIN :" + channel_name));
 	
 	send_message(client->get_fd(), std::string(format_msg(RPL_WHOREPLY, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
 	send_message(client->get_fd(), std::string(format_msg(RPL_NAMREPLY, *client) + " " + ft_irc::RPL_NAMREPLY("tmp", channels[channel_name]->get_users_names())));
@@ -162,17 +162,16 @@ void    Server::parse_command(Client *client, const std::string &command)
                 client->set_statut(CONNECTED);
 				std::cout << "Sending welcome message" << std::endl;
 				send_message(client->get_fd(), format_msg(RPL_WELCOME, *client) + ft_irc::RPL_WELCOME(client->get_nick(), "127.0.0.1"));
-                // send_message(client->get_fd(), std::string(":paco.com 001 ") + client->get_nick() + ft_irc::RPL_WELCOME() + client->get_nick() + std::string("!") + client->get_nick() + std::string("@127.0.0.1\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 251 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 253 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 254 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 255 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 265 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 266 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 375 ") + client->get_nick() + std::string(" :paco.com message of the day\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 372 ") + client->get_nick() + std::string(" :message of the day\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 372 ") + client->get_nick() + std::string(" :message of the day\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 376 ") + client->get_nick() + std::string(" :End of message of the day\r\n"));
+                send_message(client->get_fd(), std::string(":paco.com 251 ") + client->get_nick() + std::string(" :There a users"));
+                send_message(client->get_fd(), std::string(":paco.com 253 ") + client->get_nick() + std::string(" :There a users"));
+                send_message(client->get_fd(), std::string(":paco.com 254 ") + client->get_nick() + std::string(" :There a users"));
+                send_message(client->get_fd(), std::string(":paco.com 255 ") + client->get_nick() + std::string(" :There a users"));
+                send_message(client->get_fd(), std::string(":paco.com 265 ") + client->get_nick() + std::string(" :There a users"));
+                send_message(client->get_fd(), std::string(":paco.com 266 ") + client->get_nick() + std::string(" :There a users"));
+                send_message(client->get_fd(), std::string(":paco.com 375 ") + client->get_nick() + std::string(" :paco.com message of the day"));
+                send_message(client->get_fd(), std::string(":paco.com 372 ") + client->get_nick() + std::string(" :message of the day"));
+                send_message(client->get_fd(), std::string(":paco.com 372 ") + client->get_nick() + std::string(" :message of the day"));
+                send_message(client->get_fd(), std::string(":paco.com 376 ") + client->get_nick() + std::string(" :End of message of the day"));
             }
         }
     }
