@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/23 19:20:36 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/23 20:43:30 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,12 +176,10 @@ void    Server::parse_command(Client *client, const std::string &command)
                 client->set_statut(CONNECTED);
 				std::cout << "Sending welcome message" << std::endl;
 				send_message(client->get_fd(), format_msg(RPL_WELCOME, *client) + ft_irc::RPL_WELCOME(client->get_nick(), "127.0.0.1"));
-                send_message(client->get_fd(), std::string(":paco.com 251 ") + client->get_nick() + std::string(" :There a users"));
-                send_message(client->get_fd(), std::string(":paco.com 253 ") + client->get_nick() + std::string(" :There a users"));
-                send_message(client->get_fd(), std::string(":paco.com 254 ") + client->get_nick() + std::string(" :There a users"));
-                send_message(client->get_fd(), std::string(":paco.com 255 ") + client->get_nick() + std::string(" :There a users"));
-                send_message(client->get_fd(), std::string(":paco.com 265 ") + client->get_nick() + std::string(" :There a users"));
-                send_message(client->get_fd(), std::string(":paco.com 266 ") + client->get_nick() + std::string(" :There a users"));
+				send_message(client->get_fd(), format_msg(RPL_LUSERCLIENT, *client) + ft_irc::RPL_LUSERCLIENT("0", "0"));
+				send_message(client->get_fd(), format_msg(RPL_LUSERUNKNOWN, *client) + ft_irc::RPL_LUSERUNKNOWN("0"));
+				send_message(client->get_fd(), format_msg(RPL_LUSERCHANNELS, *client) + ft_irc::RPL_LUSERCHANNELS(ft_irc::to_string(channels.size())));
+				send_message(client->get_fd(), format_msg(RPL_LUSERME, *client) + ft_irc::RPL_LUSERME(ft_irc::to_string(clients.size())));
 				send_motd(client);
             }
         }
