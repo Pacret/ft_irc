@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/17 13:40:59 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/23 14:27:19 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,12 +126,12 @@ void    Server::join_channel(Client *client, const std::string &channel_name)
 {
 	if (channels.find(channel_name) == channels.end())
 		channels[channel_name] = new Channel(client, channel_name);
-
-	std::vector<Client *> usrs = channels[channel_name]->get_Users();
+	std::vector<Client *> usrs = channels[channel_name]->get_users();
 	for(unsigned long int i = 0; i < usrs.size(); i++)
-		send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_user() + "@127.0.0.1 JOIN :" + channel_name + "\r\n"));
+		send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_username() + "@127.0.0.1 JOIN :" + channel_name + "\r\n"));
 	
 	send_message(client->get_fd(), std::string(format_msg(RPL_WHOREPLY, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
+	send_message(client->get_fd(), std::string(format_msg(RPL_NAMREPLY, *client) + " " + ft_irc::RPL_NAMREPLY("tmp", channels[channel_name]->get_users_names())));
 	//send_message(client->get_fd(), std::string(format_msg(RPL_WHOREPLY, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
 
 	//inline string RPL_NAMREPLY(string channelWithType, string nicknames) {return (channelWithType + " " + nicknames);}
@@ -154,7 +154,7 @@ void    Server::parse_command(Client *client, const std::string &command)
         {
 			std::cout << "USER cmd found" << std::endl;
             client->set_user(command.substr(5, (command.find(" ", pos + 1)) - 5));
-			std::cout << client->get_user() << " <- user nick -> " << client->get_nick() << std::endl;
+			std::cout << client->get_username() << " <- user nick -> " << client->get_nick() << std::endl;
             if (client->get_nick() != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
             {
                 // Verifie t'on le hostname du client comme inspircd ?

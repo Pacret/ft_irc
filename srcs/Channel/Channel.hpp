@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/11 22:41:20 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/23 14:20:44 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,9 @@ class Channel
         int get_nbrOps();
         int get_nbrUsers();
     
-        std::vector<Client *> get_Users();
-    
+        std::vector<Client *> get_users();
+        std::string get_users_names();
+
         void demote(Client& client);
         void promote(Client& client);
 
