@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   defines.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/06/23 20:19:05 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/24 16:00:32 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,10 +284,10 @@ namespace ft_irc
 	inline string RPL_TRACELINK(string versionDebugLvl, string destination, string nextServ) {return ("Link " + versionDebugLvl + " " + destination + " " + nextServ);}
 	inline string RPL_TRACECONNECTING(string class_, string server) {return ("Try. " + class_ + " " + server);};
 	
-	inline string RPL_LUSERCLIENT(string nbr_users, string nbr_invs) {return (":There are " + nbr_users + " users and " + nbr_invs + " invisible on 1 servers");}
+	inline string RPL_LUSERCLIENT(string nbr_users, string nbr_invs) {return (" :There are " + nbr_users + " users and " + nbr_invs + " invisible on 1 servers");}
 	inline string RPL_LUSERUNKNOWN(string nbr_unk) {return (nbr_unk + " :unknow connection(s)");}
 	inline string RPL_LUSERCHANNELS(string nbr_channel) {return (nbr_channel + " :channels formed");}
-	inline string RPL_LUSERME(string nbr_clients) {return (":I have " + nbr_clients + " and 1 servers");}
+	inline string RPL_LUSERME(string nbr_clients) {return (" :I have " + nbr_clients + " and 1 servers");}
 
 }
 #endif
