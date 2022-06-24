@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/23 19:17:49 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/24 15:53:45 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,8 @@ class Server
         void    setPassword(const std::string &password);
 		std::string	get_pwd();
 
-		void	kill_connection(Client &client);
-		void	check_passwd(Client &client, const std::string &command);
+		void	kill_connection(Client *client);
+		void	check_passwd(Client *client, const std::string &command);
 
 		std::string get_name();
 		std::string get_info();

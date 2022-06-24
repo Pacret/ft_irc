@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 20:59:10 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/06/24 14:52:27 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/24 15:22:56 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ Client *pr_get_client(string& msg);
 
 struct parse_t
 {
+	string original_msg;
 	string cmd;
 	string prefix;
 	vector<string> args;

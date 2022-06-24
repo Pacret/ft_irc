@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/23 20:47:27 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/24 15:54:01 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ std::string	Server::get_pwd()
 	return (password);
 }
 
-void	Server::check_passwd(Client &client, const std::string &command)
+void	Server::check_passwd(Client *client, const std::string &command)
 {
 	//size_t pos = command.find(" ");
 	std::string	pass_sent;
@@ -113,11 +113,11 @@ void	Server::check_passwd(Client &client, const std::string &command)
 		return;
 	if (pass_sent != get_pwd())
 	{
-		//kill_connection(client);
+		kill_connection(client);
 		return;
 	}
-	client.set_statut(REGISTERED);
-	log_file << client.get_ip() << " has sent a valid password, statut changed to REGISTERED" << std::endl;
+	client->set_statut(REGISTERED);
+	log_file << client->get_ip() << " has sent a valid password, statut changed to REGISTERED" << std::endl;
 	
 	return ;
 }
@@ -152,7 +152,7 @@ void    Server::send_motd(Client *client)
 void    Server::parse_command(Client *client, const std::string &command)
 {
 	if (client->get_statut() == NONE)
-		check_passwd(*client, command);
+		check_passwd(client, command);
     else if (client->get_statut() == REGISTERED)
     {
         size_t  pos = command.find(" ");
@@ -252,15 +252,15 @@ void    Server::setPassword(const std::string &password)
     this->password = password;
 }
 
-void	Server::kill_connection(Client& client)
+void	Server::kill_connection(Client *client)
 {
 	std::vector<struct pollfd>::iterator it = pollfds.begin();
 
-	while ((*it).fd != client.get_fd())
+	while ((*it).fd != client->get_fd())
 		++it;
 	pollfds.erase(it);
-	close(client.get_fd());
-	client.~Client();
+	close(client->get_fd());
+	delete client;
 	return;
 }
 
