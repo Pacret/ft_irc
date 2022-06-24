@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/20 00:23:32 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/23 19:17:49 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
 # include "../Channel/Channel.hpp"
 
 
+
 class Server
 {
     private:
@@ -44,10 +45,15 @@ class Server
         std::map<int, Client *> clients;
         std::map<std::string, Channel *> channels;
 
+		std::string server_name;
         std::string port;
         std::string password;
 
 		std::ofstream log_file;
+		std::vector<std::string> motd;
+
+		void    send_motd(Client *client);
+
     public:
         Server();
         Server(const std::string &port, const std::string &password);

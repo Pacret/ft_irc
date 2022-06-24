@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   defines.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/05/22 02:17:45 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/23 20:19:05 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,13 +243,13 @@ namespace ft_irc
 	
 	inline string RPL_UNAWAY() {return (":You are no longer marked as being away");}
 	inline string RPL_NOWAWAY() {return (":You have been marked as being away");}
-	inline string RPL_WHOISUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_user() + " " + host + " * :" + cli.get_rn());}
+	inline string RPL_WHOISUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_username() + " " + host + " * :" + cli.get_rn());}
 	inline string RPL_WHOISSERVER(string nick, Server& serv) {return (nick + " " + serv.get_name() + " :" + serv.get_info());}
 	inline string RPL_WHOISOPERATOR(string nick) {return (nick + " :is an IRC operator");}
 	inline string RPL_WHOISIDLE(string nick, string sec) {return (nick + " " + sec + " :seconds idle");}
 	inline string RPL_ENDOFWHOIS(string nick) {return (nick + " :End of /WHOIS list");}
 	inline string RPL_WHOISCHANNELS(string nick, string chan_info) {return (nick + " :" + chan_info);}
-	inline string RPL_WHOWASUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_user() + " " + host + " * " + " :" + cli.get_rn());}
+	inline string RPL_WHOWASUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_username() + " " + host + " * " + " :" + cli.get_rn());}
 	inline string RPL_ENDOFWHOWAS(string nick) {return (nick + " :End of WHOWAS");}
 	inline string RPL_LISTSTART() {return ("Channel :Users  Name");}
 	inline string RPL_LIST(Channel& chan) {return (chan.get_name() + " " + ft_irc::to_string(chan.get_nbrUsers()) + " :" + chan.get_topic());}
@@ -266,7 +266,7 @@ namespace ft_irc
 	inline string RPL_ENDOFNAMES(string chan) {return (chan + " :End of /NAMES list");}
 	inline string RPL_LINKS(string mask, string server, string hopCount, string serverInfo) {return (mask + " " + server + " " + " :" + hopCount + " " + serverInfo);}
 	inline string RPL_ENDOFLINKS(string mask) {return (mask + " :End of /LINKS list");}
-	
+
 	inline string RPL_BANLIST(string chan, string banid) {return (chan + " " + banid);}
 	inline string RPL_ENDOFBANLIST(string chan) {return (chan + " :End of channel ban list");}
 	inline string RPL_INFO(string info) {return (":" + info);}
@@ -283,9 +283,11 @@ namespace ft_irc
 	inline string RPL_NOUSERS() {return (":Nobody logged in");}
 	inline string RPL_TRACELINK(string versionDebugLvl, string destination, string nextServ) {return ("Link " + versionDebugLvl + " " + destination + " " + nextServ);}
 	inline string RPL_TRACECONNECTING(string class_, string server) {return ("Try. " + class_ + " " + server);};
-
 	
+	inline string RPL_LUSERCLIENT(string nbr_users, string nbr_invs) {return (":There are " + nbr_users + " users and " + nbr_invs + " invisible on 1 servers");}
+	inline string RPL_LUSERUNKNOWN(string nbr_unk) {return (nbr_unk + " :unknow connection(s)");}
+	inline string RPL_LUSERCHANNELS(string nbr_channel) {return (nbr_channel + " :channels formed");}
+	inline string RPL_LUSERME(string nbr_clients) {return (":I have " + nbr_clients + " and 1 servers");}
 
 }
-
 #endif

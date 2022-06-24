@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/22 10:52:43 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/23 20:47:27 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 		Server::Server(const std::string &port, const std::string &password) : port(port), password(password)
 {
-    
+	server_name = "paco.com";
 }
 
 		Server::~Server()
@@ -82,6 +82,11 @@ void    Server::init()
     pfd.revents = 0;
 
     pollfds.push_back(pfd);
+
+	// TEMP PART, FILL THE MOTD
+	motd.push_back("une ligne de MOTD");
+	motd.push_back("une deuxieme");
+	motd.push_back("et c'est tout");
 }
 
 void    Server::send_message(int fd, const std::string &message) //Fonction juste pour montrer comment envoyer un message
@@ -124,17 +129,24 @@ std::string format_msg(numeric_replies_e num, Client& client)
 
 void    Server::join_channel(Client *client, const std::string &channel_name)
 {
-    if (channels.find(channel_name) == channels.end())
-    {
-        channels[channel_name] = new Channel(client, channel_name);
-        std::vector<Client *> usrs = channels[channel_name]->get_Users();
-    
-        for(unsigned long int i = 0; i < usrs.size(); i++)
-        {
-            send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_nick() + "@127.0.0.1 JOIN :" + channel_name + "\r\n"));
-        }
+	if (channels.find(channel_name) == channels.end())
+		channels[channel_name] = new Channel(client, channel_name);
+	std::vector<Client *> usrs = channels[channel_name]->get_users();
+	for(unsigned long int i = 0; i < usrs.size(); i++)
+		send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_username() + "@127.0.0.1 JOIN :" + channel_name));
+	send_message(client->get_fd(), std::string(format_msg(RPL_WHOREPLY, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
+	send_message(client->get_fd(), std::string(format_msg(RPL_NAMREPLY, *client) + " " + ft_irc::RPL_NAMREPLY("tmp", channels[channel_name]->get_users_names())));
+	send_message(client->get_fd(), std::string(format_msg(RPL_ENDOFNAMES, *client) + " " + ft_irc::RPL_ENDOFNAMES(channels[channel_name]->get_name())));
+}
 
-    }
+void    Server::send_motd(Client *client)
+{
+	if (motd.empty())
+		return;
+	send_message(client->get_fd(), format_msg(RPL_MOTDSTART, *client) + ft_irc::RPL_MOTDSTART(server_name));
+	for(unsigned long int i = 0; i < motd.size(); i++)
+		send_message(client->get_fd(), format_msg(RPL_MOTD, *client) + ft_irc::RPL_MOTD(motd[i]));
+	send_message(client->get_fd(), format_msg(RPL_ENDOFMOTD, *client) + ft_irc::RPL_ENDOFMOTD());
 }
 
 void    Server::parse_command(Client *client, const std::string &command)
@@ -154,7 +166,7 @@ void    Server::parse_command(Client *client, const std::string &command)
         {
 			std::cout << "USER cmd found" << std::endl;
             client->set_user(command.substr(5, (command.find(" ", pos + 1)) - 5));
-			std::cout << client->get_user() << " <- user nick -> " << client->get_nick() << std::endl;
+			std::cout << client->get_username() << " <- user nick -> " << client->get_nick() << std::endl;
             if (client->get_nick() != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
             {
                 // Verifie t'on le hostname du client comme inspircd ?
@@ -162,17 +174,11 @@ void    Server::parse_command(Client *client, const std::string &command)
                 client->set_statut(CONNECTED);
 				std::cout << "Sending welcome message" << std::endl;
 				send_message(client->get_fd(), format_msg(RPL_WELCOME, *client) + ft_irc::RPL_WELCOME(client->get_nick(), "127.0.0.1"));
-                // send_message(client->get_fd(), std::string(":paco.com 001 ") + client->get_nick() + ft_irc::RPL_WELCOME() + client->get_nick() + std::string("!") + client->get_nick() + std::string("@127.0.0.1\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 251 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 253 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 254 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 255 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 265 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 266 ") + client->get_nick() + std::string(" :There a users\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 375 ") + client->get_nick() + std::string(" :paco.com message of the day\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 372 ") + client->get_nick() + std::string(" :message of the day\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 372 ") + client->get_nick() + std::string(" :message of the day\r\n"));
-                // send_message(client->get_fd(), std::string(":paco.com 376 ") + client->get_nick() + std::string(" :End of message of the day\r\n"));
+				send_message(client->get_fd(), format_msg(RPL_LUSERCLIENT, *client) + ft_irc::RPL_LUSERCLIENT("0", "0"));
+				send_message(client->get_fd(), format_msg(RPL_LUSERUNKNOWN, *client) + ft_irc::RPL_LUSERUNKNOWN("0"));
+				send_message(client->get_fd(), format_msg(RPL_LUSERCHANNELS, *client) + ft_irc::RPL_LUSERCHANNELS(ft_irc::to_string(channels.size())));
+				send_message(client->get_fd(), format_msg(RPL_LUSERME, *client) + ft_irc::RPL_LUSERME(ft_irc::to_string(clients.size())));
+				send_motd(client);
             }
         }
     }

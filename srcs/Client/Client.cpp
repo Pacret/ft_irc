@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:23:56 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/05/22 10:51:03 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/23 14:18:11 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ string Client::get_ip() {return (ft_irc::to_string(_address.sin_addr.s_addr));}
 
 string	Client::get_nick() {return (_nick);}
 
-string	Client::get_user() {return (_username);}
+string	Client::get_username() {return (_username);}
 
 string Client::get_rn() {return (_real_name);}
 
