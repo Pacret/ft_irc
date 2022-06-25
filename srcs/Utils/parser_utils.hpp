@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 20:59:10 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/06/24 15:22:56 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/25 19:55:28 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,6 @@
 
 using namespace std;
 
-//pr_ means the function is used for parsing
-//Functions that return pointers, return NULL means the information wasn't found
-
-Client *pr_get_client(string& msg);
-
 struct parse_t
 {
 	string original_msg;
@@ -32,6 +27,8 @@ struct parse_t
 	string prefix;
 	vector<string> args;
 };
+
+parse_t *fill_parse_t(string &msg);
 
 
 #endif

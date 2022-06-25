@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/06/24 16:00:32 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/24 16:11:19 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -270,17 +270,17 @@ namespace ft_irc
 	inline string RPL_BANLIST(string chan, string banid) {return (chan + " " + banid);}
 	inline string RPL_ENDOFBANLIST(string chan) {return (chan + " :End of channel ban list");}
 	inline string RPL_INFO(string info) {return (":" + info);}
-	inline string RPL_ENDOFINFO() {return (":End of /INFO list");}
-	inline string RPL_MOTDSTART(string server) {return (":- " + server + " Message of the day");}
-	inline string RPL_MOTD(string text) {return (":- " + text);}
-	inline string RPL_ENDOFMOTD() {return (":End of /MOTD commandl");}
-	inline string RPL_YOUREOPER() {return (":You are now an IRC operator");}
+	inline string RPL_ENDOFINFO() {return (" :End of /INFO list");}
+	inline string RPL_MOTDSTART(string server) {return (" :- " + server + " Message of the day");}
+	inline string RPL_MOTD(string text) {return (" :- " + text);}
+	inline string RPL_ENDOFMOTD() {return (" :End of /MOTD command");}
+	inline string RPL_YOUREOPER() {return (" :You are now an IRC operator");}
 	inline string RPL_REHASHING(string configFile) {return (configFile + " :Rehashing");}
 	inline string RPL_TIME(string server, string time) {return (server + " :" + time);}
-	inline string RPL_USERSSTART() {return (":UserID   Terminal  Host");}
+	inline string RPL_USERSSTART() {return (" :UserID   Terminal  Host");}
 	inline string RPL_USERS(string username, string ttyline, string hostname) {return (":" + username + " " + ttyline + " " + hostname);}
-	inline string RPL_ENDOFUSERS() {return (":End of users");}
-	inline string RPL_NOUSERS() {return (":Nobody logged in");}
+	inline string RPL_ENDOFUSERS() {return (" :End of users");}
+	inline string RPL_NOUSERS() {return (" :Nobody logged in");}
 	inline string RPL_TRACELINK(string versionDebugLvl, string destination, string nextServ) {return ("Link " + versionDebugLvl + " " + destination + " " + nextServ);}
 	inline string RPL_TRACECONNECTING(string class_, string server) {return ("Try. " + class_ + " " + server);};
 	

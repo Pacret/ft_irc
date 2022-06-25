@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/24 15:53:45 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/25 19:56:20 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ class Server
         void    addClient();
 
         void    join_channel(Client *client, const std::string &channel_name);
+		// void	priv_msg(Client *client, std::string& msg);
         void    send_message(int fd, const std::string &message);
         void    parse_command(Client *client, const std::string &command);
         void    get_message(Client *client);

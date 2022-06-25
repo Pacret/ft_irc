@@ -1,4 +1,6 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+make: *** No rule to make target 'srcs/main.o', needed by 'ircserv'.  Stop.
+
 # GNU Make 4.2.1
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
@@ -6,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Jun 24 11:56:34 2022
+# Make data base, printed on Sat Jun 25 11:58:33 2022
 
 # Variables
 
@@ -32,11 +34,13 @@ CURDIR := /home/tmerrien/42/Cercle6/irc/pacret
 SHELL = /bin/sh
 # makefile (from 'Makefile', line 30)
 RM = rm -rf
+ 
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
 # environment
 _ = /mnt/c/Users/Moi/AppData/Local/Programs/Microsoft VS Code/bin/code
 # makefile (from 'Makefile', line 1)
+ 
 MAKEFILE_LIST :=  Makefile
 # makefile (from 'Makefile', line 21)
 COMP = c++
@@ -61,7 +65,7 @@ XDG_RUNTIME_DIR = /mnt/wslg/runtime-dir
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-7c99b467-fc37-458d-87f9-e4b55700ed47.sock
+VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-8734ea30-83b3-417b-82b6-de331e48e98f.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -77,7 +81,7 @@ PWD = /home/tmerrien/42/Cercle6/irc/pacret
 # default
 .LOADED := 
 # environment
-WSL_INTEROP = /run/WSL/3599_interop
+WSL_INTEROP = /run/WSL/5396_interop
 # environment
 PULSE_SERVER = /mnt/wslg/PulseServer
 # environment
@@ -134,6 +138,7 @@ MFLAGS = -pqrR
 +F = $(notdir $+)
 # environment
 VSCODE_HANDLES_SIGPIPE = true
+ 
 # default
 MAKEFILES := 
 # automatic
@@ -162,10 +167,8 @@ TERM = xterm-256color
 VSCODE_EXTHOST_WILL_SEND_SOCKET = true
 # environment
 WSL_DISTRO_NAME = Ubuntu
-# environment
-MOTD_SHOWN = update-motd
 # variable set hash-table stats:
-# Load=77/1024=8%, Rehash=0, Collisions=7/107=7%
+# Load=76/1024=7%, Rehash=0, Collisions=7/106=7%
 
 # Pattern-specific Variable Values
 
@@ -173,9 +176,9 @@ MOTD_SHOWN = update-motd
 
 # Directories
 
-# . (device 2080, inode 3370): 7 files, no impossibilities.
+# . (device 2080, inode 3370): 8 files, no impossibilities.
 
-# 7 files, no impossibilities in 1 directories.
+# 8 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -276,9 +279,6 @@ clean:
 
 # Not a target:
 srcs/Channel/Channel.o:
- 
-make: *** No rule to make target 'srcs/main.o', needed by 'ircserv'.  Stop.
-
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -303,12 +303,12 @@ srcs/Client/Client.o:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 26 / storage = 252 B / avg = 9 B
-# current buf: size = 8162 B / used = 252 B / count = 26 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 27 / storage = 256 B / avg = 9 B
+# current buf: size = 8162 B / used = 256 B / count = 27 / avg = 9 B
 
-# strcache performance: lookups = 49 / hit rate = 46%
+# strcache performance: lookups = 50 / hit rate = 46%
 # hash-table stats:
-# Load=26/8192=0%, Rehash=0, Collisions=1/49=2%
-# Finished Make data base on Fri Jun 24 11:56:34 2022
+# Load=27/8192=0%, Rehash=0, Collisions=2/50=4%
+# Finished Make data base on Sat Jun 25 11:58:33 2022
 
  
