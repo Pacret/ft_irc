@@ -17,6 +17,7 @@
 # include <fstream>
 # include <stdlib.h>
 # include <vector>
+# include <set>
 
 # include "../Utils/Utils.hpp"
 # include "../Client/Client.hpp"
@@ -25,13 +26,16 @@ class Channel
 {
     private:
 
-        Client *_owner;
-        std::string _channel_name;
-		std::string _topic;
+        Client *	_owner;
+        std::string	_channel_name;
+		std::string	_topic;
 
-        std::vector<Client *> operators;
-        std::vector<Client *> clients;
+        std::vector<Client *>	_clients;
+		std::set<Client *>		_operatorList;
 
+		bool	_isOperator(Client * client) const;
+		void	_removeOperator(Client * client);
+		void	_addOperator(Client * client);
 
     public:
         Channel(Client *owner, const std::string &channel_name);

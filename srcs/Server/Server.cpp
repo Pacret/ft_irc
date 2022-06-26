@@ -11,8 +11,6 @@
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#include "../Utils/defines.h"
-#include <string>
 
 		Server::Server()
 {
@@ -279,3 +277,23 @@ void	Server::kill_connection(Client *client)
 // 	}
 // 	//if (())
 // }
+
+bool	Server::_isOperator(Client * client) const
+{
+	std::set<Client *>::const_iterator	it;
+
+	it = _operatorList.find(client);
+	if (it !=_operatorList.end())
+		return (*it);
+	return false;
+}
+
+void	Server::_removeOperator(Client * client)
+{
+	_operatorList.erase(client);
+}
+
+void	Server::_addOperator(Client * client)
+{
+	_operatorList.insert(client);
+}

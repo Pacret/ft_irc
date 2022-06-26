@@ -25,6 +25,8 @@
 # include <poll.h>
 # include <map>
 # include <vector>
+# include <set>
+# include <string>
 
 # ifndef DEBUG
 #  define DEBUG 0
@@ -33,26 +35,33 @@
 # include "../Utils/Utils.hpp"
 # include "../Client/Client.hpp"
 # include "../Channel/Channel.hpp"
+# include "../Utils/defines.h"
 
 
 
 class Server
 {
     private:
-        int    fd_socket;
-        std::vector<struct pollfd> pollfds;
+        int							fd_socket;
+        std::vector<struct pollfd>	pollfds;
 
-        std::map<int, Client *> clients;
-        std::map<std::string, Channel *> channels;
+        std::map<int, Client *>				clients;
+        std::map<std::string, Channel *>	channels;
 
-		std::string server_name;
-        std::string port;
-        std::string password;
+		std::string	server_name;
+        std::string	port;
+        std::string	password;
 
-		std::ofstream log_file;
-		std::vector<std::string> motd;
+		std::ofstream				log_file;
+		std::vector<std::string>	motd;
 
 		void    send_motd(Client *client);
+
+		std::set<Client *>		_operatorList;
+
+		bool	_isOperator(Client * client) const;
+		void	_removeOperator(Client * client);
+		void	_addOperator(Client * client);
 
     public:
         Server();
