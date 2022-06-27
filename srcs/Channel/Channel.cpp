@@ -67,9 +67,24 @@ std::string		Channel::get_topic()
 	return (_topic);
 }
 
-void	broadcastToClients(int sendingClient, const char* msg, int length)
+void	Channel::broadcastToClients(int sendingClient, const char* msg, int length)
 {
+	for (int i = 0; i < _clients.size(); i++)
+	{
+		size_t outSock = _clients[i]->fd;
+		if (outSock != sendingClient)
+		{
+			sendToClient(outSock, msg, length);
+		}
+	}
+}
 
+void	Channel::sendToClient(int clientSocket, const char* msg, int length)
+{
+	if (send(clientSocket, msg, length, 0) == -1)
+	{
+		//error handler
+	}
 }
 
 bool	Channel::_isOperator(Client * client) const

@@ -278,7 +278,7 @@ void	Server::kill_connection(Client *client)
 // 	//if (())
 // }
 
-void	sendToClient(int clientSocket, const char* msg, int length)
+void	Server::sendToClient(int clientSocket, const char* msg, int length)
 {
 	if (send(clientSocket, msg, length, 0) == -1)
 	{

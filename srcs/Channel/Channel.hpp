@@ -56,6 +56,7 @@ class Channel
 		std::string get_mode_params();
 		std::string get_topic();
 
+		void	sendToClient(int clientSocket, const char* msg, int length);
 		void	broadcastToClients(int sendingClient, const char* msg, int length);
 };
 
