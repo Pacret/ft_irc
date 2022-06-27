@@ -26,7 +26,6 @@ class Channel
 {
     private:
 
-        Client *	_owner;
         std::string	_channel_name;
 		std::string	_topic;
 
@@ -56,6 +55,8 @@ class Channel
 		std::string get_mode();
 		std::string get_mode_params();
 		std::string get_topic();
+
+		void	broadcastToClients(int sendingClient, const char* msg, int length);
 };
 
 #endif

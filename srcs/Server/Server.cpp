@@ -278,13 +278,21 @@ void	Server::kill_connection(Client *client)
 // 	//if (())
 // }
 
+void	sendToClient(int clientSocket, const char* msg, int length)
+{
+	if (send(clientSocket, msg, length, 0) == -1)
+	{
+		//error handler
+	}
+}
+
 bool	Server::_isOperator(Client * client) const
 {
 	std::set<Client *>::const_iterator	it;
 
 	it = _operatorList.find(client);
-	if (it !=_operatorList.end())
-		return (*it);
+	if (it != _operatorList.end())
+		return (true);
 	return false;
 }
 

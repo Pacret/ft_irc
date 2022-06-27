@@ -45,7 +45,8 @@ class Server
         int							fd_socket;
         std::vector<struct pollfd>	pollfds;
 
-        std::map<int, Client *>				clients;
+		typedef int							clientSocket;
+        std::map<clientSocket, Client *>	clients;
         std::map<std::string, Channel *>	channels;
 
 		std::string	server_name;
@@ -89,6 +90,8 @@ class Server
 
 		std::string get_name();
 		std::string get_info();
+
+		void	sendToClient(int clientSocket, const char* msg, int length);
 
 };
 

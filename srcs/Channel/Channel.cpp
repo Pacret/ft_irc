@@ -12,7 +12,7 @@
 
 #include "Channel.hpp"
 
-		Channel::Channel(Client *owner, const std::string &channel_name): _owner(owner), _channel_name(channel_name)
+		Channel::Channel(Client *owner, const std::string &channel_name): _channel_name(channel_name)
 {
 	_clients.push_back(owner);
 	_addOperator(owner);
@@ -67,13 +67,18 @@ std::string		Channel::get_topic()
 	return (_topic);
 }
 
+void	broadcastToClients(int sendingClient, const char* msg, int length)
+{
+
+}
+
 bool	Channel::_isOperator(Client * client) const
 {
 	std::set<Client *>::const_iterator	it;
 
 	it = _operatorList.find(client);
 	if (it !=_operatorList.end())
-		return (*it);
+		return (true);
 	return false;
 }
 
