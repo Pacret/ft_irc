@@ -71,10 +71,9 @@ void	Channel::broadcastToClients(int sendingClient, const char* msg, int length)
 {
 	for (int i = 0; i < _clients.size(); i++)
 	{
-		size_t outSock = _clients[i]->fd;
-		if (outSock != sendingClient)
+		if (_clients[i].fd != sendingClient)
 		{
-			sendToClient(outSock, msg, length);
+			sendToClient(_clients[i].fd, msg, length);
 		}
 	}
 }
