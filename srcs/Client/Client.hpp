@@ -30,7 +30,6 @@ class Client
 {
     private:
 
-        int					_fd;
 		struct sockaddr_in	_address;
 		std::string			_nick;
 		std::string			_username;
@@ -41,6 +40,7 @@ class Client
 
     public:
         std::string buffer;
+		int			fd;
 		
 
         Client(int fd, struct sockaddr_in address);

@@ -15,14 +15,14 @@
 
 using namespace std;
 
-		Client::Client( int fd, struct sockaddr_in address) : _fd(fd), _address(address), _statut(NONE)
+		Client::Client( int fd, struct sockaddr_in address) : fd(fd), _address(address), _statut(NONE)
 {
 	return;
 }
 
 		Client::~Client()
 {
-    close(_fd);
+    close(fd);
 }
 
 void	Client::set_nick(std::string nick)
@@ -40,7 +40,7 @@ void	Client::set_rn(std::string rn)
 	_real_name = rn;
 }
 
-int		Client::get_fd() {return (this->_fd);}
+int		Client::get_fd() {return (this->fd);}
 
 string Client::get_ip() {return (ft_irc::to_string(_address.sin_addr.s_addr));}
 

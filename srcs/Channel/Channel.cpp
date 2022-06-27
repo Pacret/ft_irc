@@ -71,9 +71,9 @@ void	Channel::broadcastToClients(int sendingClient, const char* msg, int length)
 {
 	for (int i = 0; i < _clients.size(); i++)
 	{
-		if (_clients[i].fd != sendingClient)
+		if (_clients[i]->fd != sendingClient)
 		{
-			sendToClient(_clients[i].fd, msg, length);
+			sendToClient(_clients[i]->fd, msg, length);
 		}
 	}
 }
