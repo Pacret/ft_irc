@@ -6,12 +6,13 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 15:33:59 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/28 16:56:59 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "../Utils/defines.h"
+#include "../Utils/parser_utils.hpp"
 #include <string>
 
 		Server::Server()
@@ -87,6 +88,8 @@ void    Server::init()
 	motd.push_back("une ligne de MOTD");
 	motd.push_back("une deuxieme");
 	motd.push_back("et c'est tout");
+
+	//commands["TEST"] = &join_command;
 }
 
 void    Server::send_message(int fd, const std::string &message) //Fonction juste pour montrer comment envoyer un message
@@ -149,28 +152,29 @@ void    Server::send_motd(Client *client)
 	send_message(client->get_fd(), format_msg(RPL_ENDOFMOTD, *client) + ft_irc::RPL_ENDOFMOTD());
 }
 
+
 //void	Server::priv_msg(Client *client, std::string& msg)
 //{
 	//TO DO
 //}
 
-void    Server::parse_command(Client *client, const std::string &command)
+void    Server::parse_command(Client *client, struct parse_t *command)
 {
 	if (client->get_statut() == NONE)
-		check_passwd(client, command);
+		check_passwd(client, command->original_msg);
     else if (client->get_statut() == REGISTERED)
     {
-        size_t  pos = command.find(" ");
+        size_t  pos = command->original_msg.find(" ");
 
-        if (!command.find("NICK"))
+        if (!command->original_msg.find("NICK"))
 		{
-            client->set_nick(command.substr(5));
+            client->set_nick(command->original_msg.substr(5));
 			std::cout << "NICK cmd found" << std::endl;
 		}
-        else if (!command.find("USER"))
+        else if (!command->original_msg.find("USER"))
         {
 			std::cout << "USER cmd found" << std::endl;
-            client->set_user(command.substr(5, (command.find(" ", pos + 1)) - 5));
+            client->set_user(command->original_msg.substr(5, (command->original_msg.find(" ", pos + 1)) - 5));
 			std::cout << client->get_username() << " <- user nick -> " << client->get_nick() << std::endl;
             if (client->get_nick() != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
             {
@@ -189,10 +193,17 @@ void    Server::parse_command(Client *client, const std::string &command)
     }
     else if (client->get_statut() == CONNECTED)
     {
-        if (!command.find("PING "))
+
+        if (!command->original_msg.find("PING "))
             std::cout << std::endl;
-        else if (!command.find("JOIN "))
-            join_channel(client, command.substr(5));
+        else if (!command->original_msg.find("JOIN "))
+		{
+			std::string ksd = command->original_msg;
+			struct parse_t *tmp = fill_parse_t(ksd);
+			std::cout << tmp->original_msg << " | " << tmp->cmd << " | "<< tmp->prefix << " | " << std::endl; //<< tmp->args << std::endl;
+
+            join_channel(client, command->original_msg.substr(5));
+		}
 
         std::cout << command << std::endl;
     }
@@ -204,25 +215,25 @@ void    Server::get_message(Client *client)
     ssize_t    size;
     size_t  rn;
 
-    std::cout << "crasp" << std::endl;
     if ((size = recv(client->get_fd(), &buff, BUFFER_SIZE, 0)) == -1) //?? Should be a while? Need to check max size IRC REQUEST
         return;
     if (!size)
         return;
     buff[size] = 0;
     client->buffer += buff;
-    std::cout << "crsdefklhjesadf" << std::endl;
 
-    while ((rn = client->buffer.find("\r\n")) != std::string::npos)
-    {
-        std::string command = client->buffer.substr(0, rn);
-        client->buffer.erase(0, rn + 2);
-        if (command.size())
-        {
-            std::cout << std::endl;
-            parse_command(client, command);
-        } 
-    }
+   while ((rn = client->buffer.find("\r\n")) != std::string::npos)
+   {
+       std::string msg = client->buffer.substr(0, rn);
+       client->buffer.erase(0, rn + 2);
+       if (msg.size())
+       {
+			msg += "\r\n";
+		   struct parse_t *command = fill_parse_t(msg);
+		   command->original_msg.erase(command->original_msg.size() - 2, 2);
+           parse_command(client, command);
+       } 
+   }
 }
 
 void    Server::process()

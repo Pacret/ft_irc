@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 21:36:14 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/06/25 19:55:52 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 15:53:21 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ string get_prefix(string &msg)
 
 parse_t *fill_parse_t(string &msg)
 {
+	std::cout << msg << std::endl;
 	parse_t *p = new parse_t;
 
 	p->original_msg = msg;
@@ -61,6 +62,7 @@ parse_t *fill_parse_t(string &msg)
 		p->args.push_back(msg.substr(0, msg.find_first_of(" " + end_set)));
 		msg.erase(0, p->args.back().size());
 	}
+	std::cout << msg.size() << std::endl;
 	if (msg.size() < 2 || msg[0] != '\r' || msg[1] != '\n')
 		throw runtime_error("Bad data: Partial Data received"); 
 	return (p);

@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 15:34:23 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/28 16:52:41 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,12 @@ class Server
 		typedef int							clientSocket;
         std::map<clientSocket, Client *>	clients;
         std::map<std::string, Channel *>	channels;
+		std::map<std::string, void(*)(Client *, struct parse_t)> commands;
 
-		std::string	server_name;
         std::string	port;
         std::string	password;
 
+		std::string	server_name;
 		std::ofstream				log_file;
 		std::vector<std::string>	motd;
 
@@ -72,10 +73,12 @@ class Server
         void    process();
         void    addClient();
 
+		void	join_command(Client *client, struct parse_t command);
+
         void    join_channel(Client *client, const std::string &channel_name);
 		// void	priv_msg(Client *client, std::string& msg);
         void    send_message(int fd, const std::string &message);
-        void    parse_command(Client *client, const std::string &command);
+        void    parse_command(Client *client, struct parse_t *command);
         void    get_message(Client *client);
 
 		void	register_client(Client& client, const std::string& msg_rcv);
