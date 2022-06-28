@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:23:56 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/23 14:18:11 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/28 15:41:23 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 using namespace std;
 
-		Client::Client( int fd, struct sockaddr_in address) : fd(fd), _address(address), _statut(NONE)
+		Client::Client( int fd, struct sockaddr_in address) : _statut(NONE), _address(address), fd(fd)
 {
 	return;
 }
