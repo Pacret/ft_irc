@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 21:36:14 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/06/26 16:57:43 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 16:47:49 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,5 +63,6 @@ parse_t *fill_parse_t(string &msg)
 	}
 	if (msg.size() < 2 || msg[0] != '\r' || msg[1] != '\n')
 		throw runtime_error("Bad data: Partial Data received");
+	p->original_msg.erase(p->original_msg.size() - 2, 2);
 	return (p);
 }
