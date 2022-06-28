@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 22:24:57 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/28 22:31:21 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,6 @@ class Server
         void    addClient();
 
 		void	join_command(Client *client, struct parse_t *command);
-
-        void    join_channel(Client *client, const std::string &channel_name);
 		void	priv_msg(Client *client, const std::string& command);
         void    send_message(int fd, const std::string &message);
         void    parse_command(Client *client, struct parse_t *command);
