@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 21:55:57 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 22:28:34 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,8 @@ void    Server::init()
 	motd.push_back("une deuxieme");
 	motd.push_back("et c'est tout");
 
-	commands["JOIN"] = &join_command;
-	commands["MODE"] = &mode_command_dummy;
+	commands["JOIN"] = &Server::join_command;
+	commands["MODE"] = &Server::mode_command_dummy;
 }
 
 void Server::mode_command_dummy(Client *c, struct parse_t* p)
@@ -143,8 +143,10 @@ void    Server::join_command(Client *client, struct parse_t *command)
 {
 	(void)client;
 	(void)command;
-	
-	std::cout << "L:IKDULKWSJNOIWKJMD" << std::endl;
+	// std::string channel_name = command->args[0];
+
+	// std::cout << "()" << command->args[0] << "()" << std::endl;
+	// if (channels.find(channel_name) == channels.end())
 	// 	channels[channel_name] = new Channel(client, channel_name);
 	// std::vector<Client *> usrs = channels[channel_name]->get_users();
 	// for(unsigned long int i = 0; i < usrs.size(); i++)
@@ -220,7 +222,7 @@ void    Server::parse_command(Client *client, struct parse_t *command)
         }
     }
     else if (client->get_statut() == CONNECTED)
-		commands[command->cmd](client, command);
+		(this->*commands[command->cmd])(client, command);
 }
 
 void	Server::get_message(Client *client)

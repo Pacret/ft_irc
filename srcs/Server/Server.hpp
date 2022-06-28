@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 21:53:59 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 22:24:57 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class Server
 		typedef int							clientSocket;
         std::map<clientSocket, Client *>	clients;
         std::map<std::string, Channel *>	channels;
-		std::map<std::string, void(*)(Client *, struct parse_t *)> commands;
+		std::map<std::string, void(Server::*)(Client *, struct parse_t *)> commands;
 
         std::string	port;
         std::string	password;
@@ -74,7 +74,7 @@ class Server
         void    process();
         void    addClient();
 
-		static void	join_command(Client *client, struct parse_t *command);
+		void	join_command(Client *client, struct parse_t *command);
 
         void    join_channel(Client *client, const std::string &channel_name);
 		void	priv_msg(Client *client, const std::string& command);
@@ -83,7 +83,7 @@ class Server
         void    get_message(Client *client);
 
 		// DUMMY
-		static void	mode_command_dummy(Client *c, struct parse_t*p);
+		void	mode_command_dummy(Client *c, struct parse_t*p);
 
 		void	register_client(Client& client, const std::string& msg_rcv);
 
