@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 21:37:03 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 21:44:09 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,10 +237,10 @@ void	Server::get_message(Client *client)
 		std::string command = client->buffer.substr(0, rn);
 		p = fill_parse_t(command);
         client->buffer.erase(0, rn + 2);
-        if (command.size())
+        if (p->original_msg.size())
         {
             std::cout << std::endl;
-            parse_command(client, command);
+            parse_command(client, p);
         } 
     }
 }
