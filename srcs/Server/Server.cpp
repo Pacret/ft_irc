@@ -6,11 +6,12 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 16:56:59 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/28 17:00:18 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include "../Utils/parser_utils.hpp"
 #include "../Utils/defines.h"
 #include "../Utils/parser_utils.hpp"
 #include <string>
@@ -152,11 +153,15 @@ void    Server::send_motd(Client *client)
 	send_message(client->get_fd(), format_msg(RPL_ENDOFMOTD, *client) + ft_irc::RPL_ENDOFMOTD());
 }
 
-
-//void	Server::priv_msg(Client *client, std::string& msg)
-//{
-	//TO DO
-//}
+void	Server::priv_msg(Client *client, const string &command)
+{
+	// NOT FINISHED
+	//vector<string> destinators;
+	//if (parsed->args.size() != 2)
+		//ERROR
+	client->get_fd();
+	string p = command;
+}
 
 void    Server::parse_command(Client *client, struct parse_t *command)
 {
@@ -197,13 +202,9 @@ void    Server::parse_command(Client *client, struct parse_t *command)
         if (!command->original_msg.find("PING "))
             std::cout << std::endl;
         else if (!command->original_msg.find("JOIN "))
-		{
-			std::string ksd = command->original_msg;
-			struct parse_t *tmp = fill_parse_t(ksd);
-			std::cout << tmp->original_msg << " | " << tmp->cmd << " | "<< tmp->prefix << " | " << std::endl; //<< tmp->args << std::endl;
-
             join_channel(client, command->original_msg.substr(5));
-		}
+		else if (get_comand(command->original_msg) == "PRIVMSG")
+			priv_msg(client, command->original_msg);
 
         std::cout << command << std::endl;
     }

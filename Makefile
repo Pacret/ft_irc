@@ -6,16 +6,16 @@
 #    By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/18 20:59:10 by pbonilla          #+#    #+#              #
-#    Updated: 2022/06/28 15:49:22 by pbonilla         ###   ########.fr        #
+#    Updated: 2022/06/28 17:00:52 by pbonilla         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircserv
 
-SRCS		=	srcs/main.cpp 			\
-				srcs/Server/Server.cpp	\
-				srcs/Utils/Utils.cpp	\
-				srcs/Client/Client.cpp	\
+SRCS		=	srcs/main.cpp 				\
+				srcs/Server/Server.cpp		\
+				srcs/Utils/Utils.cpp		\
+				srcs/Client/Client.cpp		\
 				srcs/Channel/Channel.cpp	\
 				srcs/Utils/parser_utils.cpp \
 

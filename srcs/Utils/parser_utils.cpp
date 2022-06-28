@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 21:36:14 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/06/28 15:53:21 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/28 16:58:51 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 using namespace std;
 
 
-string get_comand(string& msg)
+string get_comand(const string& msg)
 {
 	size_t i = 0;
 
@@ -64,6 +64,7 @@ parse_t *fill_parse_t(string &msg)
 	}
 	std::cout << msg.size() << std::endl;
 	if (msg.size() < 2 || msg[0] != '\r' || msg[1] != '\n')
-		throw runtime_error("Bad data: Partial Data received"); 
+		throw runtime_error("Bad data: Partial Data received");
+	p->original_msg.erase(p->original_msg.size() - 2, 2);
 	return (p);
 }
