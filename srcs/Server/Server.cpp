@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 21:44:09 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 21:55:57 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,14 @@ void    Server::init()
 	motd.push_back("et c'est tout");
 
 	commands["JOIN"] = &join_command;
+	commands["MODE"] = &mode_command_dummy;
+}
+
+void Server::mode_command_dummy(Client *c, struct parse_t* p)
+{
+	c->get_ip();
+	p->prefix.size();
+	return;
 }
 
 void    Server::send_message(int fd, const std::string &message) //Fonction juste pour montrer comment envoyer un message
