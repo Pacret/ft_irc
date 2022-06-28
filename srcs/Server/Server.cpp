@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 16:55:53 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 21:36:01 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,7 +206,7 @@ void    Server::parse_command(Client *client, const std::string &command)
     }
 }
 
-void    Server::get_message(Client *client)
+void	Server::get_message(Client *client)
 {
     char    buff[BUFFER_SIZE + 1];
     ssize_t    size;
@@ -221,9 +221,14 @@ void    Server::get_message(Client *client)
     client->buffer += buff;
     std::cout << "crsdefklhjesadf" << std::endl;
 
-    while ((rn = client->buffer.find("\r\n")) != std::string::npos)
+    while (client->buffer.size())
     {
-        std::string command = client->buffer.substr(0, rn);
+		parse_t *p;
+		rn = client->buffer.find("\r\n");
+		if (rn == std::string::npos)
+			throw ("Bad data: Partial Data received");
+		std::string command = client->buffer.substr(0, rn);
+		p = fill_parse_t(command);
         client->buffer.erase(0, rn + 2);
         if (command.size())
         {

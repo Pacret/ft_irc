@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 21:36:14 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/06/28 16:47:49 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 21:34:10 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ parse_t *fill_parse_t(string &msg)
 	msg.erase(0, p->cmd.size());
 
 	string end_set = "\r\n\0";
-	while (msg[0] != '\0' && msg[0] != '\r' && msg[0] != '\n')
+	while (msg[0] != '\0')
 	{
 		msg.erase(0, 1);
 		if (msg[0] == ':')
@@ -61,8 +61,7 @@ parse_t *fill_parse_t(string &msg)
 		p->args.push_back(msg.substr(0, msg.find_first_of(" " + end_set)));
 		msg.erase(0, p->args.back().size());
 	}
-	if (msg.size() < 2 || msg[0] != '\r' || msg[1] != '\n')
-		throw runtime_error("Bad data: Partial Data received");
-	p->original_msg.erase(p->original_msg.size() - 2, 2);
+	//if (msg.size() < 2 || msg[0] != '\r' || msg[1] != '\n')
+	//	throw runtime_error("Bad data: Partial Data received");
 	return (p);
 }
