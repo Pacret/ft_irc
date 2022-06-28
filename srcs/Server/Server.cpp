@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 16:51:16 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 16:55:53 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,3 +287,31 @@ void	Server::kill_connection(Client *client)
 // 	}
 // 	//if (())
 // }
+
+void	Server::sendToClient(int clientSocket, const char* msg, int length)
+{
+	if (send(clientSocket, msg, length, 0) == -1)
+	{
+		//error handler
+	}
+}
+
+bool	Server::_isOperator(Client * client) const
+{
+	std::set<Client *>::const_iterator	it;
+
+	it = _operatorList.find(client);
+	if (it != _operatorList.end())
+		return (true);
+	return false;
+}
+
+void	Server::_removeOperator(Client * client)
+{
+	_operatorList.erase(client);
+}
+
+void	Server::_addOperator(Client * client)
+{
+	_operatorList.insert(client);
+}

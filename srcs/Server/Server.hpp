@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 16:54:31 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 16:55:34 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 # include <poll.h>
 # include <map>
 # include <vector>
+# include <set>
+# include <string>
 
 # ifndef DEBUG
 #  define DEBUG 0
@@ -40,20 +42,27 @@
 class Server
 {
     private:
-        int    fd_socket;
-        std::vector<struct pollfd> pollfds;
+        int							fd_socket;
+        std::vector<struct pollfd>	pollfds;
 
-        std::map<int, Client *> clients;
-        std::map<std::string, Channel *> channels;
+		typedef int							clientSocket;
+        std::map<clientSocket, Client *>	clients;
+        std::map<std::string, Channel *>	channels;
 
-		std::string server_name;
-        std::string port;
-        std::string password;
+		std::string	server_name;
+        std::string	port;
+        std::string	password;
 
-		std::ofstream log_file;
-		std::vector<std::string> motd;
+		std::ofstream				log_file;
+		std::vector<std::string>	motd;
 
 		void    send_motd(Client *client);
+
+		std::set<Client *>		_operatorList;
+
+		bool	_isOperator(Client * client) const;
+		void	_removeOperator(Client * client);
+		void	_addOperator(Client * client);
 
     public:
         Server();
@@ -81,6 +90,8 @@ class Server
 
 		std::string get_name();
 		std::string get_info();
+
+		void	sendToClient(int clientSocket, const char* msg, int length);
 
 };
 

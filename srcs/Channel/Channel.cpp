@@ -6,14 +6,16 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/23 14:20:33 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/28 15:36:10 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 
-		Channel::Channel(Client *owner, const std::string &channel_name): _owner(owner), _channel_name(channel_name)
+		Channel::Channel(Client *owner, const std::string &channel_name): _channel_name(channel_name)
 {
+	_clients.push_back(owner);
+	_addOperator(owner);
 	return;
 }
 
@@ -29,12 +31,12 @@ std::string		Channel::get_name()
 
 int		Channel::get_nbrClients()
 {
-	return (clients.size());
+	return (_clients.size());
 }
 
 int		Channel::get_nbrOps()
 {
-	return (operators.size());
+	return (_operatorList.size());
 }
 int		Channel::get_nbrUsers()
 {
@@ -43,10 +45,11 @@ int		Channel::get_nbrUsers()
 
 std::vector<Client *>	Channel::get_users()
 {
-	std::vector<Client *> users = clients;
-	users.insert(users.end(), operators.begin(), operators.end());
-	users.push_back(_owner);
-	return (users);
+	// std::vector<Client *> users = _clients;
+	// users.insert(users.end(), operators.begin(), operators.end());
+	// users.push_back(_owner);
+	// return (users);
+	return (_clients);
 }
 
 std::string		Channel::get_users_names()
@@ -62,4 +65,43 @@ std::string		Channel::get_users_names()
 std::string		Channel::get_topic()
 {
 	return (_topic);
+}
+
+void	Channel::broadcastToClients(int sendingClient, const char* msg, int length)
+{
+	for (unsigned long int i = 0; i < _clients.size(); i++)
+	{
+		if (_clients[i]->fd != sendingClient)
+		{
+			sendToClient(_clients[i]->fd, msg, length);
+		}
+	}
+}
+
+void	Channel::sendToClient(int clientSocket, const char* msg, int length)
+{
+	if (send(clientSocket, msg, length, 0) == -1)
+	{
+		//error handler
+	}
+}
+
+bool	Channel::_isOperator(Client * client) const
+{
+	std::set<Client *>::const_iterator	it;
+
+	it = _operatorList.find(client);
+	if (it !=_operatorList.end())
+		return (true);
+	return false;
+}
+
+void	Channel::_removeOperator(Client * client)
+{
+	_operatorList.erase(client);
+}
+
+void	Channel::_addOperator(Client * client)
+{
+	_operatorList.insert(client);
 }
