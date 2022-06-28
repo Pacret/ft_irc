@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2022/06/28 21:35:56 by tmerrien         ###   ########.fr       */
+=======
+/*   Updated: 2022/06/28 17:23:58 by pbonilla         ###   ########.fr       */
+>>>>>>> 272bd3a6c95141dcfd09ee5df053ddd063771e53
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +52,12 @@ class Server
 		typedef int							clientSocket;
         std::map<clientSocket, Client *>	clients;
         std::map<std::string, Channel *>	channels;
+		std::map<std::string, void(*)(Client *, struct parse_t *)> commands;
 
-		std::string	server_name;
         std::string	port;
         std::string	password;
 
+		std::string	server_name;
 		std::ofstream				log_file;
 		std::vector<std::string>	motd;
 
@@ -73,11 +78,21 @@ class Server
         void    process();
         void    addClient();
 
+<<<<<<< HEAD
         void	join_channel(Client *client, const std::string &channel_name);
 		void	priv_msg(Client *client, const std::string& command);
         void	send_message(int fd, const std::string &message);
         void	parse_command(Client *client, const std::string &command);
         void	Server::get_message(Client *client);
+=======
+		static void	join_command(Client *client, struct parse_t *command);
+
+        void    join_channel(Client *client, const std::string &channel_name);
+		void	priv_msg(Client *client, const std::string& command);
+        void    send_message(int fd, const std::string &message);
+        void    parse_command(Client *client, struct parse_t *command);
+        void    get_message(Client *client);
+>>>>>>> 272bd3a6c95141dcfd09ee5df053ddd063771e53
 
 		void	register_client(Client& client, const std::string& msg_rcv);
 

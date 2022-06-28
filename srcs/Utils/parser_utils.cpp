@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 21:36:14 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/06/28 21:34:10 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 21:37:21 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ string get_prefix(string &msg)
 
 parse_t *fill_parse_t(string &msg)
 {
+	std::cout << msg << std::endl;
 	parse_t *p = new parse_t;
 
 	p->original_msg = msg;

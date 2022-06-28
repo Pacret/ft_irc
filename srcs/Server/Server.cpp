@@ -6,13 +6,14 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 21:36:01 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 21:37:03 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "../Utils/parser_utils.hpp"
 #include "../Utils/defines.h"
+#include "../Utils/parser_utils.hpp"
 #include <string>
 
 		Server::Server()
@@ -88,6 +89,8 @@ void    Server::init()
 	motd.push_back("une ligne de MOTD");
 	motd.push_back("une deuxieme");
 	motd.push_back("et c'est tout");
+
+	commands["JOIN"] = &join_command;
 }
 
 void    Server::send_message(int fd, const std::string &message) //Fonction juste pour montrer comment envoyer un message
@@ -128,6 +131,21 @@ std::string format_msg(numeric_replies_e num, Client& client)
 	return (":paco.com " + ft_irc::to_string(num) + " " + client.get_nick());
 }
 
+void    Server::join_command(Client *client, struct parse_t *command)
+{
+	(void)client;
+	(void)command;
+	
+	std::cout << "L:IKDULKWSJNOIWKJMD" << std::endl;
+	// 	channels[channel_name] = new Channel(client, channel_name);
+	// std::vector<Client *> usrs = channels[channel_name]->get_users();
+	// for(unsigned long int i = 0; i < usrs.size(); i++)
+	// 	send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_username() + "@127.0.0.1 JOIN :" + channel_name));
+	// send_message(client->get_fd(), std::string(format_msg(RPL_WHOREPLY, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
+	// send_message(client->get_fd(), std::string(format_msg(RPL_NAMREPLY, *client) + " " + ft_irc::RPL_NAMREPLY("tmp", channels[channel_name]->get_users_names())));
+	// send_message(client->get_fd(), std::string(format_msg(RPL_ENDOFNAMES, *client) + " " + ft_irc::RPL_ENDOFNAMES(channels[channel_name]->get_name())));
+}
+
 void    Server::join_channel(Client *client, const std::string &channel_name)
 {
 	if (channels.find(channel_name) == channels.end())
@@ -160,23 +178,23 @@ void	Server::priv_msg(Client *client, const string &command)
 	string p = command;
 }
 
-void    Server::parse_command(Client *client, const std::string &command)
+void    Server::parse_command(Client *client, struct parse_t *command)
 {
 	if (client->get_statut() == NONE)
-		check_passwd(client, command);
+		check_passwd(client, command->original_msg);
     else if (client->get_statut() == REGISTERED)
     {
-        size_t  pos = command.find(" ");
+        size_t  pos = command->original_msg.find(" ");
 
-        if (!command.find("NICK"))
+        if (!command->original_msg.find("NICK"))
 		{
-            client->set_nick(command.substr(5));
+            client->set_nick(command->original_msg.substr(5));
 			std::cout << "NICK cmd found" << std::endl;
 		}
-        else if (!command.find("USER"))
+        else if (!command->original_msg.find("USER"))
         {
 			std::cout << "USER cmd found" << std::endl;
-            client->set_user(command.substr(5, (command.find(" ", pos + 1)) - 5));
+            client->set_user(command->original_msg.substr(5, (command->original_msg.find(" ", pos + 1)) - 5));
 			std::cout << client->get_username() << " <- user nick -> " << client->get_nick() << std::endl;
             if (client->get_nick() != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
             {
@@ -194,16 +212,7 @@ void    Server::parse_command(Client *client, const std::string &command)
         }
     }
     else if (client->get_statut() == CONNECTED)
-    {
-        if (!command.find("PING "))
-            std::cout << std::endl;
-        else if (!command.find("JOIN "))
-            join_channel(client, command.substr(5));
-		else if (get_comand(command) == "PRIVMSG")
-			priv_msg(client, command);
-
-        std::cout << command << std::endl;
-    }
+		commands[command->cmd](client, command);
 }
 
 void	Server::get_message(Client *client)
@@ -212,14 +221,12 @@ void	Server::get_message(Client *client)
     ssize_t    size;
     size_t  rn;
 
-    std::cout << "crasp" << std::endl;
     if ((size = recv(client->get_fd(), &buff, BUFFER_SIZE, 0)) == -1) //?? Should be a while? Need to check max size IRC REQUEST
         return;
     if (!size)
         return;
     buff[size] = 0;
     client->buffer += buff;
-    std::cout << "crsdefklhjesadf" << std::endl;
 
     while (client->buffer.size())
     {
