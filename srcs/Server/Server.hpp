@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 17:00:31 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/28 17:23:58 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class Server
 		typedef int							clientSocket;
         std::map<clientSocket, Client *>	clients;
         std::map<std::string, Channel *>	channels;
-		std::map<std::string, void(*)(Client *, struct parse_t)> commands;
+		std::map<std::string, void(*)(Client *, struct parse_t *)> commands;
 
         std::string	port;
         std::string	password;
@@ -74,7 +74,7 @@ class Server
         void    process();
         void    addClient();
 
-		void	join_command(Client *client, struct parse_t command);
+		static void	join_command(Client *client, struct parse_t *command);
 
         void    join_channel(Client *client, const std::string &channel_name);
 		void	priv_msg(Client *client, const std::string& command);
