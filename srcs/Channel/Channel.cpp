@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/23 14:20:33 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/28 15:36:10 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ std::string		Channel::get_topic()
 
 void	Channel::broadcastToClients(int sendingClient, const char* msg, int length)
 {
-	for (int i = 0; i < _clients.size(); i++)
+	for (unsigned long int i = 0; i < _clients.size(); i++)
 	{
 		if (_clients[i]->fd != sendingClient)
 		{

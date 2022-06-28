@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/23 14:18:07 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/28 15:35:34 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,16 +28,6 @@
 
 class Client
 {
-    private:
-
-		struct sockaddr_in	_address;
-		std::string			_nick;
-		std::string			_username;
-		std::string			_real_name;
-		Statut				_statut;
-
-		void check_passwd(const std::string &command);
-
     public:
         std::string buffer;
 		int			fd;
@@ -58,6 +48,14 @@ class Client
 		void	set_user(std::string user);
 		void	set_rn(std::string rn);
 		void	set_statut(Statut statut);
+    private:
+		struct sockaddr_in	_address;
+		std::string			_nick;
+		std::string			_username;
+		std::string			_real_name;
+		Statut				_statut;
+
+		void check_passwd(const std::string &command);
 };
 
 #endif
