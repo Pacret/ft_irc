@@ -1,5 +1,5 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
-make: *** No rule to make target 'srcs/main.o', needed by 'ircserv'.  Stop.
+make: *** No rule to make target 'srcs/Utils/parser_utils.o', needed by 'ircserv'.  Stop.
 
 # GNU Make 4.2.1
 # Built for x86_64-pc-linux-gnu
@@ -8,7 +8,7 @@ make: *** No rule to make target 'srcs/main.o', needed by 'ircserv'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Jun 27 09:37:12 2022
+# Make data base, printed on Tue Jun 28 16:54:13 2022
 
 # Variables
 
@@ -32,7 +32,7 @@ VSCODE_LOG_NATIVE = false
 CURDIR := /home/tmerrien/42/Cercle6/irc/pacret
 # makefile
 SHELL = /bin/sh
-# makefile (from 'Makefile', line 30)
+# makefile (from 'Makefile', line 31)
 RM = rm -rf
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
@@ -40,7 +40,8 @@ VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
 _ = /mnt/c/Users/Moi/AppData/Local/Programs/Microsoft VS Code/bin/code
 # makefile (from 'Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
-# makefile (from 'Makefile', line 21)
+ 
+# makefile (from 'Makefile', line 22)
 COMP = c++
 # 'override' directive
 GNUMAKEFLAGS := 
@@ -48,7 +49,7 @@ GNUMAKEFLAGS :=
 XDG_DATA_DIRS = /usr/local/share:/usr/share:/var/lib/snapd/desktop
 # environment
 VSCODE_VERBOSE_LOGGING = true
-# makefile (from 'Makefile', line 25)
+# makefile (from 'Makefile', line 26)
 OBJS = $(SRCS:.cpp=.o)
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
@@ -63,7 +64,7 @@ XDG_RUNTIME_DIR = /mnt/wslg/runtime-dir
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-2522f020-04df-4278-9cbe-2d1b010dac44.sock
+VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-8ee507ab-ee92-442d-9237-fd46e4d3d475.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -79,7 +80,7 @@ PWD = /home/tmerrien/42/Cercle6/irc/pacret
 # default
 .LOADED := 
 # environment
-WSL_INTEROP = /run/WSL/8_interop
+WSL_INTEROP = /run/WSL/2476_interop
 # environment
 PULSE_SERVER = /mnt/wslg/PulseServer
 # environment
@@ -97,13 +98,14 @@ VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
 # environment
+ 
 MAKELEVEL := 0
 # default
 MAKE = $(MAKE_COMMAND)
 # default
 MAKECMDGOALS := all
 # makefile (from 'Makefile', line 15)
-SRCS = srcs/main.cpp srcs/Server/Server.cpp srcs/Utils/Utils.cpp srcs/Client/Client.cpp srcs/Channel/Channel.cpp 
+SRCS = srcs/main.cpp srcs/Server/Server.cpp srcs/Utils/Utils.cpp srcs/Client/Client.cpp srcs/Channel/Channel.cpp srcs/Utils/parser_utils.cpp 
 # environment
 SHLVL = 1
 # default
@@ -150,7 +152,7 @@ HOSTTYPE = x86_64
 SUFFIXES := 
 # environment
 WAYLAND_DISPLAY = wayland-0
-# makefile (from 'Makefile', line 23)
+# makefile (from 'Makefile', line 24)
 FLAGS = -Wall -Wextra -Werror -std=c++98
 # default
 .INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
@@ -159,6 +161,7 @@ FLAGS = -Wall -Wextra -Werror -std=c++98
 # environment
 LANG = C
 # environment
+ 
 TERM = xterm-256color
 # environment
 VSCODE_EXTHOST_WILL_SEND_SOCKET = true
@@ -185,11 +188,17 @@ MOTD_SHOWN = update-motd
 
 # Files
 
+# Not a target:
+srcs/Utils/parser_utils.o:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
 debugflag:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 38):
+#  recipe to execute (from 'Makefile', line 39):
 		$(eval FLAGS=-D DEBUG)
 
 all: ircserv
@@ -207,15 +216,15 @@ all: ircserv
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-19 12:40:21.407521298
+#  Last modified 2022-06-28 16:54:08.664219837
 #  File has been updated.
 #  Successfully updated.
 
-ircserv: srcs/main.o srcs/Server/Server.o srcs/Utils/Utils.o srcs/Client/Client.o srcs/Channel/Channel.o
+ircserv: srcs/main.o srcs/Server/Server.o srcs/Utils/Utils.o srcs/Client/Client.o srcs/Channel/Channel.o srcs/Utils/parser_utils.o
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 35):
+#  recipe to execute (from 'Makefile', line 36):
 	 $(COMP) $(FLAGS) $(OBJS) -o $(NAME) 
 
 debug: debugflag run
@@ -225,23 +234,25 @@ debug: debugflag run
 
 # Not a target:
 srcs/Server/Server.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Last modified 2022-06-28 16:52:21.784221066
+#  File has been updated.
+#  Successfully updated.
 
 fclean: clean
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 46):
+#  recipe to execute (from 'Makefile', line 47):
 	$(RM) $(NAME)
 
 # Not a target:
 srcs/Utils/Utils.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Last modified 2022-06-28 16:52:21.954221064
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
 .DEFAULT:
@@ -265,7 +276,7 @@ run:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 28):
+#  recipe to execute (from 'Makefile', line 29):
 			$(COMP) -c $(FLAGS) $(FLAG) $< -o $(<:.cpp=.o)
 
 clean:
@@ -273,42 +284,44 @@ clean:
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 43):
+#  recipe to execute (from 'Makefile', line 44):
 	$(RM) $(OBJS)
 
 # Not a target:
 srcs/Channel/Channel.o:
-#  Implicit rule search has not been done.
- 
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Last modified 2022-06-28 16:52:22.614221057
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
 srcs/main.o:
 #  Implicit rule search has been done.
-#  File does not exist.
-#  File has not been updated.
+#  Last modified 2022-06-28 16:52:21.124221074
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
 srcs/Client/Client.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Last modified 2022-06-28 16:52:22.244221061
+#  File has been updated.
+#  Successfully updated.
 
 # files hash-table stats:
-# Load=18/1024=2%, Rehash=0, Collisions=0/45=0%
+# Load=19/1024=2%, Rehash=0, Collisions=0/47=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 29 / storage = 271 B / avg = 9 B
-# current buf: size = 8162 B / used = 271 B / count = 29 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 30 / storage = 297 B / avg = 9 B
+# current buf: size = 8162 B / used = 297 B / count = 30 / avg = 9 B
 
-# strcache performance: lookups = 52 / hit rate = 44%
+# strcache performance: lookups = 53 / hit rate = 43%
 # hash-table stats:
-# Load=29/8192=0%, Rehash=0, Collisions=2/52=4%
-# Finished Make data base on Mon Jun 27 09:37:12 2022
+# Load=30/8192=0%, Rehash=0, Collisions=2/53=4%
+# Finished Make data base on Tue Jun 28 16:54:13 2022
 
  

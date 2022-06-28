@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/26 16:38:26 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/28 16:51:16 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,17 +150,14 @@ void    Server::send_motd(Client *client)
 	send_message(client->get_fd(), format_msg(RPL_ENDOFMOTD, *client) + ft_irc::RPL_ENDOFMOTD());
 }
 
-void	Server::priv_msg(Client *client, const std::string& msg)
+void	Server::priv_msg(Client *client, const string &command)
 {
 	// NOT FINISHED
-	string buff = msg;
-	parse_t	*parsing = fill_parse_t(buff);
-	vector<string> destinators;
-	if (parsing->args.size() != 2)
+	//vector<string> destinators;
+	//if (parsed->args.size() != 2)
 		//ERROR
-
-	while (parsing->)
-	
+	client->get_fd();
+	string p = command;
 }
 
 void    Server::parse_command(Client *client, const std::string &command)
