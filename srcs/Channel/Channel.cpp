@@ -14,7 +14,7 @@
 
 		Channel::Channel(Client *owner, const std::string &channel_name): _channel_name(channel_name)
 {
-	_clients.push_back(owner);
+	_clients.insert(owner);
 	addOperator(owner);
 	return;
 }
@@ -44,17 +44,26 @@ int		Channel::get_nbrUsers()
 	return (_clients.size());
 }
 
+//This functions needs to be deleted
 std::vector<Client *>	Channel::get_users()
 {
-	return (_clients);
+	std::vector<Client *>	ret;
+	std::set<Client *>::iterator it = _clients.begin();
+	std::set<Client *>::iterator ite = _clients.end();
+	
+	for (; it != ite; it++)
+		ret.push_back(*it);
+	return (ret);
 }
 
 std::string		Channel::get_users_names()
 {
-	std::string users_names;
-
-	for(unsigned long int i = 0; i < _clients.size(); i++)
-		users_names += _clients[i]->get_username();
+	std::string						users_names;
+	std::set<Client *>::iterator	it = _clients.begin();
+	std::set<Client *>::iterator	ite = _clients.end();
+	
+	for (; it != ite; it++)
+		users_names += (*it)->get_username();
 	return (users_names);
 }
 
@@ -65,11 +74,14 @@ std::string		Channel::get_topic()
 
 void	Channel::broadcastToClients(int sendingClient, std::string msg)
 {
-	for (unsigned long int i = 0; i < _clients.size(); i++)
+	std::set<Client *>::iterator it = _clients.begin();
+	std::set<Client *>::iterator ite = _clients.end();
+	
+	for (; it != ite; it++)
 	{
-		if (_clients[i]->fd != sendingClient)
+		if ((*it)->fd != sendingClient)
 		{
-			sendToClient(_clients[i]->fd, msg);
+			sendToClient((*it)->fd, msg);
 		}
 	}
 }
@@ -80,6 +92,46 @@ void	Channel::sendToClient(int clientSocket, std::string msg)
 	{
 		//error handler
 	}
+}
+
+bool	Channel::isChannelMember(std::string nickname) const
+{
+	std::set<Client *>::const_iterator it = _clients.begin();
+	std::set<Client *>::const_iterator ite = _clients.end();
+	
+	for (; it != ite; it++)
+	{
+		if ((*it)->nick != nickname)
+			return (true);
+	}
+	return (false);
+}
+
+Client *	Channel::getClientByNick(std::string nickname)
+{
+	std::set<Client *>::iterator it = _clients.begin();
+	std::set<Client *>::iterator ite = _clients.end();
+	
+	for (; it != ite; it++)
+	{
+		if ((*it)->nick != nickname)
+			return (*it);
+	}
+	return 0;
+}
+
+Channel::clientSize	Channel::deleteClient(Client * client)
+{
+	_clients.erase(client);
+	_operatorList.erase(client);
+	return (_clients.size());
+}
+
+void	Channel::addClient(Client * client)
+{
+	if (isChannelMember(client->nick))
+		return ; // send an err ?
+	_clients.insert(client);
 }
 
 bool	Channel::isOperator(Client * client) const
