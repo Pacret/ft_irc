@@ -75,6 +75,8 @@ class Server
         void    addClient();
 
 		void	join_command(Client *client, struct parse_t *command);
+		void	kick_command(Client *client, struct parse_t *command);
+
 		void	priv_msg(Client *client, const std::string& command);
         void    send_message(int fd, const std::string &message);
         void    parse_command(Client *client, struct parse_t *command);
@@ -95,7 +97,7 @@ class Server
 		std::string get_name();
 		std::string get_info();
 
-		void	sendToClient(int clientSocket, const char* msg, int length);
+		void	sendToClient(int clientSocket, std::string msg);
 
 };
 

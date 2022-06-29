@@ -32,32 +32,31 @@ class Channel
         std::vector<Client *>	_clients;
 		std::set<Client *>		_operatorList;
 
-		bool	_isOperator(Client * client) const;
-		void	_removeOperator(Client * client);
-		void	_addOperator(Client * client);
-
     public:
         Channel(Client *owner, const std::string &channel_name);
         ~Channel();
 
-        
-        int get_nbrClients();
+        int get_nbrNormalClients();
         int get_nbrOps();
         int get_nbrUsers();
     
-        std::vector<Client *> get_users();
-        std::string get_users_names();
+        std::vector<Client *>	get_users();
+        std::string				get_users_names();
 
-        void demote(Client& client);
-        void promote(Client& client);
+        // void demote(Client& client);
+        // void promote(Client& client);
 
 		std::string get_name();
 		std::string get_mode();
 		std::string get_mode_params();
 		std::string get_topic();
 
-		void	sendToClient(int clientSocket, const char* msg, int length);
-		void	broadcastToClients(int sendingClient, const char* msg, int length);
+		bool	isOperator(Client * client) const;
+		void	removeOperator(Client * client);
+		void	addOperator(Client * client);
+
+		void	sendToClient(int clientSocket, std::string msg);
+		void	broadcastToClients(int sendingClient, std::string msg);
 };
 
 #endif

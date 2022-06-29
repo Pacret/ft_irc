@@ -92,6 +92,7 @@ void    Server::init()
 
 	commands["JOIN"] = &Server::join_command;
 	commands["MODE"] = &Server::mode_command_dummy;
+	commands["KICK"] = &Server::kick_command;
 }
 
 void Server::mode_command_dummy(Client *c, struct parse_t* p)
@@ -152,6 +153,13 @@ void    Server::join_command(Client *client, struct parse_t *command)
 	send_message(client->get_fd(), std::string(format_msg(RPL_NAMREPLY, *client) + " " + ft_irc::RPL_NAMREPLY("tmp", channels[channel_name]->get_users_names())));
 	send_message(client->get_fd(), std::string(format_msg(RPL_ENDOFNAMES, *client) + " " + ft_irc::RPL_ENDOFNAMES(channels[channel_name]->get_name())));
 }
+
+void	Server::kick_command(Client *client, struct parse_t *command)
+{
+	(void)client;
+	(void)command;
+}
+
 
 void    Server::send_motd(Client *client)
 {
@@ -295,9 +303,9 @@ void	Server::kill_connection(Client *client)
 // 	//if (())
 // }
 
-void	Server::sendToClient(int clientSocket, const char* msg, int length)
+void	Server::sendToClient(int clientSocket, std::string msg)
 {
-	if (send(clientSocket, msg, length, 0) == -1)
+	if (send(clientSocket, msg.c_str(), msg.size() + 1, 0) == -1)
 	{
 		//error handler
 	}
