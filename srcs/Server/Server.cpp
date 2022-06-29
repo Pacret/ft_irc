@@ -24,6 +24,7 @@
 		Server::Server(const std::string &port, const std::string &password) : port(port), password(password)
 {
 	server_name = "paco.com";
+	_prefixServer = ":" + server_name + " ";
 }
 
 		Server::~Server()
@@ -139,8 +140,53 @@ void    Server::join_command(Client *client, struct parse_t *command)
 
 void	Server::kick_command(Client *client, struct parse_t *command)
 {
-	(void)client;
-	(void)command;
+	//Check if there's enough parameters 
+	if (command->args.size() < 2)
+	{
+		sendToClient(client->fd, _prefixServer + ft_irc::ERR_NEEDMOREPARAMS(command->cmd) + "\r\n");
+		return ;
+	}
+
+	//Check if channel exists
+	std::map<channelName, Channel *>::iterator	it;
+	std::string channel_name = command->args[0];
+	it = channels.find(channel_name);
+	if (it == channels.end())
+	{
+		sendToClient(client->fd, _prefixServer + ft_irc::ERR_NOSUCHCHANNEL(channel_name) + "\r\n");
+		return ;
+	}
+
+	//Check if victim exists on given channel
+	Channel *	channel = it->second;
+	Client *	victim = channel->getClientByNick(command->args[1]);
+	if (!victim)
+	{
+		sendToClient(client->fd, _prefixServer + ft_irc::ERR_USERNOTINCHANNEL(victim->nick, channel_name) + "\r\n");
+		return ;
+	}
+
+	//Check if client has operator's privilege
+	if (!channel->isOperator(client))
+	{
+		sendToClient(client->fd, _prefixServer + ft_irc::ERR_CHANOPRIVSNEEDED(channel_name) + "\r\n");
+		return ;
+	}
+
+	//Broadcast to channel members
+	std::ostringstream	os;
+	os <<  _prefixServer + "PRIVMSG " + channel_name + " :";
+	os << victim->nick + " is kicked out of channel by " + client->nick + ".";
+	if (command->args.size() > 2)
+		os << "\nComment: " + command->args[2];
+	os << "\r\n";
+	channel->broadcastToClients(victim->fd, os.str());
+	channel->sendToClient(victim->fd, os.str());
+
+	//Delete victim from channel
+	//Delete channel if there's no one left
+	if (channel->deleteClient(victim) == 0)
+		channels.erase(channel->get_name());
 }
 
 

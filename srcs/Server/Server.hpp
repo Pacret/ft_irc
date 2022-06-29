@@ -45,15 +45,19 @@ class Server
         int							fd_socket;
         std::vector<struct pollfd>	pollfds;
 
-		typedef int							clientSocket;
+		typedef int			clientSocket;
+		typedef std::string	channelName;
+		typedef std::string	commandType;
+
         std::map<clientSocket, Client *>	clients;
-        std::map<std::string, Channel *>	channels;
-		std::map<std::string, void(Server::*)(Client *, struct parse_t *)> commands;
+        std::map<channelName, Channel *>	channels;
+		std::map<commandType, void(Server::*)(Client *, struct parse_t *)> commands;
 
         std::string	port;
         std::string	password;
 
-		std::string	server_name;
+		std::string					server_name;
+		std::string					_prefixServer;
 		std::ofstream				log_file;
 		std::vector<std::string>	motd;
 
