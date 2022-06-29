@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/29 16:07:05 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/29 20:29:11 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,9 @@ void    Server::init()
 	commands["JOIN"] = &Server::join_command;
 	commands["MODE"] = &Server::mode_command_dummy;
 	commands["KICK"] = &Server::kick_command;
+	commands["PASS"] = &Server::pass_command;
+	commands["NICK"] = &Server::nick_command;
+	commands["USER"] = &Server::user_command;
 }
 
 void Server::mode_command_dummy(Client *c, struct parse_t* p)
@@ -113,26 +116,6 @@ void    Server::send_message(int fd, const std::string &message) //Fonction just
 std::string	Server::get_pwd()
 {
 	return (password);
-}
-
-void	Server::check_passwd(Client *client, const std::string &command)
-{
-	//size_t pos = command.find(" ");
-	std::string	pass_sent;
-	
-	if (!command.find("PASS"))
-		pass_sent = command.substr(5);
-	else
-		return;
-	if (pass_sent != get_pwd())
-	{
-		kill_connection(client);
-		return;
-	}
-	client->set_statut(REGISTERED);
-	log_file << client->get_ip() << " has sent a valid password, statut changed to REGISTERED" << std::endl;
-	
-	return ;
 }
 
 std::string format_msg(numeric_replies_e num, Client& client)
@@ -181,46 +164,53 @@ void	Server::priv_msg(Client *client, const string &command)
 	string p = command;
 }
 
+void    Server::pass_command(Client *client, struct parse_t *command)
+{
+	if (command->args[0] != get_pwd())
+	{
+		kill_connection(client);
+		return;
+	}
+	client->set_statut(REGISTERED);
+}
+
+void    Server::nick_command(Client *client, struct parse_t *command)
+{
+	std::map<clientSocket, Client *>::iterator it;
+	for (it = clients.begin(); it != clients.end(); it++)
+	{
+		if (it->second->get_nick() == command->args[0])
+			send_message(client->get_fd(), format_msg(ERR_NICKNAMEINUSE, *client) + ft_irc::ERR_NICKNAMEINUSE(command->args[0]));
+		else
+			client->set_nick(command->args[0]);
+	}
+}
+
+void    Server::user_command(Client *client, struct parse_t *command)
+{
+	client->set_user(command->args[0]);
+	if (client->get_nick() != "")
+	{
+		client->set_statut(CONNECTED);
+		send_message(client->get_fd(), format_msg(RPL_WELCOME, *client) + ft_irc::RPL_WELCOME(client->get_nick(), "127.0.0.1"));
+		send_message(client->get_fd(), format_msg(RPL_LUSERCLIENT, *client) + ft_irc::RPL_LUSERCLIENT("0", "0"));
+		send_message(client->get_fd(), format_msg(RPL_LUSERUNKNOWN, *client) + ft_irc::RPL_LUSERUNKNOWN(" 0 "));
+		send_message(client->get_fd(), format_msg(RPL_LUSERCHANNELS, *client) + ft_irc::RPL_LUSERCHANNELS(ft_irc::to_string(channels.size())));
+		send_message(client->get_fd(), format_msg(RPL_LUSERME, *client) + ft_irc::RPL_LUSERME(ft_irc::to_string(clients.size())));
+		send_motd(client);
+	}
+}
+
 void    Server::parse_command(Client *client, struct parse_t *command)
 {
-	if (client->get_statut() == NONE)
-		check_passwd(client, command->original_msg);
-    else if (client->get_statut() == REGISTERED)
-    {
-        size_t  pos = command->original_msg.find(" ");
-
-        if (!command->original_msg.find("NICK"))
-		{
-            client->set_nick(command->original_msg.substr(5));
-			std::cout << "NICK cmd found" << std::endl;
-		}
-        else if (!command->original_msg.find("USER"))
-        {
-			std::cout << "USER cmd found" << std::endl;
-            client->set_user(command->original_msg.substr(5, (command->original_msg.find(" ", pos + 1)) - 5));
-			std::cout << client->get_username() << " <- user nick -> " << client->get_nick() << std::endl;
-            if (client->get_nick() != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
-            {
-                // Verifie t'on le hostname du client comme inspircd ?
-                // send_message(":paco.com NOTICE * :*** Looking up your hostname...\r\n");
-                client->set_statut(CONNECTED);
-				std::cout << "Sending welcome message" << std::endl;
-				send_message(client->get_fd(), format_msg(RPL_WELCOME, *client) + ft_irc::RPL_WELCOME(client->get_nick(), "127.0.0.1"));
-				send_message(client->get_fd(), format_msg(RPL_LUSERCLIENT, *client) + ft_irc::RPL_LUSERCLIENT("0", "0"));
-				send_message(client->get_fd(), format_msg(RPL_LUSERUNKNOWN, *client) + ft_irc::RPL_LUSERUNKNOWN(" 0 "));
-				send_message(client->get_fd(), format_msg(RPL_LUSERCHANNELS, *client) + ft_irc::RPL_LUSERCHANNELS(ft_irc::to_string(channels.size())));
-				send_message(client->get_fd(), format_msg(RPL_LUSERME, *client) + ft_irc::RPL_LUSERME(ft_irc::to_string(clients.size())));
-				send_motd(client);
-            }
-        }
-    }
-    else if (client->get_statut() == CONNECTED)
+	if ((client->get_statut() == NONE && command->cmd == "PASS") || 
+		(client->get_statut() == REGISTERED && (command->cmd == "USER" || command->cmd == "NICK")) ||
+		(client->get_statut() == CONNECTED && (commands.count(command->cmd) && command->cmd != "PASS" && command->cmd != "USER")))
 	{
-		if (commands.count(command->cmd))
-			(this->*commands[command->cmd])(client, command);
-		else
-			std::cout << "	/!\\ UNKNOWN COMMAND /!\\" << std::endl;
+		(this->*commands[command->cmd])(client, command);
 	}
+	else
+		std::cout << "	/!\\ ERROR COMMAND /!\\" << std::endl;
 }
 
 void	Server::get_message(Client *client)

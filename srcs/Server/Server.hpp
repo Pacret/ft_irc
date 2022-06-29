@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/29 16:06:50 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/29 20:29:23 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,9 @@ class Server
         void    process();
         void    addClient();
 
+		void	pass_command(Client *client, struct parse_t *command);
+		void	nick_command(Client *client, struct parse_t *command);
+		void	user_command(Client *client, struct parse_t *command);
 		void	join_command(Client *client, struct parse_t *command);
 		void	kick_command(Client *client, struct parse_t *command);
 
@@ -89,10 +92,9 @@ class Server
 
         void    setPort(const std::string &port);
         void    setPassword(const std::string &password);
-		std::string	get_pwd();
 
+		std::string	get_pwd();
 		void	kill_connection(Client *client);
-		void	check_passwd(Client *client, const std::string &command);
 
 		std::string get_name();
 		std::string get_info();
