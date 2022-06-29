@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 22:33:07 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/29 16:07:05 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,9 +148,9 @@ void    Server::join_command(Client *client, struct parse_t *command)
 		channels[channel_name] = new Channel(client, channel_name);
 	std::vector<Client *> usrs = channels[channel_name]->get_users();
 	for(unsigned long int i = 0; i < usrs.size(); i++)
-		send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_username() + "@127.0.0.1 JOIN :" + channel_name));
-	send_message(client->get_fd(), std::string(format_msg(RPL_WHOREPLY, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
-	send_message(client->get_fd(), std::string(format_msg(RPL_NAMREPLY, *client) + " " + ft_irc::RPL_NAMREPLY("tmp", channels[channel_name]->get_users_names())));
+		send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_username() + "@" + server_name + " JOIN :" + channel_name));
+	send_message(client->get_fd(), std::string(format_msg(RPL_TOPIC, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
+	send_message(client->get_fd(), std::string(format_msg(RPL_NAMREPLY, *client) + " " + ft_irc::RPL_NAMREPLY(channels[channel_name]->get_name(), channels[channel_name]->get_users_names())));
 	send_message(client->get_fd(), std::string(format_msg(RPL_ENDOFNAMES, *client) + " " + ft_irc::RPL_ENDOFNAMES(channels[channel_name]->get_name())));
 }
 
@@ -215,7 +215,12 @@ void    Server::parse_command(Client *client, struct parse_t *command)
         }
     }
     else if (client->get_statut() == CONNECTED)
-		(this->*commands[command->cmd])(client, command);
+	{
+		if (commands.count(command->cmd))
+			(this->*commands[command->cmd])(client, command);
+		else
+			std::cout << "	/!\\ UNKNOWN COMMAND /!\\" << std::endl;
+	}
 }
 
 void	Server::get_message(Client *client)

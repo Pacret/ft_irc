@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   defines.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/06/24 16:11:19 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/29 16:03:38 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,7 +262,7 @@ namespace ft_irc
 	inline string RPL_VERSION(string version, string debug_lvl, string server, string comment) {return (version + "." + debug_lvl + " " + server + " :" + comment);}
 	inline string RPL_WHOREPLY(string chan, string user, string host, string server, string nick, string status, string hopCount, string rn) {return (chan + " " + user + " " + host + " " + server + " " + nick + " " + status + " :" + hopCount + " " + rn);}
 	inline string RPL_ENDOFWHO(string name) {return (name + " :End of /WHO list");}
-	inline string RPL_NAMREPLY(string channelWithType, string nicknames) {return (channelWithType + " " + nicknames);}
+	inline string RPL_NAMREPLY(string chan, string nicknames) {return (chan + " " + nicknames);}
 	inline string RPL_ENDOFNAMES(string chan) {return (chan + " :End of /NAMES list");}
 	inline string RPL_LINKS(string mask, string server, string hopCount, string serverInfo) {return (mask + " " + server + " " + " :" + hopCount + " " + serverInfo);}
 	inline string RPL_ENDOFLINKS(string mask) {return (mask + " :End of /LINKS list");}
