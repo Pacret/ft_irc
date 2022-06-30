@@ -97,6 +97,7 @@ void    Server::init()
 	commands["PASS"] = &Server::pass_command;
 	commands["NICK"] = &Server::nick_command;
 	commands["USER"] = &Server::user_command;
+	commands["PART"] = &Server::part_command;
 }
 
 void Server::mode_command_dummy(Client *c, struct parse_t* p)
@@ -141,28 +142,27 @@ void    Server::join_command(Client *client, struct parse_t *command)
 void	Server::kick_command(Client *client, struct parse_t *command)
 {
 	//Check if there's enough parameters 
-	if (command->args.size() < 2)
-	{
-		sendToClient(client->fd, _prefixServer + ft_irc::ERR_NEEDMOREPARAMS(command->cmd) + "\r\n");
+	if (_not_enough_params(client->fd, command, 2))
 		return ;
-	}
 
 	//Check if channel exists
-	std::map<channelName, Channel *>::iterator	it;
 	std::string channel_name = command->args[0];
-	it = channels.find(channel_name);
-	if (it == channels.end())
-	{
-		sendToClient(client->fd, _prefixServer + ft_irc::ERR_NOSUCHCHANNEL(channel_name) + "\r\n");
+	if (_no_such_channel(client->fd, channel_name))
 		return ;
-	}
 
 	//Check if victim exists on given channel
-	Channel *	channel = it->second;
+	Channel *	channel = channels[channel_name];
 	Client *	victim = channel->getClientByNick(command->args[1]);
 	if (!victim)
 	{
 		sendToClient(client->fd, _prefixServer + ft_irc::ERR_USERNOTINCHANNEL(victim->nick, channel_name) + "\r\n");
+		return ;
+	}
+
+	//Check if client exists on given channel
+	if (!channels[channel_name]->isChannelMember(client->nick))
+	{
+		sendToClient(client->fd, _prefixServer + ft_irc::ERR_NOTONCHANNEL(channel_name) + "\r\n");
 		return ;
 	}
 
@@ -181,7 +181,8 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 		os << "\nComment: " + command->args[2];
 	os << "\r\n";
 	channel->broadcastToClients(victim->fd, os.str());
-	channel->sendToClient(victim->fd, os.str());
+	channel->sendToClient(victim->fd, os.str().replace(
+		os.str().find(victim->nick + " is"), victim->nick.size() + 3, "You are"));
 
 	//Delete victim from channel
 	//Delete channel if there's no one left
@@ -189,6 +190,68 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 		channels.erase(channel->get_name());
 }
 
+void	Server::part_command(Client *client, struct parse_t *command)
+{
+	//Check if there's enough parameters 
+	if (_not_enough_params(client->fd, command, 1))
+		return ;
+
+	//Check if each channel exists
+	std::vector<std::string>	channel_names;
+	channel_names = string_split(command->args[0], ",");
+	for (unsigned long i = 0; i < channel_names.size(); i++)
+	{
+		if (_no_such_channel(client->fd, channel_names[i]))
+			return ;
+	}
+
+	Channel *			chan;
+	std::ostringstream	os;
+
+	for (unsigned long i = 0; i < channel_names.size(); i++)
+	{
+		//Check if client exists on each channel
+		chan = channels[channel_names[i]];
+		if (!chan->isChannelMember(client->nick))
+		{
+			sendToClient(client->fd, _prefixServer
+				+ ft_irc::ERR_NOTONCHANNEL(chan->get_name()) + "\r\n");
+		}
+		//Broadcast PART msg, delete client
+		else
+		{
+			os <<  _prefixServer + "PRIVMSG " + chan->get_name() + " :";
+			chan->broadcastToClients(client->fd, os.str() + client->nick + "left channel.\r\n");
+			chan->sendToClient(client->fd, os.str() + "You left channel.\r\n");
+			if (chan->deleteClient(client) == 0)
+				channels.erase(chan->get_name());
+		}
+	}
+}
+
+bool	Server::_not_enough_params(int	clientFd, struct parse_t * command, unsigned int minSize)
+{
+	if (command->args.size() < minSize)
+	{
+		sendToClient(clientFd, _prefixServer 
+						+ ft_irc::ERR_NEEDMOREPARAMS(command->cmd) + "\r\n");
+		return true;
+	}
+	return false;
+}
+
+bool	Server::_no_such_channel(int clientFd, std::string & chanName)
+{
+	std::map<channelName, Channel *>::iterator	it;
+	it = channels.find(chanName);
+	if (it == channels.end())
+	{
+		sendToClient(clientFd, _prefixServer
+						+ ft_irc::ERR_NOSUCHCHANNEL(chanName) + "\r\n");
+		return true;
+	}
+	return false;
+}
 
 void    Server::send_motd(Client *client)
 {

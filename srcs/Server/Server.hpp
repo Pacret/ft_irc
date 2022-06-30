@@ -69,6 +69,10 @@ class Server
 		void	_removeOperator(Client * client);
 		void	_addOperator(Client * client);
 
+		bool	_not_enough_params(int clientFd, struct parse_t * command, unsigned int minSize);
+		bool	_no_such_channel(int clientFd, std::string & chanName);
+
+
     public:
         Server();
         Server(const std::string &port, const std::string &password);
@@ -83,6 +87,7 @@ class Server
 		void	user_command(Client *client, struct parse_t *command);
 		void	join_command(Client *client, struct parse_t *command);
 		void	kick_command(Client *client, struct parse_t *command);
+		void	part_command(Client *client, struct parse_t *command);
 
 		void	priv_msg(Client *client, const std::string& command);
         void    send_message(int fd, const std::string &message);
