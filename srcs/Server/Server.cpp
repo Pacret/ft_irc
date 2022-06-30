@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/29 20:29:11 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/30 19:23:20 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,9 +131,10 @@ void    Server::join_command(Client *client, struct parse_t *command)
 
 	if (channels.find(channel_name) == channels.end())
 		channels[channel_name] = new Channel(client, channel_name);
+	else
+		channels[channel_name]->addClient(client);
 	std::vector<Client *> usrs = channels[channel_name]->get_users();
-	for(unsigned long int i = 0; i < usrs.size(); i++)
-		send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_username() + "@" + server_name + " JOIN :" + channel_name));
+	channels[channel_name]->broadcastToClients(NULL, std::string(":" + client->get_nick() + "!" +  client->get_username() + "@" + server_name + " JOIN :" + channel_name + "\r\n"));
 	send_message(client->get_fd(), std::string(format_msg(RPL_TOPIC, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
 	send_message(client->get_fd(), std::string(format_msg(RPL_NAMREPLY, *client) + " " + ft_irc::RPL_NAMREPLY(channels[channel_name]->get_name(), channels[channel_name]->get_users_names())));
 	send_message(client->get_fd(), std::string(format_msg(RPL_ENDOFNAMES, *client) + " " + ft_irc::RPL_ENDOFNAMES(channels[channel_name]->get_name())));
@@ -180,8 +181,8 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 	if (command->args.size() > 2)
 		os << "\nComment: " + command->args[2];
 	os << "\r\n";
-	channel->broadcastToClients(victim->fd, os.str());
-	channel->sendToClient(victim->fd, os.str().replace(
+	channel->broadcastToClients(victim, os.str());
+	channel->sendToClient(victim, os.str().replace(
 		os.str().find(victim->nick + " is"), victim->nick.size() + 3, "You are"));
 
 	//Delete victim from channel
@@ -221,8 +222,8 @@ void	Server::part_command(Client *client, struct parse_t *command)
 		else
 		{
 			os <<  _prefixServer + "PRIVMSG " + chan->get_name() + " :";
-			chan->broadcastToClients(client->fd, os.str() + client->nick + "left channel.\r\n");
-			chan->sendToClient(client->fd, os.str() + "You left channel.\r\n");
+			chan->broadcastToClients(client, os.str() + client->nick + "left channel.\r\n");
+			chan->sendToClient(client, os.str() + "You left channel.\r\n");
 			if (chan->deleteClient(client) == 0)
 				channels.erase(chan->get_name());
 		}
@@ -285,6 +286,8 @@ void    Server::pass_command(Client *client, struct parse_t *command)
 
 void    Server::nick_command(Client *client, struct parse_t *command)
 {
+	if (command->args.size() == 4)
+		return ;
 	std::map<clientSocket, Client *>::iterator it;
 	for (it = clients.begin(); it != clients.end(); it++)
 	{

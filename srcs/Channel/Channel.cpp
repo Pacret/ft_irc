@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 15:36:10 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/30 16:13:51 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,23 +72,23 @@ std::string		Channel::get_topic()
 	return (_topic);
 }
 
-void	Channel::broadcastToClients(int sendingClient, std::string msg)
+void	Channel::broadcastToClients(Client * client, std::string msg)
 {
 	std::set<Client *>::iterator it = _clients.begin();
 	std::set<Client *>::iterator ite = _clients.end();
 	
 	for (; it != ite; it++)
 	{
-		if ((*it)->fd != sendingClient)
+		if (client == NULL || (*it)->fd != client->fd)
 		{
-			sendToClient((*it)->fd, msg);
+			sendToClient((*it), msg);
 		}
 	}
 }
 
-void	Channel::sendToClient(int clientSocket, std::string msg)
+void	Channel::sendToClient(Client * client, std::string msg)
 {
-	if (send(clientSocket, msg.c_str(), msg.size() + 1, 0) == -1)
+	if (send(client->fd, msg.c_str(), msg.size() + 1, 0) == -1)
 	{
 		//error handler
 	}

@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/23 14:20:44 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/30 16:01:07 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ class Channel
 		void	removeOperator(Client * client);
 		void	addOperator(Client * client);
 
-		void	sendToClient(int clientSocket, std::string msg);
-		void	broadcastToClients(int sendingClient, std::string msg);
+		void	sendToClient(Client * client, std::string msg);
+		void	broadcastToClients(Client * client, std::string msg);
 };
 
 #endif
