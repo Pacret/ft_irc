@@ -19,7 +19,7 @@
 using namespace std;
 
 
-string get_comand(const string& msg)
+string get_command(const string& msg)
 {
 	size_t i = 0;
 
@@ -46,7 +46,7 @@ parse_t *fill_parse_t(string &msg)
 		p->prefix = get_prefix(msg);
 		msg.erase(0, p->prefix.size() + 1);
 	}
-	p->cmd = get_comand(msg);
+	p->cmd = get_command(msg);
 	msg.erase(0, p->cmd.size());
 
 	string end_set = "\r\n\0";
@@ -64,5 +64,23 @@ parse_t *fill_parse_t(string &msg)
 	}
 	//if (msg.size() < 2 || msg[0] != '\r' || msg[1] != '\n')
 	//	throw runtime_error("Bad data: Partial Data received");
+	print_parse_t(*p);
 	return (p);
+}
+
+void	print_parse_t(const parse_t & p)
+{
+	std::vector<std::string>::const_iterator it = p.args.begin();
+	std::vector<std::string>::const_iterator ite = p.args.end();
+
+	std::cout << "============== print parse_t ===============" << std::endl;
+	std::cout << "-> Original msg {" << p.original_msg << "}" << std::endl;
+	std::cout << "-> cmd {"<< p.cmd << "}" << std::endl;
+	std::cout << "-> prefix {" << p.prefix << "}" << std::endl;
+	std::cout << "-> msg_to_send {" << p.msg_to_send << "}" << std::endl;
+
+	for (int i = 0; it != ite; it++, i++)
+		std::cout << "-> args[" << i << "] {" << *it << "}" << std::endl;
+	std::cout << "=========== print parse_t end ==============" << std::endl;
+
 }

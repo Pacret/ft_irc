@@ -33,7 +33,9 @@ struct parse_t
 // Fill the structure, args are sequencial and separated by every space found, except when entering a trailling,
 // if trailling is found then all the rest of the string is put into it. Function throw and error if partial data is found.
 parse_t		*fill_parse_t(string &msg);
-string		get_comand(const string& msg);
+string		get_command(const string& msg);
+void		print_parse_t(const parse_t& p);
+
 
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/01 16:15:12 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/01 16:16:10 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 		Server::Server(const std::string &port, const std::string &password) : port(port), password(password)
 {
 	server_name = "paco.com";
+	_prefixServer = ":" + server_name + " ";
 }
 
 		Server::~Server()
@@ -95,8 +96,13 @@ void    Server::init()
 	motd.push_back("une deuxieme");
 	motd.push_back("et c'est tout");
 
-	commands["JOIN"] = &join_command;
-	commands["MODE"] = &mode_command_dummy;
+	commands["JOIN"] = &Server::join_command;
+	commands["MODE"] = &Server::mode_command_dummy;
+	commands["KICK"] = &Server::kick_command;
+	commands["PASS"] = &Server::pass_command;
+	commands["NICK"] = &Server::nick_command;
+	commands["USER"] = &Server::user_command;
+	commands["PART"] = &Server::part_command;
 }
 
 void Server::mode_command_dummy(Client *c, struct parse_t* p)
@@ -119,26 +125,6 @@ std::string	Server::get_pwd()
 	return (password);
 }
 
-void	Server::check_passwd(Client *client, const std::string &command)
-{
-	//size_t pos = command.find(" ");
-	std::string	pass_sent;
-	
-	if (!command.find("PASS"))
-		pass_sent = command.substr(5);
-	else
-		return;
-	if (pass_sent != get_pwd())
-	{
-		kill_connection(client);
-		return;
-	}
-	client->set_statut(REGISTERED);
-	log_file << client->get_ip() << " has sent a valid password, statut changed to REGISTERED" << std::endl;
-	
-	return ;
-}
-
 std::string format_msg(numeric_replies_e num, Client& client)
 {
 	return (":paco.com " + ft_irc::to_string(num) + " " + client.get_nick());
@@ -146,29 +132,131 @@ std::string format_msg(numeric_replies_e num, Client& client)
 
 void    Server::join_command(Client *client, struct parse_t *command)
 {
-	(void)client;
-	(void)command;
-	
-	std::cout << "L:IKDULKWSJNOIWKJMD" << std::endl;
-	// 	channels[channel_name] = new Channel(client, channel_name);
-	// std::vector<Client *> usrs = channels[channel_name]->get_users();
-	// for(unsigned long int i = 0; i < usrs.size(); i++)
-	// 	send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_username() + "@127.0.0.1 JOIN :" + channel_name));
-	// send_message(client->get_fd(), std::string(format_msg(RPL_WHOREPLY, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
-	// send_message(client->get_fd(), std::string(format_msg(RPL_NAMREPLY, *client) + " " + ft_irc::RPL_NAMREPLY("tmp", channels[channel_name]->get_users_names())));
-	// send_message(client->get_fd(), std::string(format_msg(RPL_ENDOFNAMES, *client) + " " + ft_irc::RPL_ENDOFNAMES(channels[channel_name]->get_name())));
-}
+	std::string channel_name = command->args[0];
 
-void    Server::join_channel(Client *client, const std::string &channel_name)
-{
 	if (channels.find(channel_name) == channels.end())
 		channels[channel_name] = new Channel(client, channel_name);
+	else
+		channels[channel_name]->addClient(client);
 	std::vector<Client *> usrs = channels[channel_name]->get_users();
-	for(unsigned long int i = 0; i < usrs.size(); i++)
-		send_message(usrs[i]->get_fd(), std::string(":" + client->get_nick() + "!" +  client->get_username() + "@127.0.0.1 JOIN :" + channel_name));
-	send_message(client->get_fd(), std::string(format_msg(RPL_WHOREPLY, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
-	send_message(client->get_fd(), std::string(format_msg(RPL_NAMREPLY, *client) + " " + ft_irc::RPL_NAMREPLY("tmp", channels[channel_name]->get_users_names())));
+	channels[channel_name]->broadcastToClients(NULL, std::string(":" + client->get_nick() + "!" +  client->get_username() + "@" + server_name + " JOIN :" + channel_name + "\r\n"));
+	send_message(client->get_fd(), std::string(format_msg(RPL_TOPIC, *client) + " " + ft_irc::RPL_TOPIC(*channels[channel_name])));
+	send_message(client->get_fd(), std::string(format_msg(RPL_NAMREPLY, *client) + " " + ft_irc::RPL_NAMREPLY(channels[channel_name]->get_name(), channels[channel_name]->get_users_names())));
 	send_message(client->get_fd(), std::string(format_msg(RPL_ENDOFNAMES, *client) + " " + ft_irc::RPL_ENDOFNAMES(channels[channel_name]->get_name())));
+}
+
+void	Server::kick_command(Client *client, struct parse_t *command)
+{
+	//Check if there's enough parameters 
+	if (_not_enough_params(client->fd, command, 2))
+		return ;
+
+	//Check if channel exists
+	std::string channel_name = command->args[0];
+	if (_no_such_channel(client->fd, channel_name))
+		return ;
+
+	//Check if victim exists on given channel
+	Channel *	channel = channels[channel_name];
+	Client *	victim = channel->getClientByNick(command->args[1]);
+	if (!victim)
+	{
+		sendToClient(client->fd, _prefixServer + ft_irc::ERR_USERNOTINCHANNEL(victim->nick, channel_name) + "\r\n");
+		return ;
+	}
+
+	//Check if client exists on given channel
+	if (!channels[channel_name]->isChannelMember(client->nick))
+	{
+		sendToClient(client->fd, _prefixServer + ft_irc::ERR_NOTONCHANNEL(channel_name) + "\r\n");
+		return ;
+	}
+
+	//Check if client has operator's privilege
+	if (!channel->isOperator(client))
+	{
+		sendToClient(client->fd, _prefixServer + ft_irc::ERR_CHANOPRIVSNEEDED(channel_name) + "\r\n");
+		return ;
+	}
+
+	//Broadcast to channel members
+	std::ostringstream	os;
+	os <<  _prefixServer + "PRIVMSG " + channel_name + " :";
+	os << victim->nick + " is kicked out of channel by " + client->nick + ".";
+	if (command->args.size() > 2)
+		os << "\nComment: " + command->args[2];
+	os << "\r\n";
+	channel->broadcastToClients(victim, os.str());
+	channel->sendToClient(victim, os.str().replace(
+		os.str().find(victim->nick + " is"), victim->nick.size() + 3, "You are"));
+
+	//Delete victim from channel
+	//Delete channel if there's no one left
+	if (channel->deleteClient(victim) == 0)
+		channels.erase(channel->get_name());
+}
+
+void	Server::part_command(Client *client, struct parse_t *command)
+{
+	//Check if there's enough parameters 
+	if (_not_enough_params(client->fd, command, 1))
+		return ;
+
+	//Check if each channel exists
+	std::vector<std::string>	channel_names;
+	channel_names = string_split(command->args[0], ",");
+	for (unsigned long i = 0; i < channel_names.size(); i++)
+	{
+		if (_no_such_channel(client->fd, channel_names[i]))
+			return ;
+	}
+
+	Channel *			chan;
+	std::ostringstream	os;
+
+	for (unsigned long i = 0; i < channel_names.size(); i++)
+	{
+		//Check if client exists on each channel
+		chan = channels[channel_names[i]];
+		if (!chan->isChannelMember(client->nick))
+		{
+			sendToClient(client->fd, _prefixServer
+				+ ft_irc::ERR_NOTONCHANNEL(chan->get_name()) + "\r\n");
+		}
+		//Broadcast PART msg, delete client
+		else
+		{
+			os <<  _prefixServer + "PRIVMSG " + chan->get_name() + " :";
+			chan->broadcastToClients(client, os.str() + client->nick + "left channel.\r\n");
+			chan->sendToClient(client, os.str() + "You left channel.\r\n");
+			if (chan->deleteClient(client) == 0)
+				channels.erase(chan->get_name());
+		}
+	}
+}
+
+bool	Server::_not_enough_params(int	clientFd, struct parse_t * command, unsigned int minSize)
+{
+	if (command->args.size() < minSize)
+	{
+		sendToClient(clientFd, _prefixServer 
+						+ ft_irc::ERR_NEEDMOREPARAMS(command->cmd) + "\r\n");
+		return true;
+	}
+	return false;
+}
+
+bool	Server::_no_such_channel(int clientFd, std::string & chanName)
+{
+	std::map<channelName, Channel *>::iterator	it;
+	it = channels.find(chanName);
+	if (it == channels.end())
+	{
+		sendToClient(clientFd, _prefixServer
+						+ ft_irc::ERR_NOSUCHCHANNEL(chanName) + "\r\n");
+		return true;
+	}
+	return false;
 }
 
 void    Server::send_motd(Client *client)
@@ -222,41 +310,63 @@ void	Server::priv_msg(Client *client, parse_t *p)
 	}
 }
 
-void    Server::parse_command(Client *client, struct parse_t *command)
+void    Server::pass_command(Client *client, struct parse_t *command)
 {
+<<<<<<< HEAD
 	if (client->get_statut() == NONE && command->cmd == "PASS")
 		check_passwd(client, command->original_msg);
     else if (client->get_statut() == REGISTERED)
     {
         size_t  pos = command->original_msg.find(" ");
+=======
+	if (command->args[0] != get_pwd())
+	{
+		kill_connection(client);
+		return;
+	}
+	client->set_statut(REGISTERED);
+}
+>>>>>>> 56e357f7c0984424a6544e26accf92fbac798905
 
-        if (!command->original_msg.find("NICK"))
-		{
-            client->set_nick(command->original_msg.substr(5));
-			std::cout << "NICK cmd found" << std::endl;
-		}
-        else if (!command->original_msg.find("USER"))
-        {
-			std::cout << "USER cmd found" << std::endl;
-            client->set_user(command->original_msg.substr(5, (command->original_msg.find(" ", pos + 1)) - 5));
-			std::cout << client->get_username() << " <- user nick -> " << client->get_nick() << std::endl;
-            if (client->get_nick() != "") // todo: verifier qu'il n'y a pas un client ayant le meme nick
-            {
-                // Verifie t'on le hostname du client comme inspircd ?
-                // send_message(":paco.com NOTICE * :*** Looking up your hostname...\r\n");
-                client->set_statut(CONNECTED);
-				std::cout << "Sending welcome message" << std::endl;
-				send_message(client->get_fd(), format_msg(RPL_WELCOME, *client) + ft_irc::RPL_WELCOME(client->get_nick(), "127.0.0.1"));
-				send_message(client->get_fd(), format_msg(RPL_LUSERCLIENT, *client) + ft_irc::RPL_LUSERCLIENT("0", "0"));
-				send_message(client->get_fd(), format_msg(RPL_LUSERUNKNOWN, *client) + ft_irc::RPL_LUSERUNKNOWN(" 0 "));
-				send_message(client->get_fd(), format_msg(RPL_LUSERCHANNELS, *client) + ft_irc::RPL_LUSERCHANNELS(ft_irc::to_string(channels.size())));
-				send_message(client->get_fd(), format_msg(RPL_LUSERME, *client) + ft_irc::RPL_LUSERME(ft_irc::to_string(clients.size())));
-				send_motd(client);
-            }
-        }
-    }
-    else if (client->get_statut() == CONNECTED)
-		commands[command->cmd](client, command);
+void    Server::nick_command(Client *client, struct parse_t *command)
+{
+	if (command->args.size() == 4)
+		return ;
+	std::map<clientSocket, Client *>::iterator it;
+	for (it = clients.begin(); it != clients.end(); it++)
+	{
+		if (it->second->get_nick() == command->args[0])
+			send_message(client->get_fd(), format_msg(ERR_NICKNAMEINUSE, *client) + ft_irc::ERR_NICKNAMEINUSE(command->args[0]));
+		else
+			client->set_nick(command->args[0]);
+	}
+}
+
+void    Server::user_command(Client *client, struct parse_t *command)
+{
+	client->set_user(command->args[0]);
+	if (client->get_nick() != "")
+	{
+		client->set_statut(CONNECTED);
+		send_message(client->get_fd(), format_msg(RPL_WELCOME, *client) + ft_irc::RPL_WELCOME(client->get_nick(), "127.0.0.1"));
+		send_message(client->get_fd(), format_msg(RPL_LUSERCLIENT, *client) + ft_irc::RPL_LUSERCLIENT("0", "0"));
+		send_message(client->get_fd(), format_msg(RPL_LUSERUNKNOWN, *client) + ft_irc::RPL_LUSERUNKNOWN(" 0 "));
+		send_message(client->get_fd(), format_msg(RPL_LUSERCHANNELS, *client) + ft_irc::RPL_LUSERCHANNELS(ft_irc::to_string(channels.size())));
+		send_message(client->get_fd(), format_msg(RPL_LUSERME, *client) + ft_irc::RPL_LUSERME(ft_irc::to_string(clients.size())));
+		send_motd(client);
+	}
+}
+
+void    Server::parse_command(Client *client, struct parse_t *command)
+{
+	if ((client->get_statut() == NONE && command->cmd == "PASS") || 
+		(client->get_statut() == REGISTERED && (command->cmd == "USER" || command->cmd == "NICK")) ||
+		(client->get_statut() == CONNECTED && (commands.count(command->cmd) && command->cmd != "PASS" && command->cmd != "USER")))
+	{
+		(this->*commands[command->cmd])(client, command);
+	}
+	else
+		std::cout << "	/!\\ ERROR COMMAND /!\\" << std::endl;
 }
 
 void	Server::get_message(Client *client)
@@ -344,9 +454,9 @@ void	Server::kill_connection(Client *client)
 // 	//if (())
 // }
 
-void	Server::sendToClient(int clientSocket, const char* msg, int length)
+void	Server::sendToClient(int clientSocket, std::string msg)
 {
-	if (send(clientSocket, msg, length, 0) == -1)
+	if (send(clientSocket, msg.c_str(), msg.size() + 1, 0) == -1)
 	{
 		//error handler
 	}

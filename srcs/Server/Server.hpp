@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/29 14:49:51 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/01 16:16:09 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,19 @@ class Server
         int							fd_socket;
         std::vector<struct pollfd>	pollfds;
 
-		typedef int							clientSocket;
+		typedef int			clientSocket;
+		typedef std::string	channelName;
+		typedef std::string	commandType;
+
         std::map<clientSocket, Client *>	clients;
-        std::map<std::string, Channel *>	channels;
-		std::map<std::string, void(*)(Client *, struct parse_t *)> commands;
+        std::map<channelName, Channel *>	channels;
+		std::map<commandType, void(Server::*)(Client *, struct parse_t *)> commands;
 
         std::string	port;
         std::string	password;
 
-		std::string	server_name;
+		std::string					server_name;
+		std::string					_prefixServer;
 		std::ofstream				log_file;
 		std::vector<std::string>	motd;
 
@@ -65,6 +69,10 @@ class Server
 		void	_removeOperator(Client * client);
 		void	_addOperator(Client * client);
 
+		bool	_not_enough_params(int clientFd, struct parse_t * command, unsigned int minSize);
+		bool	_no_such_channel(int clientFd, std::string & chanName);
+
+
     public:
         Server();
         Server(const std::string &port, const std::string &password);
@@ -74,30 +82,38 @@ class Server
         void    process();
         void    addClient();
 
-		static void	join_command(Client *client, struct parse_t *command);
+		void	pass_command(Client *client, struct parse_t *command);
+		void	nick_command(Client *client, struct parse_t *command);
+		void	user_command(Client *client, struct parse_t *command);
+		void	join_command(Client *client, struct parse_t *command);
+		void	kick_command(Client *client, struct parse_t *command);
+		void	part_command(Client *client, struct parse_t *command);
 
+<<<<<<< HEAD
         void    join_channel(Client *client, const std::string &channel_name);
 		void	priv_msg(Client *client, parse_t *p);
+=======
+		void	priv_msg(Client *client, const std::string& command);
+>>>>>>> 56e357f7c0984424a6544e26accf92fbac798905
         void    send_message(int fd, const std::string &message);
         void    parse_command(Client *client, struct parse_t *command);
         void    get_message(Client *client);
 
 		// DUMMY
-		static void	mode_command_dummy(Client *c, struct parse_t*p);
+		void	mode_command_dummy(Client *c, struct parse_t*p);
 
 		void	register_client(Client& client, const std::string& msg_rcv);
 
         void    setPort(const std::string &port);
         void    setPassword(const std::string &password);
-		std::string	get_pwd();
 
+		std::string	get_pwd();
 		void	kill_connection(Client *client);
-		void	check_passwd(Client *client, const std::string &command);
 
 		std::string get_name();
 		std::string get_info();
 
-		void	sendToClient(int clientSocket, const char* msg, int length);
+		void	sendToClient(int clientSocket, std::string msg);
 
 };
 

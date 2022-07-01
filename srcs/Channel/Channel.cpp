@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 15:36:10 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/30 16:13:51 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 		Channel::Channel(Client *owner, const std::string &channel_name): _channel_name(channel_name)
 {
-	_clients.push_back(owner);
-	_addOperator(owner);
+	_clients.insert(owner);
+	addOperator(owner);
 	return;
 }
 
@@ -29,36 +29,41 @@ std::string		Channel::get_name()
 	return (_channel_name);
 }
 
-int		Channel::get_nbrClients()
+int		Channel::get_nbrNormalClients()
 {
-	return (_clients.size());
+	return (_clients.size() - _operatorList.size());
 }
 
 int		Channel::get_nbrOps()
 {
 	return (_operatorList.size());
 }
+
 int		Channel::get_nbrUsers()
 {
-	return (get_nbrOps() + get_nbrClients() + 1);
+	return (_clients.size());
 }
 
+//This functions needs to be deleted
 std::vector<Client *>	Channel::get_users()
 {
-	// std::vector<Client *> users = _clients;
-	// users.insert(users.end(), operators.begin(), operators.end());
-	// users.push_back(_owner);
-	// return (users);
-	return (_clients);
+	std::vector<Client *>	ret;
+	std::set<Client *>::iterator it = _clients.begin();
+	std::set<Client *>::iterator ite = _clients.end();
+	
+	for (; it != ite; it++)
+		ret.push_back(*it);
+	return (ret);
 }
 
 std::string		Channel::get_users_names()
 {
-	std::string users_names;
-	std::vector<Client *> users = get_users();
-
-	for(unsigned long int i = 0; i < users.size(); i++)
-		users_names += users[i]->get_username();
+	std::string						users_names;
+	std::set<Client *>::iterator	it = _clients.begin();
+	std::set<Client *>::iterator	ite = _clients.end();
+	
+	for (; it != ite; it++)
+		users_names += (*it)->get_username();
 	return (users_names);
 }
 
@@ -67,26 +72,69 @@ std::string		Channel::get_topic()
 	return (_topic);
 }
 
-void	Channel::broadcastToClients(int sendingClient, const char* msg, int length)
+void	Channel::broadcastToClients(Client * client, std::string msg)
 {
-	for (unsigned long int i = 0; i < _clients.size(); i++)
+	std::set<Client *>::iterator it = _clients.begin();
+	std::set<Client *>::iterator ite = _clients.end();
+	
+	for (; it != ite; it++)
 	{
-		if (_clients[i]->fd != sendingClient)
+		if (client == NULL || (*it)->fd != client->fd)
 		{
-			sendToClient(_clients[i]->fd, msg, length);
+			sendToClient((*it), msg);
 		}
 	}
 }
 
-void	Channel::sendToClient(int clientSocket, const char* msg, int length)
+void	Channel::sendToClient(Client * client, std::string msg)
 {
-	if (send(clientSocket, msg, length, 0) == -1)
+	if (send(client->fd, msg.c_str(), msg.size() + 1, 0) == -1)
 	{
 		//error handler
 	}
 }
 
-bool	Channel::_isOperator(Client * client) const
+bool	Channel::isChannelMember(std::string nickname) const
+{
+	std::set<Client *>::const_iterator it = _clients.begin();
+	std::set<Client *>::const_iterator ite = _clients.end();
+	
+	for (; it != ite; it++)
+	{
+		if ((*it)->nick != nickname)
+			return (true);
+	}
+	return (false);
+}
+
+Client *	Channel::getClientByNick(std::string nickname)
+{
+	std::set<Client *>::iterator it = _clients.begin();
+	std::set<Client *>::iterator ite = _clients.end();
+	
+	for (; it != ite; it++)
+	{
+		if ((*it)->nick != nickname)
+			return (*it);
+	}
+	return 0;
+}
+
+Channel::clientSize	Channel::deleteClient(Client * client)
+{
+	_clients.erase(client);
+	_operatorList.erase(client);
+	return (_clients.size());
+}
+
+void	Channel::addClient(Client * client)
+{
+	if (isChannelMember(client->nick))
+		return ; // send an err ?
+	_clients.insert(client);
+}
+
+bool	Channel::isOperator(Client * client) const
 {
 	std::set<Client *>::const_iterator	it;
 
@@ -96,12 +144,12 @@ bool	Channel::_isOperator(Client * client) const
 	return false;
 }
 
-void	Channel::_removeOperator(Client * client)
+void	Channel::removeOperator(Client * client)
 {
 	_operatorList.erase(client);
 }
 
-void	Channel::_addOperator(Client * client)
+void	Channel::addOperator(Client * client)
 {
 	_operatorList.insert(client);
 }
