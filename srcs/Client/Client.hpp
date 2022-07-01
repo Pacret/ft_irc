@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 15:41:47 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/29 16:28:04 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include "../Utils/Utils.hpp"
 #include <iostream>
 #include <unistd.h>
+#include <netdb.h>
 
 
 #ifndef BUFFER_SIZE
@@ -34,6 +35,7 @@ class Client
 		std::string			_real_name;
 		Statut				_statut;
 		struct sockaddr_in	_address;
+		struct hostent 		_host;
 
     public:
         std::string buffer;

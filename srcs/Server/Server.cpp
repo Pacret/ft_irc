@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 21:55:57 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/01 16:15:12 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "../Utils/defines.h"
 #include "../Utils/parser_utils.hpp"
 #include <string>
+#include <netdb.h>
 
 		Server::Server()
 {
@@ -52,6 +53,10 @@ void    Server::addClient()
     pfd.events = POLLIN;
     pfd.revents = 0;
     pollfds.push_back(pfd);
+
+	struct hostent *host;
+
+
 
     clients[fd_client] = new Client(fd_client, client_adress);
 
@@ -176,19 +181,50 @@ void    Server::send_motd(Client *client)
 	send_message(client->get_fd(), format_msg(RPL_ENDOFMOTD, *client) + ft_irc::RPL_ENDOFMOTD());
 }
 
-void	Server::priv_msg(Client *client, const string &command)
+void	Server::priv_msg(Client *client, parse_t *p)
 {
 	// NOT FINISHED
 	//vector<string> destinators;
 	//if (parsed->args.size() != 2)
 		//ERROR
-	client->get_fd();
-	string p = command;
+	string start_msg;
+	vector<string> destinators;
+	string buff = p->args[0];
+	size_t i = 0;
+	Channel *chan;
+	vector<Client *> clients;
+
+	start_msg = ":" + client->get_nick() + " " + "PRIVMSG ";
+	while (!buff.empty() && buff[i] != '\0')
+	{
+		if ((i = buff.find(',')) == string::npos)
+			i = buff.size() + 1;
+		destinators.push_back(buff.substr(0, i - 1));
+		buff.erase(0, i);
+		i = 0;
+	}
+	for (vector<string>::iterator it = destinators.begin(); it != destinators.end(); it++)
+	{
+		string final_msg(start_msg);
+		final_msg += *it;
+		final_msg += " " + p->args[1];
+		if ((*it)[0] == '#')
+		{
+			chan = channels[*it];
+			clients = chan->get_users();
+			for(vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++)
+				send_message((*it)->fd, final_msg);
+		}
+		else
+		{
+			send_message();
+		}
+	}
 }
 
 void    Server::parse_command(Client *client, struct parse_t *command)
 {
-	if (client->get_statut() == NONE)
+	if (client->get_statut() == NONE && command->cmd == "PASS")
 		check_passwd(client, command->original_msg);
     else if (client->get_statut() == REGISTERED)
     {

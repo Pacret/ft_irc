@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 21:53:59 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/06/29 14:49:51 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ class Server
 		static void	join_command(Client *client, struct parse_t *command);
 
         void    join_channel(Client *client, const std::string &channel_name);
-		void	priv_msg(Client *client, const std::string& command);
+		void	priv_msg(Client *client, parse_t *p);
         void    send_message(int fd, const std::string &message);
         void    parse_command(Client *client, struct parse_t *command);
         void    get_message(Client *client);
