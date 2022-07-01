@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/06/29 16:03:38 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/01 16:52:40 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,8 +271,8 @@ namespace ft_irc
 	inline string RPL_ENDOFBANLIST(string chan) {return (chan + " :End of channel ban list");}
 	inline string RPL_INFO(string info) {return (":" + info);}
 	inline string RPL_ENDOFINFO() {return (" :End of /INFO list");}
-	inline string RPL_MOTDSTART(string server) {return (" :- " + server + " Message of the day");}
-	inline string RPL_MOTD(string text) {return (" :- " + text);}
+	inline string RPL_MOTDSTART(string server) {return (" :" + server + " Message of the day");}
+	inline string RPL_MOTD(string text) {return (" :" + text);}
 	inline string RPL_ENDOFMOTD() {return (" :End of /MOTD command");}
 	inline string RPL_YOUREOPER() {return (" :You are now an IRC operator");}
 	inline string RPL_REHASHING(string configFile) {return (configFile + " :Rehashing");}
@@ -286,8 +286,8 @@ namespace ft_irc
 	
 	inline string RPL_LUSERCLIENT(string nbr_users, string nbr_invs) {return (" :There are " + nbr_users + " users and " + nbr_invs + " invisible on 1 servers");}
 	inline string RPL_LUSERUNKNOWN(string nbr_unk) {return (nbr_unk + " :unknow connection(s)");}
-	inline string RPL_LUSERCHANNELS(string nbr_channel) {return (nbr_channel + " :channels formed");}
-	inline string RPL_LUSERME(string nbr_clients) {return (" :I have " + nbr_clients + " and 1 servers");}
+	inline string RPL_LUSERCHANNELS(string nbr_channel) {return (" " + nbr_channel + " :channels formed");}
+	inline string RPL_LUSERME(string nbr_clients) {return (" :I have " + nbr_clients + " clients and 1 servers");}
 
 }
 #endif
