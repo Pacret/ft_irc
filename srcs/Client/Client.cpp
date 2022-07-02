@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:23:56 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/28 15:41:23 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/06/29 17:16:13 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ using namespace std;
 
 		Client::Client( int fd, struct sockaddr_in address) : _statut(NONE), _address(address), fd(fd)
 {
+	
 	return;
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/29 20:29:23 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/01 17:13:15 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ class Server
 		void	oper_command(Client *client, struct parse_t *command);
 
 
-		void	priv_msg(Client *client, const std::string& command);
+		void	priv_msg_command(Client *client, parse_t *p);
         void    send_message(int fd, const std::string &message);
         void    parse_command(Client *client, struct parse_t *command);
         void    get_message(Client *client);
@@ -117,6 +117,8 @@ class Server
 
 		std::string get_name();
 		std::string get_info();
+
+		Client	*get_client_by_nickname(string &nick_name);
 
 		void	sendToClient(int clientSocket, std::string msg);
 

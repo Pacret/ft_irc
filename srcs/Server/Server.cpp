@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/01 16:56:48 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/02 12:48:54 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "../Utils/defines.h"
 #include "../Utils/parser_utils.hpp"
 #include <string>
+#include <netdb.h>
 
 		Server::Server()
 {
@@ -53,6 +54,10 @@ void    Server::addClient()
     pfd.events = POLLIN;
     pfd.revents = 0;
     pollfds.push_back(pfd);
+
+	//struct hostent *host;
+
+
 
     clients[fd_client] = new Client(fd_client, client_adress);
 
@@ -98,6 +103,7 @@ void    Server::init()
 	commands["NICK"] = &Server::nick_command;
 	commands["USER"] = &Server::user_command;
 	commands["PART"] = &Server::part_command;
+	commands["PRIVMSG"] = &Server::priv_msg_command;
 	commands["OPER"] = &Server::oper_command;
 }
 
@@ -298,14 +304,68 @@ void    Server::send_motd(Client *client)
 	send_message(client->get_fd(), format_msg(RPL_ENDOFMOTD, *client) + ft_irc::RPL_ENDOFMOTD());
 }
 
-void	Server::priv_msg(Client *client, const string &command)
+Client*	Server::get_client_by_nickname(string &nick_name)
+{
+	std::map<clientSocket, Client *>::iterator it = clients.begin();
+	for(; it != clients.end(); it++)
+	{
+		if (it->second->get_nick() == nick_name)
+			return (it->second);
+	}
+	return (NULL);
+}
+
+void	Server::priv_msg_command(Client *client, struct parse_t *p)
 {
 	// NOT FINISHED
 	//vector<string> destinators;
 	//if (parsed->args.size() != 2)
 		//ERROR
-	client->get_fd();
-	string p = command;
+	string start_msg;
+	vector<string> destinators;
+	string buff = p->args[0];
+	size_t i = 0;
+	vector<Client *> client_vector;
+
+	start_msg = ":" + client->get_nick() + " " + "PRIVMSG ";
+	while (!buff.empty() && buff[i] != '\0')
+	{
+		if ((i = buff.find(',')) == string::npos)
+			i = buff.size() + 1;
+		destinators.push_back(buff.substr(0, i - 1));
+		buff.erase(0, i);
+		i = 0;
+	}
+	
+	// cout << "before for" << endl;
+
+	for (vector<string>::iterator it = destinators.begin(); it != destinators.end(); it++)
+	{
+		string final_msg(start_msg);
+		final_msg += *it;
+		final_msg += " " + p->args[1];
+
+		// cout << "before if in for " << *it << endl;
+		// channels.find(*it);
+		// cout << "channel cond" << endl;
+		// get_client_by_nickname(*it);
+		// cout << "by nickname" << endl;
+		if (channels.find(*it) == channels.end() && get_client_by_nickname(*it) == NULL)
+		{
+			// cout << "in if not found" << endl;
+			return;
+		}
+		else if (channels.find(*it) != channels.end())
+		{
+			// cout << "before broadcast" << endl;
+			channels[*it]->broadcastToClients(client, final_msg);
+			// cout << "after broadcast" << endl;
+		}
+		else
+		{
+			send_message(get_client_by_nickname(*it)->fd, final_msg);
+		}
+	}
 }
 
 void    Server::pass_command(Client *client, struct parse_t *command)

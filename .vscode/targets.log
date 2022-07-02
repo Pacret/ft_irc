@@ -1,6 +1,4 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
-make: *** No rule to make target 'srcs/Utils/parser_utils.o', needed by 'ircserv'.  Stop.
-
 # GNU Make 4.2.1
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
@@ -8,7 +6,7 @@ make: *** No rule to make target 'srcs/Utils/parser_utils.o', needed by 'ircserv
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Tue Jun 28 16:54:13 2022
+# Make data base, printed on Sat Jul  2 12:19:13 2022
 
 # Variables
 
@@ -40,7 +38,6 @@ VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
 _ = /mnt/c/Users/Moi/AppData/Local/Programs/Microsoft VS Code/bin/code
 # makefile (from 'Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
- 
 # makefile (from 'Makefile', line 22)
 COMP = c++
 # 'override' directive
@@ -64,7 +61,7 @@ XDG_RUNTIME_DIR = /mnt/wslg/runtime-dir
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-8ee507ab-ee92-442d-9237-fd46e4d3d475.sock
+VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-a7608146-42c5-4dd8-a8e6-7dc888b82806.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -80,7 +77,7 @@ PWD = /home/tmerrien/42/Cercle6/irc/pacret
 # default
 .LOADED := 
 # environment
-WSL_INTEROP = /run/WSL/2476_interop
+WSL_INTEROP = /run/WSL/8_interop
 # environment
 PULSE_SERVER = /mnt/wslg/PulseServer
 # environment
@@ -98,7 +95,6 @@ VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
 # environment
- 
 MAKELEVEL := 0
 # default
 MAKE = $(MAKE_COMMAND)
@@ -108,6 +104,7 @@ MAKECMDGOALS := all
 SRCS = srcs/main.cpp srcs/Server/Server.cpp srcs/Utils/Utils.cpp srcs/Client/Client.cpp srcs/Channel/Channel.cpp srcs/Utils/parser_utils.cpp 
 # environment
 SHLVL = 1
+ 
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -161,7 +158,6 @@ FLAGS = -Wall -Wextra -Werror -std=c++98
 # environment
 LANG = C
 # environment
- 
 TERM = xterm-256color
 # environment
 VSCODE_EXTHOST_WILL_SEND_SOCKET = true
@@ -178,9 +174,9 @@ MOTD_SHOWN = update-motd
 
 # Directories
 
-# . (device 2080, inode 3370): 10 files, no impossibilities.
+# . (device 2080, inode 3370): 11 files, no impossibilities.
 
-# 10 files, no impossibilities in 1 directories.
+# 11 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -191,8 +187,9 @@ MOTD_SHOWN = update-motd
 # Not a target:
 srcs/Utils/parser_utils.o:
 #  Implicit rule search has been done.
-#  File does not exist.
-#  File has not been updated.
+#  Last modified 2022-07-01 17:05:20.150801969
+#  File has been updated.
+#  Successfully updated.
 
 debugflag:
 #  Implicit rule search has not been done.
@@ -206,7 +203,8 @@ all: ircserv
 #  Command line target.
 #  Implicit rule search has not been done.
 #  File does not exist.
-#  File has not been updated.
+#  File has been updated.
+#  Successfully updated.
 
 .PHONY: all clean fclean re
 #  Implicit rule search has not been done.
@@ -216,14 +214,15 @@ all: ircserv
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-28 16:54:08.664219837
+#  Last modified 2022-06-28 21:36:39.474024847
 #  File has been updated.
 #  Successfully updated.
 
 ircserv: srcs/main.o srcs/Server/Server.o srcs/Utils/Utils.o srcs/Client/Client.o srcs/Channel/Channel.o srcs/Utils/parser_utils.o
 #  Implicit rule search has not been done.
-#  File does not exist.
-#  File has not been updated.
+#  Last modified 2022-07-01 17:16:08.340809448
+#  File has been updated.
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 36):
 	 $(COMP) $(FLAGS) $(OBJS) -o $(NAME) 
 
@@ -235,7 +234,7 @@ debug: debugflag run
 # Not a target:
 srcs/Server/Server.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-28 16:52:21.784221066
+#  Last modified 2022-07-01 17:16:08.180809446
 #  File has been updated.
 #  Successfully updated.
 
@@ -250,7 +249,7 @@ fclean: clean
 # Not a target:
 srcs/Utils/Utils.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-28 16:52:21.954221064
+#  Last modified 2022-07-01 17:05:19.250801958
 #  File has been updated.
 #  Successfully updated.
 
@@ -290,21 +289,21 @@ clean:
 # Not a target:
 srcs/Channel/Channel.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-28 16:52:22.614221057
+#  Last modified 2022-07-01 17:05:19.860801965
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 srcs/main.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-28 16:52:21.124221074
+#  Last modified 2022-07-01 17:01:09.230799074
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 srcs/Client/Client.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-28 16:52:22.244221061
+#  Last modified 2022-07-01 17:05:19.500801961
 #  File has been updated.
 #  Successfully updated.
 
@@ -319,9 +318,9 @@ srcs/Client/Client.o:
 # strcache buffers: 1 (0) / strings = 30 / storage = 297 B / avg = 9 B
 # current buf: size = 8162 B / used = 297 B / count = 30 / avg = 9 B
 
-# strcache performance: lookups = 53 / hit rate = 43%
+# strcache performance: lookups = 54 / hit rate = 44%
 # hash-table stats:
-# Load=30/8192=0%, Rehash=0, Collisions=2/53=4%
-# Finished Make data base on Tue Jun 28 16:54:13 2022
+# Load=30/8192=0%, Rehash=0, Collisions=2/54=4%
+# Finished Make data base on Sat Jul  2 12:19:13 2022
 
  
