@@ -98,6 +98,7 @@ void    Server::init()
 	commands["NICK"] = &Server::nick_command;
 	commands["USER"] = &Server::user_command;
 	commands["PART"] = &Server::part_command;
+	commands["OPER"] = &Server::oper_command;
 }
 
 void Server::mode_command_dummy(Client *c, struct parse_t* p)
@@ -229,6 +230,37 @@ void	Server::part_command(Client *client, struct parse_t *command)
 		}
 	}
 }
+
+void	Server::oper_command(Client *client, struct parse_t *command)
+{
+	//Check if there's enough parameters 
+	if (_not_enough_params(client->fd, command, 2))
+		return ;
+
+	//Check if client has aleady op status
+	// if (client->mode.o)
+	//RPL_YOUREOPER
+
+	//Load config file
+	if (_load_server_config() && (_servOpConfig.host == client->get_ip()
+				||  _servOpConfig.host != "" || _servOpConfig.host != "*" ))
+	{
+		if (_servOpConfig.password != command->args[1]
+			|| _servOpConfig.username != command->args[0])
+		{
+			// ERR_PASSWDMISMATCH
+			return ;
+		}
+		//client->mode.o = 1
+		//Send user mode change to irc client
+	}
+	else
+	{
+		//ERR_NOOPERHOST
+		return ;
+	}
+}
+
 
 bool	Server::_not_enough_params(int	clientFd, struct parse_t * command, unsigned int minSize)
 {
@@ -436,4 +468,45 @@ void	Server::_removeOperator(Client * client)
 void	Server::_addOperator(Client * client)
 {
 	_operatorList.insert(client);
+}
+
+bool	Server::_load_server_config()
+{
+	std::ifstream				ifs("config");
+	std::stringstream			buffer;
+	std::vector<std::string>	tmp;
+
+	//Get config file's content into a string and split into lines 
+  	if (!ifs.good())
+	{
+		std::cout << "Error: open config file failed" << std::endl;
+		return (false);
+	}
+	buffer << ifs.rdbuf();
+	tmp = string_split(buffer.str(), "\n");
+
+	//Get lines that are not comments
+	for (unsigned long int i = 0; i < tmp.size(); i++)
+	{
+		if (tmp[i][0] != '#')
+			_config.push_back(tmp[i]);
+	}
+
+	//Parse O-lines for server operator, only the last line is accepted
+	std::vector<std::string>	op_config;
+	for (unsigned long int i = 0; i < _config.size(); i++)
+	{
+		if (_config[i][0] == 'O')
+		{
+			op_config = string_split(_config[i], ":");
+			if (op_config.size() > 3)
+			{
+				_servOpConfig.host = op_config[1];
+				_servOpConfig.password = op_config[2];
+				_servOpConfig.username = op_config[3];
+			}
+		}
+	}
+
+	return (true);
 }

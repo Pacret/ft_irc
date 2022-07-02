@@ -54,7 +54,7 @@ class Client
 		void	set_user(std::string user);
 		void	set_rn(std::string rn);
 		void	set_statut(Statut statut);
-		void check_passwd(const std::string &command);
+		void	check_passwd(const std::string &command);
 };
 
 #endif

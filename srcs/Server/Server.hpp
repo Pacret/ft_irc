@@ -37,7 +37,12 @@
 # include "../Channel/Channel.hpp"
 # include "../Utils/parser_utils.hpp"
 
-
+typedef struct servop_s
+{
+	std::string	host;
+	std::string	password;
+	std::string	username;
+}	servop_t;
 
 class Server
 {
@@ -53,13 +58,15 @@ class Server
         std::map<channelName, Channel *>	channels;
 		std::map<commandType, void(Server::*)(Client *, struct parse_t *)> commands;
 
-        std::string	port;
-        std::string	password;
+        std::string				port;
+        std::string				password;
+		servop_t				_servOpConfig;
 
 		std::string					server_name;
 		std::string					_prefixServer;
 		std::ofstream				log_file;
 		std::vector<std::string>	motd;
+		std::vector<std::string>	_config;
 
 		void    send_motd(Client *client);
 
@@ -72,6 +79,7 @@ class Server
 		bool	_not_enough_params(int clientFd, struct parse_t * command, unsigned int minSize);
 		bool	_no_such_channel(int clientFd, std::string & chanName);
 
+		bool	_load_server_config();
 
     public:
         Server();
@@ -88,6 +96,8 @@ class Server
 		void	join_command(Client *client, struct parse_t *command);
 		void	kick_command(Client *client, struct parse_t *command);
 		void	part_command(Client *client, struct parse_t *command);
+		void	oper_command(Client *client, struct parse_t *command);
+
 
 		void	priv_msg(Client *client, const std::string& command);
         void    send_message(int fd, const std::string &message);
