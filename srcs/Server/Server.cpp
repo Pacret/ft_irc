@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/01 16:16:10 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/02 12:47:35 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void    Server::addClient()
     pfd.revents = 0;
     pollfds.push_back(pfd);
 
-	struct hostent *host;
+	//struct hostent *host;
 
 
 
@@ -103,6 +103,7 @@ void    Server::init()
 	commands["NICK"] = &Server::nick_command;
 	commands["USER"] = &Server::user_command;
 	commands["PART"] = &Server::part_command;
+	commands["PRIVMSG"] = &Server::priv_msg_command;
 }
 
 void Server::mode_command_dummy(Client *c, struct parse_t* p)
@@ -269,7 +270,18 @@ void    Server::send_motd(Client *client)
 	send_message(client->get_fd(), format_msg(RPL_ENDOFMOTD, *client) + ft_irc::RPL_ENDOFMOTD());
 }
 
-void	Server::priv_msg(Client *client, parse_t *p)
+Client*	Server::get_client_by_nickname(string &nick_name)
+{
+	std::map<clientSocket, Client *>::iterator it = clients.begin();
+	for(; it != clients.end(); it++)
+	{
+		if (it->second->get_nick() == nick_name)
+			return (it->second);
+	}
+	return (NULL);
+}
+
+void	Server::priv_msg_command(Client *client, struct parse_t *p)
 {
 	// NOT FINISHED
 	//vector<string> destinators;
@@ -279,8 +291,7 @@ void	Server::priv_msg(Client *client, parse_t *p)
 	vector<string> destinators;
 	string buff = p->args[0];
 	size_t i = 0;
-	Channel *chan;
-	vector<Client *> clients;
+	vector<Client *> client_vector;
 
 	start_msg = ":" + client->get_nick() + " " + "PRIVMSG ";
 	while (!buff.empty() && buff[i] != '\0')
@@ -291,34 +302,40 @@ void	Server::priv_msg(Client *client, parse_t *p)
 		buff.erase(0, i);
 		i = 0;
 	}
+	
+	// cout << "before for" << endl;
+
 	for (vector<string>::iterator it = destinators.begin(); it != destinators.end(); it++)
 	{
 		string final_msg(start_msg);
 		final_msg += *it;
 		final_msg += " " + p->args[1];
-		if ((*it)[0] == '#')
+
+		// cout << "before if in for " << *it << endl;
+		// channels.find(*it);
+		// cout << "channel cond" << endl;
+		// get_client_by_nickname(*it);
+		// cout << "by nickname" << endl;
+		if (channels.find(*it) == channels.end() && get_client_by_nickname(*it) == NULL)
 		{
-			chan = channels[*it];
-			clients = chan->get_users();
-			for(vector<Client *>::iterator it = clients.begin(); it != clients.end(); it++)
-				send_message((*it)->fd, final_msg);
+			// cout << "in if not found" << endl;
+			return;
+		}
+		else if (channels.find(*it) != channels.end())
+		{
+			// cout << "before broadcast" << endl;
+			channels[*it]->broadcastToClients(client, final_msg);
+			// cout << "after broadcast" << endl;
 		}
 		else
 		{
-			send_message();
+			send_message(get_client_by_nickname(*it)->fd, final_msg);
 		}
 	}
 }
 
 void    Server::pass_command(Client *client, struct parse_t *command)
 {
-<<<<<<< HEAD
-	if (client->get_statut() == NONE && command->cmd == "PASS")
-		check_passwd(client, command->original_msg);
-    else if (client->get_statut() == REGISTERED)
-    {
-        size_t  pos = command->original_msg.find(" ");
-=======
 	if (command->args[0] != get_pwd())
 	{
 		kill_connection(client);
@@ -326,7 +343,6 @@ void    Server::pass_command(Client *client, struct parse_t *command)
 	}
 	client->set_statut(REGISTERED);
 }
->>>>>>> 56e357f7c0984424a6544e26accf92fbac798905
 
 void    Server::nick_command(Client *client, struct parse_t *command)
 {

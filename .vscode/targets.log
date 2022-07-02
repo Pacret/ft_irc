@@ -1,6 +1,4 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
-make: *** No rule to make target 'srcs/main.o', needed by 'ircserv'.  Stop.
-
 # GNU Make 4.2.1
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
@@ -8,7 +6,7 @@ make: *** No rule to make target 'srcs/main.o', needed by 'ircserv'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Jul  1 12:09:04 2022
+# Make data base, printed on Sat Jul  2 12:19:13 2022
 
 # Variables
 
@@ -63,7 +61,7 @@ XDG_RUNTIME_DIR = /mnt/wslg/runtime-dir
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-3a00b68d-fe0e-4f44-8411-6a79222b78c6.sock
+VSCODE_IPC_HOOK_CLI = /mnt/wslg/runtime-dir/vscode-ipc-a7608146-42c5-4dd8-a8e6-7dc888b82806.sock
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -79,7 +77,7 @@ PWD = /home/tmerrien/42/Cercle6/irc/pacret
 # default
 .LOADED := 
 # environment
-WSL_INTEROP = /run/WSL/137_interop
+WSL_INTEROP = /run/WSL/8_interop
 # environment
 PULSE_SERVER = /mnt/wslg/PulseServer
 # environment
@@ -106,6 +104,7 @@ MAKECMDGOALS := all
 SRCS = srcs/main.cpp srcs/Server/Server.cpp srcs/Utils/Utils.cpp srcs/Client/Client.cpp srcs/Channel/Channel.cpp srcs/Utils/parser_utils.cpp 
 # environment
 SHLVL = 1
+ 
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -175,9 +174,9 @@ MOTD_SHOWN = update-motd
 
 # Directories
 
-# . (device 2080, inode 3370): 10 files, no impossibilities.
+# . (device 2080, inode 3370): 11 files, no impossibilities.
 
-# 10 files, no impossibilities in 1 directories.
+# 11 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -187,9 +186,10 @@ MOTD_SHOWN = update-motd
 
 # Not a target:
 srcs/Utils/parser_utils.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Last modified 2022-07-01 17:05:20.150801969
+#  File has been updated.
+#  Successfully updated.
 
 debugflag:
 #  Implicit rule search has not been done.
@@ -203,7 +203,8 @@ all: ircserv
 #  Command line target.
 #  Implicit rule search has not been done.
 #  File does not exist.
-#  File has not been updated.
+#  File has been updated.
+#  Successfully updated.
 
 .PHONY: all clean fclean re
 #  Implicit rule search has not been done.
@@ -219,8 +220,9 @@ Makefile:
 
 ircserv: srcs/main.o srcs/Server/Server.o srcs/Utils/Utils.o srcs/Client/Client.o srcs/Channel/Channel.o srcs/Utils/parser_utils.o
 #  Implicit rule search has not been done.
-#  File does not exist.
-#  File has not been updated.
+#  Last modified 2022-07-01 17:16:08.340809448
+#  File has been updated.
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 36):
 	 $(COMP) $(FLAGS) $(OBJS) -o $(NAME) 
 
@@ -231,9 +233,10 @@ debug: debugflag run
 
 # Not a target:
 srcs/Server/Server.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Last modified 2022-07-01 17:16:08.180809446
+#  File has been updated.
+#  Successfully updated.
 
 fclean: clean
 #  Phony target (prerequisite of .PHONY).
@@ -245,9 +248,10 @@ fclean: clean
 
 # Not a target:
 srcs/Utils/Utils.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Last modified 2022-07-01 17:05:19.250801958
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
 .DEFAULT:
@@ -279,27 +283,29 @@ clean:
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
- 
 #  recipe to execute (from 'Makefile', line 44):
 	$(RM) $(OBJS)
 
 # Not a target:
 srcs/Channel/Channel.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Last modified 2022-07-01 17:05:19.860801965
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
 srcs/main.o:
 #  Implicit rule search has been done.
-#  File does not exist.
-#  File has not been updated.
+#  Last modified 2022-07-01 17:01:09.230799074
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
 srcs/Client/Client.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Last modified 2022-07-01 17:05:19.500801961
+#  File has been updated.
+#  Successfully updated.
 
 # files hash-table stats:
 # Load=19/1024=2%, Rehash=0, Collisions=0/47=0%
@@ -312,9 +318,9 @@ srcs/Client/Client.o:
 # strcache buffers: 1 (0) / strings = 30 / storage = 297 B / avg = 9 B
 # current buf: size = 8162 B / used = 297 B / count = 30 / avg = 9 B
 
-# strcache performance: lookups = 53 / hit rate = 43%
+# strcache performance: lookups = 54 / hit rate = 44%
 # hash-table stats:
-# Load=30/8192=0%, Rehash=0, Collisions=2/53=4%
-# Finished Make data base on Fri Jul  1 12:09:05 2022
+# Load=30/8192=0%, Rehash=0, Collisions=2/54=4%
+# Finished Make data base on Sat Jul  2 12:19:13 2022
 
  
