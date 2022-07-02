@@ -101,7 +101,7 @@ bool	Channel::isChannelMember(std::string nickname) const
 	
 	for (; it != ite; it++)
 	{
-		if ((*it)->nick != nickname)
+		if ((*it)->nick == nickname)
 			return (true);
 	}
 	return (false);
@@ -114,7 +114,7 @@ Client *	Channel::getClientByNick(std::string nickname)
 	
 	for (; it != ite; it++)
 	{
-		if ((*it)->nick != nickname)
+		if ((*it)->nick == nickname)
 			return (*it);
 	}
 	return 0;

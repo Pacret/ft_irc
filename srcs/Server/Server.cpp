@@ -141,6 +141,7 @@ void    Server::join_command(Client *client, struct parse_t *command)
 	send_message(client->get_fd(), std::string(format_msg(RPL_ENDOFNAMES, *client) + " " + ft_irc::RPL_ENDOFNAMES(channels[channel_name]->get_name())));
 }
 
+//KICK <channel> <user> [<comment>] 
 void	Server::kick_command(Client *client, struct parse_t *command)
 {
 	//Check if there's enough parameters 
@@ -157,7 +158,7 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 	Client *	victim = channel->getClientByNick(command->args[1]);
 	if (!victim)
 	{
-		sendToClient(client->fd, _prefixServer + ft_irc::ERR_USERNOTINCHANNEL(victim->nick, channel_name) + "\r\n");
+		sendToClient(client->fd, _prefixServer + ft_irc::ERR_USERNOTINCHANNEL(command->args[1], channel_name) + "\r\n");
 		return ;
 	}
 
@@ -182,6 +183,7 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 	if (command->args.size() > 2)
 		os << "\nComment: " + command->args[2];
 	os << "\r\n";
+	std::cout << os.str() << std::endl;
 	channel->broadcastToClients(victim, os.str());
 	channel->sendToClient(victim, os.str().replace(
 		os.str().find(victim->nick + " is"), victim->nick.size() + 3, "You are"));
