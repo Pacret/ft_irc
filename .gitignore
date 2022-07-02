@@ -2,3 +2,5 @@ log
 test.cpp
 a.out
 .vscode
+*.o
+ircserv

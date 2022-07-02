@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/02 12:47:35 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/02 12:48:54 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ void    Server::init()
 	commands["USER"] = &Server::user_command;
 	commands["PART"] = &Server::part_command;
 	commands["PRIVMSG"] = &Server::priv_msg_command;
+	commands["OPER"] = &Server::oper_command;
 }
 
 void Server::mode_command_dummy(Client *c, struct parse_t* p)
@@ -236,6 +237,37 @@ void	Server::part_command(Client *client, struct parse_t *command)
 	}
 }
 
+void	Server::oper_command(Client *client, struct parse_t *command)
+{
+	//Check if there's enough parameters 
+	if (_not_enough_params(client->fd, command, 2))
+		return ;
+
+	//Check if client has aleady op status
+	// if (client->mode.o)
+	//RPL_YOUREOPER
+
+	//Load config file
+	if (_load_server_config() && (_servOpConfig.host == client->get_ip()
+				||  _servOpConfig.host != "" || _servOpConfig.host != "*" ))
+	{
+		if (_servOpConfig.password != command->args[1]
+			|| _servOpConfig.username != command->args[0])
+		{
+			// ERR_PASSWDMISMATCH
+			return ;
+		}
+		//client->mode.o = 1
+		//Send user mode change to irc client
+	}
+	else
+	{
+		//ERR_NOOPERHOST
+		return ;
+	}
+}
+
+
 bool	Server::_not_enough_params(int	clientFd, struct parse_t * command, unsigned int minSize)
 {
 	if (command->args.size() < minSize)
@@ -366,7 +398,7 @@ void    Server::user_command(Client *client, struct parse_t *command)
 		client->set_statut(CONNECTED);
 		send_message(client->get_fd(), format_msg(RPL_WELCOME, *client) + ft_irc::RPL_WELCOME(client->get_nick(), "127.0.0.1"));
 		send_message(client->get_fd(), format_msg(RPL_LUSERCLIENT, *client) + ft_irc::RPL_LUSERCLIENT("0", "0"));
-		send_message(client->get_fd(), format_msg(RPL_LUSERUNKNOWN, *client) + ft_irc::RPL_LUSERUNKNOWN(" 0 "));
+		send_message(client->get_fd(), format_msg(RPL_LUSERUNKNOWN, *client) + ft_irc::RPL_LUSERUNKNOWN(" 0"));
 		send_message(client->get_fd(), format_msg(RPL_LUSERCHANNELS, *client) + ft_irc::RPL_LUSERCHANNELS(ft_irc::to_string(channels.size())));
 		send_message(client->get_fd(), format_msg(RPL_LUSERME, *client) + ft_irc::RPL_LUSERME(ft_irc::to_string(clients.size())));
 		send_motd(client);
@@ -496,4 +528,45 @@ void	Server::_removeOperator(Client * client)
 void	Server::_addOperator(Client * client)
 {
 	_operatorList.insert(client);
+}
+
+bool	Server::_load_server_config()
+{
+	std::ifstream				ifs("config");
+	std::stringstream			buffer;
+	std::vector<std::string>	tmp;
+
+	//Get config file's content into a string and split into lines 
+  	if (!ifs.good())
+	{
+		std::cout << "Error: open config file failed" << std::endl;
+		return (false);
+	}
+	buffer << ifs.rdbuf();
+	tmp = string_split(buffer.str(), "\n");
+
+	//Get lines that are not comments
+	for (unsigned long int i = 0; i < tmp.size(); i++)
+	{
+		if (tmp[i][0] != '#')
+			_config.push_back(tmp[i]);
+	}
+
+	//Parse O-lines for server operator, only the last line is accepted
+	std::vector<std::string>	op_config;
+	for (unsigned long int i = 0; i < _config.size(); i++)
+	{
+		if (_config[i][0] == 'O')
+		{
+			op_config = string_split(_config[i], ":");
+			if (op_config.size() > 3)
+			{
+				_servOpConfig.host = op_config[1];
+				_servOpConfig.password = op_config[2];
+				_servOpConfig.username = op_config[3];
+			}
+		}
+	}
+
+	return (true);
 }

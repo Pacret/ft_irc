@@ -1,0 +1,7 @@
+# Use O-line to define operator access. 
+# Only the last O-line is gonna be accepted
+# Example:
+# O:<HostName>:<Password>:<User>:
+#
+
+O:127.0.0.1:opPw:opName:
