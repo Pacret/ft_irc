@@ -18,7 +18,8 @@ SRCS		=	srcs/main.cpp 				\
 				srcs/Client/Client.cpp		\
 				srcs/Channel/Channel.cpp	\
 				srcs/Utils/parser_utils.cpp \
-
+				srcs/Utils/defines.cpp
+	
 COMP		= c++
 
 FLAGS		= -Wall -Wextra -Werror -std=c++98

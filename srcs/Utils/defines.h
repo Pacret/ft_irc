@@ -13,12 +13,28 @@
 #ifndef FT_IRC_PROTOCOL_DEFINES_H
 # define FT_IRC_PROTOCOL_DEFINES_H
 
-using namespace std;
+# include <map>
+# include <string>
 
 # include "../Server/Server.hpp"
 # include "../Channel/Channel.hpp"
 # include "../Client/Client.hpp"
 
+template <typename T>
+class EnumParser
+{
+	map <string, T> strEnumMap;
+public:
+	EnumParser(){};
+
+	T getEnum(const string &value)
+	{
+		typename std::map<string, T>::const_iterator it = strEnumMap.find(value);
+		if (it  == strEnumMap.end())
+			throw runtime_error("Enum name does not exist in strEnumMap");
+		return it->second;
+	}
+};
 
 /*
 ** Error numeric codes
@@ -38,7 +54,7 @@ enum numeric_replies_e
 	ERR_NOTEXTTOSEND = 412,
 	ERR_NOTOPLEVEL = 413,
 	ERR_WILDTOPLEVEL = 414,
-	RR_UNKNOWNCOMMAND = 421,
+	ERR_UNKNOWNCOMMAND = 421,
 	ERR_NOMOTD = 422,
 	ERR_NOADMININFO = 423,
 	ERR_FILEERROR = 424,
@@ -175,7 +191,7 @@ enum numeric_replies_e
 
 namespace ft_irc
 {
-	inline string to_string(int code)
+	inline std::string to_string(int code)
 	{
 		stringstream sstream;
 
@@ -183,111 +199,113 @@ namespace ft_irc
 		return (sstream.str());
 	};
 	
-	inline string ERR_NOSUCHNICK(string nick) {return (nick + " :No such nick/channel");}
-	inline string ERR_NOSUCHSERVER(string serv) {return (serv + " :No such server");}
-	inline string ERR_NOSUCHCHANNEL(string chan) {return (chan + " :No such channel");}
-	inline string ERR_CANNOTSENDTOCHAN(string chan) {return (chan + " :Cannot send to channel");}
-
-	inline string ERR_TOOMANYCHANNELS(string chan) {return (chan + " :You have joined too many channels");}
-	inline string ERR_WASNOSUCHNICK(string nick) {return (nick + " :There was no such nickname");}
-	inline string ERR_TOOMANYTARGETS(string target) {return (target + " :Duplicate recipients. No message delivered");} 
-	inline string ERR_NOORIGIN() {return (":No origin specified");}
-	inline string ERR_NORECIPIENT(string cmd) {return (":No recipient given (" + cmd + ")");}
-	inline string ERR_NOTEXTTOSEND() {return (":No text to send");}
-	inline string ERR_NOTOPLEVEL(string mask) {return (mask + " :No toplevel domain specified");}
-	inline string ERR_WILDTOPLEVEL(string mask) {return (mask + " :Wildcard in toplevel domain");}
-
-	inline string ERR_UNKNOWNCOMMAND(string cmd) {return (cmd + " :Unknown command");}
-	inline string ERR_NOMOTD() {return (":MOTD File is missing");}
-	inline string ERR_NOADMININFO(string serv) {return (serv + " :No administrative info available");}
-	inline string ERR_FILEERROR(string& file_op, string& file) {return (":File error doing "+ file_op + " on " + file);}
-	inline string ERR_NONICKNAMEGIVEN() {return (":No nickname given");}
-	inline string ERR_NICKNAMEINUSE(string nick) {return (nick + " :Nickname is already in use");}
-	inline string ERR_NICKCOLLISION(string nick) {return (nick + " :Nickname collision KILL");}
-	inline string ERR_USERNOTINCHANNEL(string nick, string chan) {return (nick + " " + chan + " :They aren't on that channel");}
-	inline string ERR_NOTONCHANNEL(string chan) {return (chan + " :You're not on that channel");}
-
-	inline string ERR_USERONCHANNEL(string nick, string chan) {return (nick + " " + chan + " :is already on channel");}
-	inline string ERR_NOLOGIN(string user) {return (user + " :User not logged in");}
-	inline string ERR_SUMMONDISABLED() {return (":SUMMON has been disabled");}
-	inline string ERR_USERSDISABLED() {return (":USERS has been disabled");}
-	inline string ERR_NOTREGISTERED() {return (":You have not registered");}
-	inline string ERR_NEEDMOREPARAMS(string cmd) {return (cmd + " :Not enough parameters");}
-	inline string ERR_ALREADYREGISTRED() {return (":You may not reregister");}
-	inline string ERR_NOPERMFORHOST() {return (":Your host isn't among the privileged");}
-	inline string ERR_PASSWDMISMATCH() {return (":Password incorrect");}
-	inline string ERR_YOUREBANNEDCREEP() {return (":You are banned from this server");}
-	inline string ERR_KEYSET(string chan) {return (chan + " :Channel key already set");}
-
-	inline string ERR_CHANNELISFULL(string chan) {return (chan + " :Cannot join channel (+l)");}
-	inline string ERR_UNKNOWNMODE(string charac) {return (charac + " :is unknown mode char to me");}
-	inline string ERR_INVITEONLYCHAN(string chan) {return (chan + " :Cannot join channel (+i)");}
-	inline string ERR_BANNEDFROMCHAN(string chan) {return (chan + " :Cannot join channel (+b)");}
-	inline string ERR_BADCHANNELKEY(string chan) {return (chan + " :Cannot join channel (+k)");}
-	inline string ERR_NOPRIVILEGES() {return (":Permission Denied- You're not an IRC operator");}
-	inline string ERR_CHANOPRIVSNEEDED(string chan) {return (chan + " :You're not channel operator");}
-	inline string ERR_CANTKILLSERVER() {return (":You cant kill a server!");}
-	inline string ERR_NOOPERHOST() {return (":No O-lines for your host");}
-	inline string ERR_UMODEUNKNOWNFLAG() {return (":Unknown MODE flag");}
-	inline string ERR_USERSDONTMATCH() {return (":Cant change mode for other users");}
-
-	//
-	//
-	//
-
-	inline string RPL_WELCOME(std::string nick, std::string host) {return (" :Welcome to the Internet Relay Network " + nick + "! " + nick + "@" + host);}
-	inline string RPL_NONE() {return ("");}
-	inline string RPL_USERHOST(string reply) {return (":" + reply);}
-	inline string RPL_ISON(string reply) {return (":" + reply);}
-	inline string RPL_AWAY(string nick, string msg) {return (nick + " :" + msg);}
+	std::string format_prefix(std::string sender, std::string const & code, std::string receiver);
 	
-	inline string RPL_UNAWAY() {return (":You are no longer marked as being away");}
-	inline string RPL_NOWAWAY() {return (":You have been marked as being away");}
-	inline string RPL_WHOISUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_username() + " " + host + " * :" + cli.get_rn());}
-	inline string RPL_WHOISSERVER(string nick, Server& serv) {return (nick + " " + serv.get_name() + " :" + serv.get_info());}
-	inline string RPL_WHOISOPERATOR(string nick) {return (nick + " :is an IRC operator");}
-	inline string RPL_WHOISIDLE(string nick, string sec) {return (nick + " " + sec + " :seconds idle");}
-	inline string RPL_ENDOFWHOIS(string nick) {return (nick + " :End of /WHOIS list");}
-	inline string RPL_WHOISCHANNELS(string nick, string chan_info) {return (nick + " :" + chan_info);}
-	inline string RPL_WHOWASUSER(Client& cli, string host) {return (cli.get_nick() + " " + cli.get_username() + " " + host + " * " + " :" + cli.get_rn());}
-	inline string RPL_ENDOFWHOWAS(string nick) {return (nick + " :End of WHOWAS");}
-	inline string RPL_LISTSTART() {return ("Channel :Users  Name");}
-	inline string RPL_LIST(Channel& chan) {return (chan.get_name() + " " + ft_irc::to_string(chan.get_nbrUsers()) + " :" + chan.get_topic());}
-	inline string RPL_LISTEND() {return (":End of /LIST");}
-	inline string RPL_CHANNELMODEIS(Channel& chan) {return (chan.get_name() + " " + chan.get_mode() + " " + chan.get_mode_params() + " :Cannot send to channel");}
-	inline string RPL_NOTOPIC(string chan) {return (chan + " :No topic is set");}
-	inline string RPL_TOPIC(Channel& chan) {return (chan.get_name() + " :" + chan.get_topic());}
-	inline string RPL_INVITING(string chan, string nick) {return (chan + " " + nick);}
-	inline string RPL_SUMMONING(string user) {return (user + " :Summoning user to IRC");}
-	inline string RPL_VERSION(string version, string debug_lvl, string server, string comment) {return (version + "." + debug_lvl + " " + server + " :" + comment);}
-	inline string RPL_WHOREPLY(string chan, string user, string host, string server, string nick, string status, string hopCount, string rn) {return (chan + " " + user + " " + host + " " + server + " " + nick + " " + status + " :" + hopCount + " " + rn);}
-	inline string RPL_ENDOFWHO(string name) {return (name + " :End of /WHO list");}
-	inline string RPL_NAMREPLY(string chan, string nicknames) {return (chan + " " + nicknames);}
-	inline string RPL_ENDOFNAMES(string chan) {return (chan + " :End of /NAMES list");}
-	inline string RPL_LINKS(string mask, string server, string hopCount, string serverInfo) {return (mask + " " + server + " " + " :" + hopCount + " " + serverInfo);}
-	inline string RPL_ENDOFLINKS(string mask) {return (mask + " :End of /LINKS list");}
+	inline std::string ERR_NOSUCHNICK(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :No such nick/channel");}
+	inline std::string ERR_NOSUCHSERVER(std::string sender, std::string receiver, std::string serv) {return (format_prefix(sender, __func__, receiver) + serv + " :No such server");}
+	inline std::string ERR_NOSUCHCHANNEL(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :No such channel");}
+	inline std::string ERR_CANNOTSENDTOCHAN(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :Cannot send to channel");}
 
-	inline string RPL_BANLIST(string chan, string banid) {return (chan + " " + banid);}
-	inline string RPL_ENDOFBANLIST(string chan) {return (chan + " :End of channel ban list");}
-	inline string RPL_INFO(string info) {return (":" + info);}
-	inline string RPL_ENDOFINFO() {return (" :End of /INFO list");}
-	inline string RPL_MOTDSTART(string server) {return (" :" + server + " Message of the day");}
-	inline string RPL_MOTD(string text) {return (" :" + text);}
-	inline string RPL_ENDOFMOTD() {return (" :End of /MOTD command");}
-	inline string RPL_YOUREOPER() {return (" :You are now an IRC operator");}
-	inline string RPL_REHASHING(string configFile) {return (configFile + " :Rehashing");}
-	inline string RPL_TIME(string server, string time) {return (server + " :" + time);}
-	inline string RPL_USERSSTART() {return (" :UserID   Terminal  Host");}
-	inline string RPL_USERS(string username, string ttyline, string hostname) {return (":" + username + " " + ttyline + " " + hostname);}
-	inline string RPL_ENDOFUSERS() {return (" :End of users");}
-	inline string RPL_NOUSERS() {return (" :Nobody logged in");}
-	inline string RPL_TRACELINK(string versionDebugLvl, string destination, string nextServ) {return ("Link " + versionDebugLvl + " " + destination + " " + nextServ);}
-	inline string RPL_TRACECONNECTING(string class_, string server) {return ("Try. " + class_ + " " + server);};
+	inline std::string ERR_TOOMANYCHANNELS(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :You have joined too many channels");}
+	inline std::string ERR_WASNOSUCHNICK(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :There was no such nickname");}
+	inline std::string ERR_TOOMANYTARGETS(std::string sender, std::string receiver, std::string target) {return (format_prefix(sender, __func__, receiver) + target + " :Duplicate recipients. No message delivered");} 
+	inline std::string ERR_NOORIGIN(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":No origin specified");}
+	inline std::string ERR_NORECIPIENT(std::string sender, std::string receiver, std::string cmd) {return (format_prefix(sender, __func__, receiver) + ":No recipient given (" + cmd + ")");}
+	inline std::string ERR_NOTEXTTOSEND(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":No text to send");}
+	inline std::string ERR_NOTOPLEVEL(std::string sender, std::string receiver, std::string mask) {return (format_prefix(sender, __func__, receiver) + mask + " :No toplevel domain specified");}
+	inline std::string ERR_WILDTOPLEVEL(std::string sender, std::string receiver, std::string mask) {return (format_prefix(sender, __func__, receiver) + mask + " :Wildcard in toplevel domain");}
+
+	inline std::string ERR_UNKNOWNCOMMAND(std::string sender, std::string receiver, std::string cmd) {return (format_prefix(sender, __func__, receiver) + cmd + " :Unknown command");}
+	inline std::string ERR_NOMOTD(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":MOTD File is missing");}
+	inline std::string ERR_NOADMININFO(std::string sender, std::string receiver, std::string serv) {return (format_prefix(sender, __func__, receiver) + serv + " :No administrative info available");}
+	inline std::string ERR_FILEERROR(std::string sender, std::string receiver, std::string& file_op, std::string& file) {return (format_prefix(sender, __func__, receiver) + ":File error doing "+ file_op + " on " + file);}
+	inline std::string ERR_NONICKNAMEGIVEN(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":No nickname given");}
+	inline std::string ERR_NICKNAMEINUSE(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :Nickname is already in use");}
+	inline std::string ERR_NICKCOLLISION(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :Nickname collision KILL");}
+	inline std::string ERR_USERNOTINCHANNEL(std::string sender, std::string receiver, std::string nick, std::string chan) {return (format_prefix(sender, __func__, receiver) + nick + " " + chan + " :They aren't on that channel");}
+	inline std::string ERR_NOTONCHANNEL(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :You're not on that channel");}
+
+	inline std::string ERR_USERONCHANNEL(std::string sender, std::string receiver, std::string nick, std::string chan) {return (format_prefix(sender, __func__, receiver) + nick + " " + chan + " :is already on channel");}
+	inline std::string ERR_NOLOGIN(std::string sender, std::string receiver, std::string user) {return (format_prefix(sender, __func__, receiver) + user + " :User not logged in");}
+	inline std::string ERR_SUMMONDISABLED(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":SUMMON has been disabled");}
+	inline std::string ERR_USERSDISABLED(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":USERS has been disabled");}
+	inline std::string ERR_NOTREGISTERED(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":You have not registered");}
+	inline std::string ERR_NEEDMOREPARAMS(std::string sender, std::string receiver, std::string cmd) {return (format_prefix(sender, __func__, receiver) + cmd + " :Not enough parameters");}
+	inline std::string ERR_ALREADYREGISTRED(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":You may not reregister");}
+	inline std::string ERR_NOPERMFORHOST(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":Your host isn't among the privileged");}
+	inline std::string ERR_PASSWDMISMATCH(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":Password incorrect");}
+	inline std::string ERR_YOUREBANNEDCREEP(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":You are banned from this server");}
+	inline std::string ERR_KEYSET(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :Channel key already set");}
+
+	inline std::string ERR_CHANNELISFULL(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :Cannot join channel (+l)");}
+	inline std::string ERR_UNKNOWNMODE(std::string sender, std::string receiver, std::string charac) {return (format_prefix(sender, __func__, receiver) + charac + " :is unknown mode char to me");}
+	inline std::string ERR_INVITEONLYCHAN(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :Cannot join channel (+i)");}
+	inline std::string ERR_BANNEDFROMCHAN(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :Cannot join channel (+b)");}
+	inline std::string ERR_BADCHANNELKEY(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :Cannot join channel (+k)");}
+	inline std::string ERR_NOPRIVILEGES(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":Permission Denied- You're not an IRC operator");}
+	inline std::string ERR_CHANOPRIVSNEEDED(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :You're not channel operator");}
+	inline std::string ERR_CANTKILLSERVER(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":You cant kill a server!");}
+	inline std::string ERR_NOOPERHOST(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":No O-lines for your host");}
+	inline std::string ERR_UMODEUNKNOWNFLAG(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":Unknown MODE flag");}
+	inline std::string ERR_USERSDONTMATCH(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":Cant change mode for other users");}
+
+	//
+	//
+	//
+
+	inline std::string RPL_WELCOME(std::string sender, std::string receiver, std::string nick, std::string host) {return (format_prefix(sender, __func__, receiver) + " :Welcome to the Internet Relay Network " + nick + "! " + nick + "@" + host);}
+	inline std::string RPL_NONE(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + "");}
+	inline std::string RPL_USERHOST(std::string sender, std::string receiver, std::string reply) {return (format_prefix(sender, __func__, receiver) + ":" + reply);}
+	inline std::string RPL_ISON(std::string sender, std::string receiver, std::string reply) {return (format_prefix(sender, __func__, receiver) + ":" + reply);}
+	inline std::string RPL_AWAY(std::string sender, std::string receiver, std::string nick, std::string msg) {return (format_prefix(sender, __func__, receiver) + nick + " :" + msg);}
 	
-	inline string RPL_LUSERCLIENT(string nbr_users, string nbr_invs) {return (" :There are " + nbr_users + " users and " + nbr_invs + " invisible on 1 servers");}
-	inline string RPL_LUSERUNKNOWN(string nbr_unk) {return (nbr_unk + " :unknow connection(s)");}
-	inline string RPL_LUSERCHANNELS(string nbr_channel) {return (" " + nbr_channel + " :channels formed");}
-	inline string RPL_LUSERME(string nbr_clients) {return (" :I have " + nbr_clients + " clients and 1 servers");}
+	inline std::string RPL_UNAWAY(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":You are no longer marked as being away");}
+	inline std::string RPL_NOWAWAY(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":You have been marked as being away");}
+	inline std::string RPL_WHOISUSER(std::string sender, std::string receiver, Client& cli, std::string host) {return (format_prefix(sender, __func__, receiver) + cli.get_nick() + " " + cli.get_username() + " " + host + " * :" + cli.get_rn());}
+	inline std::string RPL_WHOISSERVER(std::string sender, std::string receiver, std::string nick, Server& serv) {return (format_prefix(sender, __func__, receiver) + nick + " " + serv.get_name() + " :" + serv.get_info());}
+	inline std::string RPL_WHOISOPERATOR(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :is an IRC operator");}
+	inline std::string RPL_WHOISIDLE(std::string sender, std::string receiver, std::string nick, std::string sec) {return (format_prefix(sender, __func__, receiver) + nick + " " + sec + " :seconds idle");}
+	inline std::string RPL_ENDOFWHOIS(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :End of /WHOIS list");}
+	inline std::string RPL_WHOISCHANNELS(std::string sender, std::string receiver, std::string nick, std::string chan_info) {return (format_prefix(sender, __func__, receiver) + nick + " :" + chan_info);}
+	inline std::string RPL_WHOWASUSER(std::string sender, std::string receiver, Client& cli, std::string host) {return (format_prefix(sender, __func__, receiver) + cli.get_nick() + " " + cli.get_username() + " " + host + " * " + " :" + cli.get_rn());}
+	inline std::string RPL_ENDOFWHOWAS(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :End of WHOWAS");}
+	inline std::string RPL_LISTSTART(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + "Channel :Users  Name");}
+	inline std::string RPL_LIST(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " " + ft_irc::to_string(chan.get_nbrUsers()) + " :" + chan.get_topic());}
+	inline std::string RPL_LISTEND(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":End of /LIST");}
+	inline std::string RPL_CHANNELMODEIS(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " " + chan.get_mode() + " " + chan.get_mode_params() + " :Cannot send to channel");}
+	inline std::string RPL_NOTOPIC(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :No topic is set");}
+	inline std::string RPL_TOPIC(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " :" + chan.get_topic());}
+	inline std::string RPL_INVITING(std::string sender, std::string receiver, std::string chan, std::string nick) {return (format_prefix(sender, __func__, receiver) + chan + " " + nick);}
+	inline std::string RPL_SUMMONING(std::string sender, std::string receiver, std::string user) {return (format_prefix(sender, __func__, receiver) + user + " :Summoning user to IRC");}
+	inline std::string RPL_VERSION(std::string sender, std::string receiver, std::string version, std::string debug_lvl, std::string server, std::string comment) {return (format_prefix(sender, __func__, receiver) + version + "." + debug_lvl + " " + server + " :" + comment);}
+	inline std::string RPL_WHOREPLY(std::string sender, std::string receiver, std::string chan, std::string user, std::string host, std::string server, std::string nick, std::string status, std::string hopCount, std::string rn) {return (format_prefix(sender, __func__, receiver) + chan + " " + user + " " + host + " " + server + " " + nick + " " + status + " :" + hopCount + " " + rn);}
+	inline std::string RPL_ENDOFWHO(std::string sender, std::string receiver, std::string name) {return (format_prefix(sender, __func__, receiver) + name + " :End of /WHO list");}
+	inline std::string RPL_NAMREPLY(std::string sender, std::string receiver, std::string chan, std::string nicknames) {return (format_prefix(sender, __func__, receiver) + chan + " " + nicknames);}
+	inline std::string RPL_ENDOFNAMES(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :End of /NAMES list");}
+	inline std::string RPL_LINKS(std::string sender, std::string receiver, std::string mask, std::string server, std::string hopCount, std::string serverInfo) {return (format_prefix(sender, __func__, receiver) + mask + " " + server + " " + " :" + hopCount + " " + serverInfo);}
+	inline std::string RPL_ENDOFLINKS(std::string sender, std::string receiver, std::string mask) {return (format_prefix(sender, __func__, receiver) + mask + " :End of /LINKS list");}
+
+	inline std::string RPL_BANLIST(std::string sender, std::string receiver, std::string chan, std::string banid) {return (format_prefix(sender, __func__, receiver) + chan + " " + banid);}
+	inline std::string RPL_ENDOFBANLIST(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :End of channel ban list");}
+	inline std::string RPL_INFO(std::string sender, std::string receiver, std::string info) {return (format_prefix(sender, __func__, receiver) + ":" + info);}
+	inline std::string RPL_ENDOFINFO(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + " :End of /INFO list");}
+	inline std::string RPL_MOTDSTART(std::string sender, std::string receiver, std::string server) {return (format_prefix(sender, __func__, receiver) + " :" + server + " Message of the day");}
+	inline std::string RPL_MOTD(std::string sender, std::string receiver, std::string text) {return (format_prefix(sender, __func__, receiver) + " :" + text);}
+	inline std::string RPL_ENDOFMOTD(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + " :End of /MOTD command");}
+	inline std::string RPL_YOUREOPER(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + " :You are now an IRC operator");}
+	inline std::string RPL_REHASHING(std::string sender, std::string receiver, std::string configFile) {return (format_prefix(sender, __func__, receiver) + configFile + " :Rehashing");}
+	inline std::string RPL_TIME(std::string sender, std::string receiver, std::string server, std::string time) {return (format_prefix(sender, __func__, receiver) + server + " :" + time);}
+	inline std::string RPL_USERSSTART(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + " :UserID   Terminal  Host");}
+	inline std::string RPL_USERS(std::string sender, std::string receiver, std::string username, std::string ttyline, std::string hostname) {return (format_prefix(sender, __func__, receiver) + ":" + username + " " + ttyline + " " + hostname);}
+	inline std::string RPL_ENDOFUSERS(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + " :End of users");}
+	inline std::string RPL_NOUSERS(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + " :Nobody logged in");}
+	inline std::string RPL_TRACELINK(std::string sender, std::string receiver, std::string versionDebugLvl, std::string destination, std::string nextServ) {return (format_prefix(sender, __func__, receiver) + "Link " + versionDebugLvl + " " + destination + " " + nextServ);}
+	inline std::string RPL_TRACECONNECTING(std::string sender, std::string receiver, std::string class_, std::string server) {return (format_prefix(sender, __func__, receiver) + "Try. " + class_ + " " + server);};
+	
+	inline std::string RPL_LUSERCLIENT(std::string sender, std::string receiver, std::string nbr_users, std::string nbr_invs) {return (format_prefix(sender, __func__, receiver) + " :There are " + nbr_users + " users and " + nbr_invs + " invisible on 1 servers");}
+	inline std::string RPL_LUSERUNKNOWN(std::string sender, std::string receiver, std::string nbr_unk) {return (format_prefix(sender, __func__, receiver) + nbr_unk + " :unknow connection(s)");}
+	inline std::string RPL_LUSERCHANNELS(std::string sender, std::string receiver, std::string nbr_channel) {return (format_prefix(sender, __func__, receiver) + " " + nbr_channel + " :channels formed");}
+	inline std::string RPL_LUSERME(std::string sender, std::string receiver, std::string nbr_clients) {return (format_prefix(sender, __func__, receiver) + " :I have " + nbr_clients + " clients and 1 servers");}
 
 }
 #endif

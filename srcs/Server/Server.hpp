@@ -76,8 +76,8 @@ class Server
 		void	_removeOperator(Client * client);
 		void	_addOperator(Client * client);
 
-		bool	_not_enough_params(int clientFd, struct parse_t * command, unsigned int minSize);
-		bool	_no_such_channel(int clientFd, std::string & chanName);
+		bool	_not_enough_params(Client & client, struct parse_t * command, unsigned int minSize);
+		bool	_no_such_channel(Client & client, std::string & chanName);
 
 		bool	_load_server_config();
 
