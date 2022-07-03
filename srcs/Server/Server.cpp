@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/02 12:48:54 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/02 17:42:16 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -300,6 +300,11 @@ bool	Server::_no_such_channel(int clientFd, std::string & chanName)
 
 void    Server::send_motd(Client *client)
 {
+	send_message(client->get_fd(), format_msg(RPL_WELCOME, *client) + ft_irc::RPL_WELCOME(client->get_nick(), "127.0.0.1"));
+	send_message(client->get_fd(), format_msg(RPL_LUSERCLIENT, *client) + ft_irc::RPL_LUSERCLIENT("0", "0"));
+	send_message(client->get_fd(), format_msg(RPL_LUSERUNKNOWN, *client) + ft_irc::RPL_LUSERUNKNOWN(" 0"));
+	send_message(client->get_fd(), format_msg(RPL_LUSERCHANNELS, *client) + ft_irc::RPL_LUSERCHANNELS(ft_irc::to_string(channels.size())));
+	send_message(client->get_fd(), format_msg(RPL_LUSERME, *client) + ft_irc::RPL_LUSERME(ft_irc::to_string(clients.size())));
 	if (motd.empty())
 		return;
 	send_message(client->get_fd(), format_msg(RPL_MOTDSTART, *client) + ft_irc::RPL_MOTDSTART(server_name));
@@ -384,31 +389,40 @@ void    Server::pass_command(Client *client, struct parse_t *command)
 
 void    Server::nick_command(Client *client, struct parse_t *command)
 {
-	if (command->args.size() == 4)
-		return ;
+	bool tmp = false;
+
+	client->set_nick(command->args[0]);
+
 	std::map<clientSocket, Client *>::iterator it;
 	for (it = clients.begin(); it != clients.end(); it++)
 	{
-		if (it->second->get_nick() == command->args[0])
-			send_message(client->get_fd(), format_msg(ERR_NICKNAMEINUSE, *client) + ft_irc::ERR_NICKNAMEINUSE(command->args[0]));
-		else
-			client->set_nick(command->args[0]);
+		std::cout << it->second->get_nick() << std::endl;
+		if (it->second->get_fd() != client->get_fd() && it->second->get_nick() == client->get_nick())
+		{
+			client->nick_inuse = true;
+			tmp = true;
+			if (client->get_statut() == CONNECTED)
+				send_message(client->get_fd(), ":paco.com 433 * " + ft_irc::ERR_NICKNAMEINUSE(client->get_nick()));
+		}
+	}
+	if (client->get_statut() == CONNECTED && tmp == false)
+	{
+		client->nick_inuse = false;
+		send_motd(client);
 	}
 }
 
 void    Server::user_command(Client *client, struct parse_t *command)
 {
 	client->set_user(command->args[0]);
-	if (client->get_nick() != "")
+	client->set_statut(CONNECTED);
+
+	if (client->nick_inuse)
 	{
-		client->set_statut(CONNECTED);
-		send_message(client->get_fd(), format_msg(RPL_WELCOME, *client) + ft_irc::RPL_WELCOME(client->get_nick(), "127.0.0.1"));
-		send_message(client->get_fd(), format_msg(RPL_LUSERCLIENT, *client) + ft_irc::RPL_LUSERCLIENT("0", "0"));
-		send_message(client->get_fd(), format_msg(RPL_LUSERUNKNOWN, *client) + ft_irc::RPL_LUSERUNKNOWN(" 0"));
-		send_message(client->get_fd(), format_msg(RPL_LUSERCHANNELS, *client) + ft_irc::RPL_LUSERCHANNELS(ft_irc::to_string(channels.size())));
-		send_message(client->get_fd(), format_msg(RPL_LUSERME, *client) + ft_irc::RPL_LUSERME(ft_irc::to_string(clients.size())));
-		send_motd(client);
+		send_message(client->get_fd(), ":paco.com 433 * " + ft_irc::ERR_NICKNAMEINUSE(client->get_nick()));
+		return ;
 	}
+	send_motd(client);
 }
 
 void    Server::parse_command(Client *client, struct parse_t *command)
