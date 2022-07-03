@@ -161,10 +161,12 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 
 	//Check if victim exists on given channel
 	Channel *	channel = channels[channel_name];
+	std::cout << "(" + channel->get_users_names() + ")" << std::endl;
 	Client *	victim = channel->getClientByNick(command->args[1]);
 	if (!victim)
 	{
 		sendToClient(client->fd, _prefixServer + ft_irc::ERR_USERNOTINCHANNEL(command->args[1], channel_name) + "\r\n");
+		std::cout << "Victim not on channel" << std::endl;	
 		return ;
 	}
 
@@ -172,6 +174,7 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 	if (!channels[channel_name]->isChannelMember(client->nick))
 	{
 		sendToClient(client->fd, _prefixServer + ft_irc::ERR_NOTONCHANNEL(channel_name) + "\r\n");
+		std::cout << "Client not on channel" << std::endl;
 		return ;
 	}
 
@@ -179,20 +182,19 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 	if (!channel->isOperator(client))
 	{
 		sendToClient(client->fd, _prefixServer + ft_irc::ERR_CHANOPRIVSNEEDED(channel_name) + "\r\n");
+		std::cout << "Need op priv" << std::endl;
 		return ;
 	}
 
 	//Broadcast to channel members
 	std::ostringstream	os;
 	os <<  _prefixServer + "PRIVMSG " + channel_name + " :";
-	os << victim->nick + " is kicked out of channel by " + client->nick + ".";
+	os << victim->nick + " was kicked from" + channel_name + " by " + client->nick + ".";
 	if (command->args.size() > 2)
-		os << "\nComment: " + command->args[2];
+		os << " [" + command->args[2] + "]";
 	os << "\r\n";
 	std::cout << os.str() << std::endl;
-	channel->broadcastToClients(victim, os.str());
-	channel->sendToClient(victim, os.str().replace(
-		os.str().find(victim->nick + " is"), victim->nick.size() + 3, "You are"));
+	channel->broadcastToClients(0, os.str());
 
 	//Delete victim from channel
 	//Delete channel if there's no one left
@@ -276,6 +278,7 @@ bool	Server::_not_enough_params(int	clientFd, struct parse_t * command, unsigned
 	{
 		sendToClient(clientFd, _prefixServer 
 						+ ft_irc::ERR_NEEDMOREPARAMS(command->cmd) + "\r\n");
+		std::cout << "Not enough param" << std::endl;
 		return true;
 	}
 	return false;
@@ -289,6 +292,7 @@ bool	Server::_no_such_channel(int clientFd, std::string & chanName)
 	{
 		sendToClient(clientFd, _prefixServer
 						+ ft_irc::ERR_NOSUCHCHANNEL(chanName) + "\r\n");
+		std::cout << "No such channel" << std::endl;
 		return true;
 	}
 	return false;
