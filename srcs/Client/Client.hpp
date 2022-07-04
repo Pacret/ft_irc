@@ -26,6 +26,14 @@
 # define BUFFER_SIZE 1024
 #endif
 
+typedef struct user_mode_s
+{
+	bool	i; // marks a users as invisible
+	bool	o; // operator falg
+
+	user_mode_s(): i(false), o(false) {}
+}	user_mode_t;
+
 
 class Client
 {
@@ -40,7 +48,8 @@ class Client
         std::string buffer;
 		int			fd;
 		std::string	nick;
-		bool nick_inuse;
+		bool		nick_inuse;
+		user_mode_t	mode;
 
         Client(int fd, struct sockaddr_in address);
         ~Client();

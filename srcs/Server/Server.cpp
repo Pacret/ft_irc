@@ -165,7 +165,7 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 	Client *	victim = channel->getClientByNick(command->args[1]);
 	if (!victim)
 	{
-		sendToClient(client->fd, ft_irc::ERR_USERNOTINCHANNEL(server_name, client->get_nick(), command->args[1], channel_name) + "\r\n");
+		sendToClient(client->fd, ft_irc::ERR_USERNOTINCHANNEL(server_name, client->get_nick(), command->args[1], channel_name));
 		std::cout << "Victim not on channel" << std::endl;	
 		return ;
 	}
@@ -173,7 +173,7 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 	//Check if client exists on given channel
 	if (!channels[channel_name]->isChannelMember(client->nick))
 	{
-		sendToClient(client->fd, ft_irc::ERR_NOTONCHANNEL(server_name, client->get_nick(), channel_name) + "\r\n");
+		sendToClient(client->fd, ft_irc::ERR_NOTONCHANNEL(server_name, client->get_nick(), channel_name));
 		std::cout << "Client not on channel" << std::endl;
 		return ;
 	}
@@ -181,7 +181,7 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 	//Check if client has operator's privilege
 	if (!channel->isOperator(client))
 	{
-		sendToClient(client->fd, ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->get_nick(), channel_name) + "\r\n");
+		sendToClient(client->fd, ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->get_nick(), channel_name));
 		std::cout << "Need op priv" << std::endl;
 		return ;
 	}
@@ -230,25 +230,26 @@ void	Server::part_command(Client *client, struct parse_t *command)
 			return ;
 	}
 
-	Channel *			chan;
+	Channel *	chan;
 	for (unsigned long i = 0; i < channel_names.size(); i++)
 	{
 		//Check if client exists on each channel
 		chan = channels[channel_names[i]];
 		if (!chan->isChannelMember(client->nick))
 		{
-			sendToClient(client->fd, ft_irc::ERR_NOTONCHANNEL(server_name, client->get_nick(), chan->get_name()) + "\r\n");
+			sendToClient(client->fd, ft_irc::ERR_NOTONCHANNEL(server_name, client->get_nick(), chan->get_name()));
 		}
 		//Broadcast PART msg, delete client
 		else
 		{
-			chan->broadcastToClients(client, _format_response(client->nick, *command));
+			chan->broadcastToClients(0, _format_response(client->nick, *command));
 			if (chan->deleteClient(client) == 0)
 				channels.erase(chan->get_name());
 		}
 	}
 }
 
+//OPER <user> <password>
 void	Server::oper_command(Client *client, struct parse_t *command)
 {
 	//Check if there's enough parameters 
@@ -256,27 +257,31 @@ void	Server::oper_command(Client *client, struct parse_t *command)
 		return ;
 
 	//Check if client has aleady op status
-	// if (client->mode.o)
-	//RPL_YOUREOPER
+	if (client->mode.o)
+	{
+		sendToClient(client->fd, ft_irc::RPL_YOUREOPER(
+							server_name, client->get_nick()));
+		return ;
+	}
 
 	//Load config file
 	if (_load_server_config() && (_servOpConfig.host == client->get_ip()
-				||  _servOpConfig.host != "" || _servOpConfig.host != "*" ))
+				|| _servOpConfig.host == "" || _servOpConfig.host == "*" ))
 	{
-		if (_servOpConfig.password != command->args[1]
-			|| _servOpConfig.username != command->args[0])
+		if (_servOpConfig.username != command->args[0]
+			|| _servOpConfig.password != command->args[1])
 		{
-			// ERR_PASSWDMISMATCH
+			sendToClient(client->fd, ft_irc::ERR_PASSWDMISMATCH(
+							server_name, client->get_nick()));
 			return ;
 		}
-		//client->mode.o = 1
-		//Send user mode change to irc client
+		client->mode.o = true;
+		//Send user mode change to irc client (? -> Test how it works)
+		sendToClient(client->fd, _format_response(client->nick, *command));
 	}
 	else
-	{
-		//ERR_NOOPERHOST
-		return ;
-	}
+		sendToClient(client->fd, ft_irc::ERR_NOOPERHOST(
+							server_name, client->get_nick()));
 }
 
 
@@ -284,7 +289,7 @@ bool	Server::_not_enough_params(Client & client, struct parse_t * command, unsig
 {
 	if (command->args.size() < minSize)
 	{
-		sendToClient(client.fd, ft_irc::ERR_NEEDMOREPARAMS(server_name, client.get_nick(), command->cmd) + "\r\n");
+		sendToClient(client.fd, ft_irc::ERR_NEEDMOREPARAMS(server_name, client.get_nick(), command->cmd));
 		std::cout << "Not enough param" << std::endl;
 		return true;
 	}
@@ -297,7 +302,7 @@ bool	Server::_no_such_channel(Client & client, std::string & chanName)
 	it = channels.find(chanName);
 	if (it == channels.end())
 	{
-		sendToClient(client.fd, ft_irc::ERR_NOSUCHCHANNEL(server_name, client.get_nick(), chanName) + "\r\n");
+		sendToClient(client.fd, ft_irc::ERR_NOSUCHCHANNEL(server_name, client.get_nick(), chanName));
 		std::cout << "No such channel" << std::endl;
 		return true;
 	}

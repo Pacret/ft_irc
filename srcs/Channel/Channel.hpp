@@ -23,6 +23,15 @@
 # include "../Utils/Utils.hpp"
 # include "../Client/Client.hpp"
 
+typedef struct chan_mode_s
+{
+	bool	o; // give/take channel operator privileges;
+	bool	i; // invite-only channel flag;
+	bool	t; // topic settable by channel operator only flag;
+
+	chan_mode_s(): o(false), i(false), t(false) {}
+}	chan_mode_t;
+
 class Channel
 {
     private:
@@ -34,7 +43,8 @@ class Channel
 		std::set<Client *>	_operatorList;
 
     public:
-		typedef unsigned long int				clientSize;
+		typedef unsigned long int	clientSize;
+		chan_mode_t					mode;
 
         Channel(Client *owner, const std::string &channel_name);
         ~Channel();
