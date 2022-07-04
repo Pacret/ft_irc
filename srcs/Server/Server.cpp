@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/04 15:29:40 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/04 17:56:17 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -437,8 +437,11 @@ void    Server::user_command(Client *client, struct parse_t *command)
 
 void    Server::quit_command(Client *client, struct parse_t *command)
 {
+	std::string message;
+	if (command->args.size())
+		message = command->args[0];
+	send_message(client->get_fd(), std::string("ERROR :Closing link: (" + client->get_nick() + "@127.0.0.1) [Quit: " + message + "]"));
 	client->set_statut(DELETE);
-	(void)command;
 }
 
 void    Server::parse_command(Client *client, struct parse_t *command)
