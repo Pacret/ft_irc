@@ -188,7 +188,7 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 
 	//Broadcast to channel members
 	std::cout << "{" << _format_response(client->nick, *command) << "}" << std::endl;
-	channel->broadcastToClients(0, _format_response(client->nick, *command));
+	channel->broadcastToClients(0, _format_response(client->get_nickmask(), *command));
 
 	//Delete victim from channel
 	//Delete channel if there's no one left
@@ -242,7 +242,7 @@ void	Server::part_command(Client *client, struct parse_t *command)
 		//Broadcast PART msg, delete client
 		else
 		{
-			chan->broadcastToClients(0, _format_response(client->nick, *command));
+			chan->broadcastToClients(0, _format_response(client->get_nickmask(), *command));
 			if (chan->deleteClient(client) == 0)
 				channels.erase(chan->get_name());
 		}
@@ -276,12 +276,10 @@ void	Server::oper_command(Client *client, struct parse_t *command)
 			return ;
 		}
 		client->mode.o = true;
-		//Send user mode change to irc client (? -> Test how it works)
-		sendToClient(client->fd, _format_response(client->nick, *command));
+		sendToClient(client->fd, ft_irc::RPL_YOUREOPER(server_name, client->get_nick()));
 	}
 	else
-		sendToClient(client->fd, ft_irc::ERR_NOOPERHOST(
-							server_name, client->get_nick()));
+		sendToClient(client->fd, ft_irc::ERR_NOOPERHOST(server_name, client->get_nick()));
 }
 
 

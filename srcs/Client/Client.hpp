@@ -59,8 +59,9 @@ class Client
 		std::string	get_nick();
 		std::string	get_username();
 		std::string	get_rn();
-		std::string	get_ip();
+		std::string	get_ip() const;
 		Statut		get_statut();
+		std::string	get_nickmask() const;
 		
 		void	set_nick(std::string nick);
 		void	set_user(std::string user);

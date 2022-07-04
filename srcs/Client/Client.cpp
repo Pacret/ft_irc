@@ -43,7 +43,7 @@ void	Client::set_rn(std::string rn)
 
 int		Client::get_fd() {return (this->fd);}
 
-string Client::get_ip() {return (ft_irc::to_string(_address.sin_addr.s_addr));}
+string Client::get_ip() const {return (ft_irc::to_string(_address.sin_addr.s_addr));}
 
 string	Client::get_nick() {return (nick);}
 
@@ -56,4 +56,10 @@ Statut	Client::get_statut() {return (_statut);}
 void	Client::set_statut(Statut statut)
 {
 	_statut = statut;
+}
+
+//Nickmask standard basic format: <nick>!<username>@<host>
+std::string	Client::get_nickmask() const
+{
+	return (nick + "!" + _username + "@" + get_ip()); //How to get hostname instead of ip?
 }
