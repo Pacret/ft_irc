@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/04 17:56:17 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/04 20:11:49 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,9 +143,9 @@ void    Server::join_command(Client *client, struct parse_t *command)
 		channels[channel_name]->addClient(client);
 	std::vector<Client *> usrs = channels[channel_name]->get_users();
 	channels[channel_name]->broadcastToClients(NULL, std::string(":" + client->get_nick() + "!" +  client->get_username() + "@" + server_name + " JOIN :" + channel_name + "\r\n"));
-	send_message(client->get_fd(), std::string(" " + ft_irc::RPL_TOPIC(server_name, client->get_nick(), *channels[channel_name])));
-	send_message(client->get_fd(), std::string(" " + ft_irc::RPL_NAMREPLY(server_name, client->get_nick(), channels[channel_name]->get_name(), channels[channel_name]->get_users_names())));
-	send_message(client->get_fd(), std::string(" " + ft_irc::RPL_ENDOFNAMES(server_name, client->get_nick(), channels[channel_name]->get_name())));
+	send_message(client->get_fd(), std::string(ft_irc::RPL_TOPIC(server_name, client->get_nick(), *channels[channel_name])));
+	send_message(client->get_fd(), std::string(ft_irc::RPL_NAMREPLY(server_name, client->get_nick(), channels[channel_name]->get_name(), channels[channel_name]->get_users_names())));
+	send_message(client->get_fd(), std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->get_nick(), channels[channel_name]->get_name())));
 }
 
 //KICK <channel> <user> [<comment>] 
