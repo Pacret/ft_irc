@@ -79,7 +79,8 @@ class Server
 		bool	_not_enough_params(Client & client, struct parse_t * command, unsigned int minSize);
 		bool	_no_such_channel(Client & client, std::string & chanName);
 
-		bool	_load_server_config();
+		bool		_load_server_config();
+		std::string	_format_response(std::string sender, parse_t & command);
 
     public:
         Server();

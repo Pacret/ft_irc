@@ -67,6 +67,18 @@ std::string		Channel::get_users_names()
 	return (users_names);
 }
 
+std::string		Channel::get_users_nicks()
+{
+	std::string						users_nicks;
+	std::set<Client *>::iterator	it = _clients.begin();
+	std::set<Client *>::iterator	ite = _clients.end();
+	
+	for (; it != ite; it++)
+		users_nicks += (*it)->nick;
+	return (users_nicks);
+}
+
+
 std::string		Channel::get_topic()
 {
 	return (_topic);

@@ -161,7 +161,7 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 
 	//Check if victim exists on given channel
 	Channel *	channel = channels[channel_name];
-	std::cout << "(" + channel->get_users_names() + ")" << std::endl;
+	std::cout << "(" + channel->get_users_nicks() + ")" << std::endl;
 	Client *	victim = channel->getClientByNick(command->args[1]);
 	if (!victim)
 	{
@@ -187,19 +187,32 @@ void	Server::kick_command(Client *client, struct parse_t *command)
 	}
 
 	//Broadcast to channel members
-	std::ostringstream	os;
-	os <<  _prefixServer + "PRIVMSG " + channel_name + " :";
-	os << victim->nick + " was kicked from" + channel_name + " by " + client->nick + ".";
-	if (command->args.size() > 2)
-		os << " [" + command->args[2] + "]";
-	os << "\r\n";
-	std::cout << os.str() << std::endl;
-	channel->broadcastToClients(0, os.str());
+	std::cout << "{" << _format_response(client->nick, *command) << "}" << std::endl;
+	channel->broadcastToClients(0, _format_response(client->nick, *command));
 
 	//Delete victim from channel
 	//Delete channel if there's no one left
 	if (channel->deleteClient(victim) == 0)
 		channels.erase(channel->get_name());
+}
+
+std::string	Server::_format_response(std::string sender, parse_t & command)
+{
+	std::ostringstream	os;
+
+	os << ":" << sender << " ";
+	if (command.prefix.empty())
+		os << command.original_msg;
+	else
+	{
+		os << command.cmd;
+		for (unsigned long i = 0; i < command.args.size(); i++)
+		{
+			os << " " << command.args[i];
+		}
+	}
+	os << "\r\n";
+	return (os.str());
 }
 
 void	Server::part_command(Client *client, struct parse_t *command)
@@ -218,8 +231,6 @@ void	Server::part_command(Client *client, struct parse_t *command)
 	}
 
 	Channel *			chan;
-	std::ostringstream	os;
-
 	for (unsigned long i = 0; i < channel_names.size(); i++)
 	{
 		//Check if client exists on each channel
@@ -231,9 +242,7 @@ void	Server::part_command(Client *client, struct parse_t *command)
 		//Broadcast PART msg, delete client
 		else
 		{
-			os <<  _prefixServer + "PRIVMSG " + chan->get_name() + " :";
-			chan->broadcastToClients(client, os.str() + client->nick + "left channel.\r\n");
-			chan->sendToClient(client, os.str() + "You left channel.\r\n");
+			chan->broadcastToClients(client, _format_response(client->nick, *command));
 			if (chan->deleteClient(client) == 0)
 				channels.erase(chan->get_name());
 		}
