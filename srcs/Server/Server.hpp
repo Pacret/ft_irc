@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/01 17:13:15 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/04 14:48:02 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ class Server
 		void	kick_command(Client *client, struct parse_t *command);
 		void	part_command(Client *client, struct parse_t *command);
 		void	oper_command(Client *client, struct parse_t *command);
-
+		void	quit_command(Client *client, struct parse_t *command);
 
 		void	priv_msg_command(Client *client, parse_t *p);
         void    send_message(int fd, const std::string &message);

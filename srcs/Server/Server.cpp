@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/02 17:42:16 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/04 15:29:40 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ void    Server::init()
 	commands["PART"] = &Server::part_command;
 	commands["PRIVMSG"] = &Server::priv_msg_command;
 	commands["OPER"] = &Server::oper_command;
+	commands["QUIT"] = &Server::quit_command;
 }
 
 void Server::mode_command_dummy(Client *c, struct parse_t* p)
@@ -390,7 +391,7 @@ void    Server::pass_command(Client *client, struct parse_t *command)
 {
 	if (command->args[0] != get_pwd())
 	{
-		kill_connection(client);
+		client->set_statut(DELETE);
 		return;
 	}
 	client->set_statut(REGISTERED);
@@ -432,6 +433,12 @@ void    Server::user_command(Client *client, struct parse_t *command)
 		return ;
 	}
 	send_motd(client);
+}
+
+void    Server::quit_command(Client *client, struct parse_t *command)
+{
+	client->set_statut(DELETE);
+	(void)command;
 }
 
 void    Server::parse_command(Client *client, struct parse_t *command)
@@ -489,10 +496,18 @@ void    Server::process()
         else
         {
             for (std::vector<struct pollfd>::iterator it = pollfds.begin(); it != pollfds.end(); ++it)
+			{
                 if ((*it).revents == POLLIN)
                     get_message(clients[(*it).fd]);
+			}
 
         }
+		for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
+		{
+			std::cout << it->second->get_nick() << std::endl;
+        	if (it->second->get_statut() == DELETE)
+				kill_connection(it->second);
+		}
         std::cout << pollfds[0].revents << std::endl;
 		std::cout << "here\n" << std::endl;
     }
@@ -516,6 +531,7 @@ void	Server::kill_connection(Client *client)
 		++it;
 	pollfds.erase(it);
 	close(client->get_fd());
+	clients.erase(client->get_fd());
 	delete client;
 	return;
 }
