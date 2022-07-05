@@ -166,7 +166,7 @@ void	Server::kill_connection(Client *client)
 
 bool	Server::_load_server_config(std::string configFileNamepath)
 {
-	std::ifstream				ifs(configFileNamepath);
+	std::ifstream				ifs(configFileNamepath.c_str());
 	std::stringstream			buffer;
 	std::vector<std::string>	tmp;
 
