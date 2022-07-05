@@ -96,6 +96,7 @@ void	Channel::broadcastToClients(Client * client, std::string msg)
 	std::set<Client *>::iterator it = _clients.begin();
 	std::set<Client *>::iterator ite = _clients.end();
 	
+	std::cout << "Broadcast: {" << msg << "}" << std::endl;
 	for (; it != ite; it++)
 	{
 		if (client == NULL || (*it)->fd != client->fd)
@@ -107,7 +108,7 @@ void	Channel::broadcastToClients(Client * client, std::string msg)
 
 void	Channel::sendToClient(Client * client, std::string msg)
 {
-	if (send(client->fd, msg.c_str(), msg.size() + 1, 0) == -1)
+	if (send(client->fd, msg.c_str(), msg.size(), 0) == -1)
 	{
 		//error handler
 	}
