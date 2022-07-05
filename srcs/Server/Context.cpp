@@ -265,7 +265,8 @@ Action		Context::pass_command(Client *client, struct parse_t *command)
 {
 	if (command->args[0] != getPassword())
 	{
-		client->set_statut(DELETE);
+		//client->set_statut(DELETE);
+		deleteClient(client);
 		return KILL_CONNECTION;
 	}
 	client->set_statut(REGISTERED);
@@ -318,7 +319,8 @@ Action	Context::quit_command(Client *client, struct parse_t *command)
 	if (command->args.size())
 		message = command->args[0];
 	sendToClient(client->get_fd(), std::string("ERROR :Closing link: (" + client->get_nick() + "@127.0.0.1) [Quit: " + message + "]"));
-	client->set_statut(DELETE);
+	//client->set_statut(DELETE);
+	deleteClient(client);
 	return KILL_CONNECTION;
 }
 
@@ -419,9 +421,7 @@ void	Context::addClient(int fd, struct sockaddr_in address)
 
 void	Context::deleteClient(Client * client)
 {
-	close(client->get_fd());
 	_clients.erase(client->get_fd());
-
 	//TODO: Erase client from all of her channels
 	//If no one left in that channel, delete channel
 

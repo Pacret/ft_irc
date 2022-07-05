@@ -43,6 +43,9 @@ class Server
 		Context *					context;
 		std::ofstream				log_file;
 
+		typedef int				clientFd;
+		std::vector<clientFd>	_clients_to_kill;
+
 		bool		_load_server_config(std::string config);
 
 	public:
@@ -55,7 +58,7 @@ class Server
 		void	addClient();
 
 		void	get_message(Client *client);
-		void	kill_connection(Client *client);
+		void	kill_connection(int clientFd);
 };
 
 #endif

@@ -108,12 +108,10 @@ void	Server::process()
 					get_message(context->getClient((*it).fd));
 			}
 		}
-		// for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
-		// {
-		// 	std::cout << it->second->get_nick() << std::endl;
-        // 	if (it->second->get_statut() == DELETE)
-		// 		kill_connection(it->second);
-		// }
+		for (std::vector<int>::iterator it = _clients_to_kill.begin(); it != _clients_to_kill.end(); ++it)
+		{
+			kill_connection(*it);
+		}
 		std::cout << pollfds[0].revents << std::endl;
 		std::cout << "here\n" << std::endl;
 	}
@@ -124,6 +122,7 @@ void	Server::get_message(Client *client)
 	char	buff[BUFFER_SIZE + 1];
 	ssize_t	size;
 	size_t	rn;
+	int		clientFd = client->fd;
 
 	if ((size = recv(client->get_fd(), &buff, BUFFER_SIZE, 0)) == -1) //?? Should be a while? Need to check max size IRC REQUEST
 		return;
@@ -132,7 +131,7 @@ void	Server::get_message(Client *client)
 	buff[size] = 0;
 	client->buffer += buff;
 
-	while (client->buffer.size())
+	while (client && client->buffer.size())
 	{
 		parse_t *p;
 		rn = client->buffer.find("\r\n");
@@ -145,23 +144,25 @@ void	Server::get_message(Client *client)
 		{
 			std::cout << std::endl;
 			if (context->parse_command(client, p) == KILL_CONNECTION)
-				kill_connection(client);
+				_clients_to_kill.push_back(clientFd);
 		}
 	}
 }
 
-void	Server::kill_connection(Client *client)
+void	Server::kill_connection(int clientFd)
 {
 	std::vector<struct pollfd>::iterator it = pollfds.begin();
+	std::vector<struct pollfd>::iterator ite = pollfds.end();
 
-	while ((*it).fd != client->get_fd())
-		++it;
-	pollfds.erase(it);
-	// close(client->get_fd());
-	// clients.erase(client->get_fd());
-	// delete client;
-	context->deleteClient(client);
-	return;
+	for (; it != ite; it++)
+	{
+		if ((*it).fd == clientFd)
+		{
+			pollfds.erase(it);
+			close(clientFd);
+			return ;
+		}
+	}
 }
 
 bool	Server::_load_server_config(std::string configFileNamepath)
