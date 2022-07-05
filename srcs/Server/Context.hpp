@@ -21,6 +21,12 @@
 # include "../Utils/parser_utils.hpp"
 # include "../Utils/defines.hpp"
 
+enum Action
+{
+	KILL_CONNECTION,
+	CLOSE_SERVER,
+	NOPE
+};
 
 typedef struct servop_s
 {
@@ -38,7 +44,7 @@ private:
 
 	std::map<clientSocket, Client *>									_clients;
 	std::map<channelName, Channel *>									_channels;
-	std::map<commandType, int(Context::*)(Client *, struct parse_t *)>	_commands;
+	std::map<commandType, Action(Context::*)(Client *, struct parse_t *)>	_commands;
 
 	std::string					_password;
 	std::set<Client *>			_operatorList;
@@ -69,25 +75,29 @@ public:
 
 	void	sendToClient(int clientSocket, const std::string & msg);
 
-	int		parse_command(Client *client, struct parse_t *command);
+	Action	parse_command(Client *client, struct parse_t *command);
 
-	int		pass_command(Client *client, struct parse_t *command);
-	int		nick_command(Client *client, struct parse_t *command);
-	int		user_command(Client *client, struct parse_t *command);
-	int		oper_command(Client *client, struct parse_t *command);
+	Action	pass_command(Client *client, struct parse_t *command);
+	Action	nick_command(Client *client, struct parse_t *command);
+	Action	user_command(Client *client, struct parse_t *command);
+	Action	oper_command(Client *client, struct parse_t *command);
+	Action	quit_command(Client *client, struct parse_t *command);
 
-	int		join_command(Client *client, struct parse_t *command);
-	int		kick_command(Client *client, struct parse_t *command);
-	int		part_command(Client *client, struct parse_t *command);
-	int		priv_msg_command(Client *client, parse_t *p);
 
-	int		mode_command_dummy(Client *c, struct parse_t*p);
+	Action	join_command(Client *client, struct parse_t *command);
+	Action	kick_command(Client *client, struct parse_t *command);
+	Action	part_command(Client *client, struct parse_t *command);
+	Action	priv_msg_command(Client *client, parse_t *p);
+
+	Action	mode_command_dummy(Client *c, struct parse_t*p);
 
 	void		setPort(const std::string &port);
 	void		setPassword(const std::string &password);
 	std::string	getPassword() const;
+
 	Client *	getClient(int clientFd);
 	void		addClient(int fd, struct sockaddr_in address);
+	void		deleteClient(Client * client);
 
 };
 

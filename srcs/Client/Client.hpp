@@ -36,8 +36,9 @@ typedef struct user_mode_s
 enum Statut
 {
 	NONE,
-    REGISTERED,
-    CONNECTED
+	REGISTERED,
+	CONNECTED,
+	DELETE
 };
 
 class Client

@@ -103,9 +103,17 @@ void	Server::process()
 		else
 		{
 			for (std::vector<struct pollfd>::iterator it = pollfds.begin(); it != pollfds.end(); ++it)
+			{
 				if ((*it).revents == POLLIN)
 					get_message(context->getClient((*it).fd));
+			}
 		}
+		// for (std::map<int, Client *>::iterator it = clients.begin(); it != clients.end(); ++it)
+		// {
+		// 	std::cout << it->second->get_nick() << std::endl;
+        // 	if (it->second->get_statut() == DELETE)
+		// 		kill_connection(it->second);
+		// }
 		std::cout << pollfds[0].revents << std::endl;
 		std::cout << "here\n" << std::endl;
 	}
@@ -136,7 +144,7 @@ void	Server::get_message(Client *client)
 		if (p->original_msg.size())
 		{
 			std::cout << std::endl;
-			if (context->parse_command(client, p) == -1)
+			if (context->parse_command(client, p) == KILL_CONNECTION)
 				kill_connection(client);
 		}
 	}
@@ -149,8 +157,10 @@ void	Server::kill_connection(Client *client)
 	while ((*it).fd != client->get_fd())
 		++it;
 	pollfds.erase(it);
-	close(client->get_fd());
-	delete client;
+	// close(client->get_fd());
+	// clients.erase(client->get_fd());
+	// delete client;
+	context->deleteClient(client);
 	return;
 }
 
