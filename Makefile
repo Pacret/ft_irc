@@ -6,7 +6,7 @@
 #    By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/18 20:59:10 by pbonilla          #+#    #+#              #
-#    Updated: 2022/06/28 17:00:52 by pbonilla         ###   ########.fr        #
+#    Updated: 2022/07/04 15:13:21 by pbonilla         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ SRCS		=	srcs/main.cpp 				\
 	
 COMP		= c++
 
-FLAGS		= -Wall -Wextra -Werror -std=c++98
+FLAGS		= -Wall -Wextra -Werror -fsanitize=address -std=c++98 
 
 OBJS		= $(SRCS:.cpp=.o)
 

@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/07/01 16:52:40 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/04 20:35:29 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,7 +274,7 @@ namespace ft_irc
 	inline std::string RPL_VERSION(std::string sender, std::string receiver, std::string version, std::string debug_lvl, std::string server, std::string comment) {return (format_prefix(sender, __func__, receiver) + version + "." + debug_lvl + " " + server + " :" + comment + "\r\n");}
 	inline std::string RPL_WHOREPLY(std::string sender, std::string receiver, std::string chan, std::string user, std::string host, std::string server, std::string nick, std::string status, std::string hopCount, std::string rn) {return (format_prefix(sender, __func__, receiver) + chan + " " + user + " " + host + " " + server + " " + nick + " " + status + " :" + hopCount + " " + rn + "\r\n");}
 	inline std::string RPL_ENDOFWHO(std::string sender, std::string receiver, std::string name) {return (format_prefix(sender, __func__, receiver) + name + " :End of /WHO list" + "\r\n");}
-	inline std::string RPL_NAMREPLY(std::string sender, std::string receiver, std::string chan, std::string nicknames) {return (format_prefix(sender, __func__, receiver) + chan + " " + nicknames + "\r\n");}
+	inline std::string RPL_NAMREPLY(std::string sender, std::string receiver, std::string chan, std::string nicknames) {return (format_prefix(sender, __func__, receiver) + "= " + chan + " :" + nicknames + "\r\n");}
 	inline std::string RPL_ENDOFNAMES(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :End of /NAMES list" + "\r\n");}
 	inline std::string RPL_LINKS(std::string sender, std::string receiver, std::string mask, std::string server, std::string hopCount, std::string serverInfo) {return (format_prefix(sender, __func__, receiver) + mask + " " + server + " " + " :" + hopCount + " " + serverInfo + "\r\n");}
 	inline std::string RPL_ENDOFLINKS(std::string sender, std::string receiver, std::string mask) {return (format_prefix(sender, __func__, receiver) + mask + " :End of /LINKS list" + "\r\n");}

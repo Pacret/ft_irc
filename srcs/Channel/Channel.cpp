@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/30 16:13:51 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/04 20:30:27 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,14 @@ std::string		Channel::get_users_names()
 	std::set<Client *>::iterator	ite = _clients.end();
 	
 	for (; it != ite; it++)
+	{
+		if (users_names != "")
+			users_names += " ";
+		if (isOperator(*it))
+			users_names += "@";
 		users_names += (*it)->get_username();
+	}
+	std::cout << users_names << std::endl;
 	return (users_names);
 }
 
