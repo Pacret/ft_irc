@@ -10,16 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <string>
-
-#include "../Client/Client.hpp"
-#include "../Channel/Channel.hpp"
 #include "parser_utils.hpp"
 
-using namespace std;
-
-
-string get_command(const string& msg)
+std::string get_command(const std::string& msg)
 {
 	size_t i = 0;
 
@@ -29,13 +22,13 @@ string get_command(const string& msg)
 }
 
 // get_prefix does not include the ':' starting the prefix.
-string get_prefix(string &msg)
+std::string get_prefix(std::string &msg)
 {
 	size_t i = msg.find(" ");
 	return (msg.substr(1, i));
 }
 
-parse_t *fill_parse_t(string &msg)
+parse_t *fill_parse_t(std::string &msg)
 {
 	std::cout << msg << std::endl;
 	parse_t *p = new parse_t;
@@ -49,7 +42,7 @@ parse_t *fill_parse_t(string &msg)
 	p->cmd = get_command(msg);
 	msg.erase(0, p->cmd.size());
 
-	string end_set = "\r\n\0";
+	std::string end_set = "\r\n\0";
 	while (msg[0] != '\0')
 	{
 		msg.erase(0, 1);

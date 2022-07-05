@@ -20,7 +20,7 @@
 # include <set>
 # include <map>
 
-# include "../Utils/Utils.hpp"
+# include "../Utils/utils.hpp"
 # include "../Client/Client.hpp"
 
 typedef struct chan_mode_s

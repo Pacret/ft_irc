@@ -1,4 +1,4 @@
-# include "defines.h"
+# include "defines.hpp"
 
 template<>
 EnumParser<numeric_replies_e>::EnumParser()
@@ -129,7 +129,7 @@ namespace ft_irc
 {
 	std::string format_prefix(std::string sender, std::string const & code, std::string receiver)
 	{
-		ostringstream					os;
+		std::ostringstream					os;
 		EnumParser<numeric_replies_e>	enumParser;
 
 		os << ":" + sender + " ";

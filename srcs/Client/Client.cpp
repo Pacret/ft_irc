@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "Client.hpp"
-#include "../Utils/defines.h"
 
 using namespace std;
 
@@ -43,7 +42,7 @@ void	Client::set_rn(std::string rn)
 
 int		Client::get_fd() {return (this->fd);}
 
-string Client::get_ip() const {return (ft_irc::to_string(_address.sin_addr.s_addr));}
+string Client::get_ip() const {return (int_to_string(_address.sin_addr.s_addr));}
 
 string	Client::get_nick() {return (nick);}
 

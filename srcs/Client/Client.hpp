@@ -15,12 +15,11 @@
 
 
 #include <netinet/in.h>
-//#include "../Server/Server.hpp"
-#include "../Utils/Utils.hpp"
 #include <iostream>
 #include <unistd.h>
 #include <netdb.h>
 
+#include "../Utils/utils.hpp"
 
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE 1024
@@ -34,6 +33,12 @@ typedef struct user_mode_s
 	user_mode_s(): i(false), o(false) {}
 }	user_mode_t;
 
+enum Statut
+{
+	NONE,
+    REGISTERED,
+    CONNECTED
+};
 
 class Client
 {

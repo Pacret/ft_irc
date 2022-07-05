@@ -17,16 +17,10 @@
 # include <stdlib.h>
 # include <vector>
 # include <string>
+# include <sstream>
 
-enum Statut
-{
-	NONE,
-    REGISTERED,
-    CONNECTED
-};
-
-void	close_server(const std::string &msg_error);
-
+void						close_server(const std::string &msg_error);
 std::vector<std::string>	string_split(std::string str, std::string const& delim);
+std::string					int_to_string(int code);
 
 #endif

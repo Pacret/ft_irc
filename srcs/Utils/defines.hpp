@@ -15,23 +15,25 @@
 
 # include <map>
 # include <string>
+# include <exception>
+# include <sstream>
 
-# include "../Server/Server.hpp"
 # include "../Channel/Channel.hpp"
 # include "../Client/Client.hpp"
+# include "../Utils/utils.hpp"
 
 template <typename T>
 class EnumParser
 {
-	map <string, T> strEnumMap;
+	std::map<std::string, T> strEnumMap;
 public:
 	EnumParser(){};
 
-	T getEnum(const string &value)
+	T getEnum(const std::string &value)
 	{
-		typename std::map<string, T>::const_iterator it = strEnumMap.find(value);
+		typename std::map<std::string, T>::const_iterator it = strEnumMap.find(value);
 		if (it  == strEnumMap.end())
-			throw runtime_error("Enum name does not exist in strEnumMap");
+			throw std::runtime_error("Enum name does not exist in strEnumMap");
 		return it->second;
 	}
 };
@@ -191,15 +193,7 @@ enum numeric_replies_e
 
 namespace ft_irc
 {
-	inline std::string to_string(int code)
-	{
-		stringstream sstream;
-
-		sstream << code;
-		return (sstream.str());
-	};
-	
-	std::string format_prefix(std::string sender, std::string const & code, std::string receiver);
+	std::string	format_prefix(std::string sender, std::string const & code, std::string receiver);
 	
 	inline std::string ERR_NOSUCHNICK(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :No such nick/channel" + "\r\n");}
 	inline std::string ERR_NOSUCHSERVER(std::string sender, std::string receiver, std::string serv) {return (format_prefix(sender, __func__, receiver) + serv + " :No such server" + "\r\n");}
@@ -262,7 +256,7 @@ namespace ft_irc
 	inline std::string RPL_UNAWAY(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":You are no longer marked as being away" + "\r\n");}
 	inline std::string RPL_NOWAWAY(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":You have been marked as being away" + "\r\n");}
 	inline std::string RPL_WHOISUSER(std::string sender, std::string receiver, Client& cli, std::string host) {return (format_prefix(sender, __func__, receiver) + cli.get_nick() + " " + cli.get_username() + " " + host + " * :" + cli.get_rn() + "\r\n");}
-	inline std::string RPL_WHOISSERVER(std::string sender, std::string receiver, std::string nick, Server& serv) {return (format_prefix(sender, __func__, receiver) + nick + " " + serv.get_name() + " :" + serv.get_info() + "\r\n");}
+	inline std::string RPL_WHOISSERVER(std::string sender, std::string receiver, std::string nick, std::string server_name, std::string info) {return (format_prefix(sender, __func__, receiver) + nick + " " + server_name + " :" + info + "\r\n");}
 	inline std::string RPL_WHOISOPERATOR(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :is an IRC operator" + "\r\n");}
 	inline std::string RPL_WHOISIDLE(std::string sender, std::string receiver, std::string nick, std::string sec) {return (format_prefix(sender, __func__, receiver) + nick + " " + sec + " :seconds idle" + "\r\n");}
 	inline std::string RPL_ENDOFWHOIS(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :End of /WHOIS list" + "\r\n");}
@@ -270,7 +264,7 @@ namespace ft_irc
 	inline std::string RPL_WHOWASUSER(std::string sender, std::string receiver, Client& cli, std::string host) {return (format_prefix(sender, __func__, receiver) + cli.get_nick() + " " + cli.get_username() + " " + host + " * " + " :" + cli.get_rn() + "\r\n");}
 	inline std::string RPL_ENDOFWHOWAS(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :End of WHOWAS" + "\r\n");}
 	inline std::string RPL_LISTSTART(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + "Channel :Users  Name" + "\r\n");}
-	inline std::string RPL_LIST(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " " + ft_irc::to_string(chan.get_nbrUsers()) + " :" + chan.get_topic() + "\r\n");}
+	inline std::string RPL_LIST(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " " + int_to_string(chan.get_nbrUsers()) + " :" + chan.get_topic() + "\r\n");}
 	inline std::string RPL_LISTEND(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":End of /LIST" + "\r\n");}
 	inline std::string RPL_CHANNELMODEIS(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " " + chan.get_mode() + " " + chan.get_mode_params() + " :Cannot send to channel" + "\r\n");}
 	inline std::string RPL_NOTOPIC(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :No topic is set" + "\r\n");}

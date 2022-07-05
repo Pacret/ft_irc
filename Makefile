@@ -14,11 +14,12 @@ NAME		= ircserv
 
 SRCS		=	srcs/main.cpp 				\
 				srcs/Server/Server.cpp		\
-				srcs/Utils/Utils.cpp		\
+				srcs/Server/Context.cpp		\
 				srcs/Client/Client.cpp		\
 				srcs/Channel/Channel.cpp	\
 				srcs/Utils/parser_utils.cpp \
-				srcs/Utils/defines.cpp
+				srcs/Utils/defines.cpp		\
+				srcs/Utils/utils.cpp		
 	
 COMP		= c++
 

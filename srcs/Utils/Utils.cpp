@@ -10,12 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Utils.hpp"
+#include "utils.hpp"
 
-void    close_server(const std::string &msg_error)
+void	close_server(const std::string &msg_error)
 {
-    std::cerr << msg_error << std::endl;
-    exit(EXIT_FAILURE);
+	std::cerr << msg_error << std::endl;
+	exit(EXIT_FAILURE);
 }
 
 std::vector<std::string>	string_split(std::string str, std::string const& delim)
@@ -32,3 +32,11 @@ std::vector<std::string>	string_split(std::string str, std::string const& delim)
 		ret.push_back(str);
 	return ret;
 }
+
+std::string int_to_string(int code)
+{
+	std::stringstream	sstream;
+
+	sstream << code;
+	return (sstream.str());
+};
