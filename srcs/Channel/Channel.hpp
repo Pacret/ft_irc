@@ -54,7 +54,7 @@ class Channel
         int get_nbrUsers();
 
         std::vector<Client *>	get_users();
-        std::string				get_users_names();
+        //std::string			get_users_names();
         std::string				get_users_nicks();
 
         // void demote(Client& client);

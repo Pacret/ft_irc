@@ -124,7 +124,7 @@ void	Server::get_message(Client *client)
 	size_t	rn;
 	int		clientFd = client->fd;
 
-	if ((size = recv(client->get_fd(), &buff, BUFFER_SIZE, 0)) == -1) //?? Should be a while? Need to check max size IRC REQUEST
+	if ((size = recv(client->fd, &buff, BUFFER_SIZE, 0)) == -1) //?? Should be a while? Need to check max size IRC REQUEST
 		return;
 	if (!size)
 		return;

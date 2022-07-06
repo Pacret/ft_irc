@@ -61,11 +61,9 @@ class Client
 		user_mode_t			mode;
 		std::set<Channel *>	channelSet;
 
-        Client(int fd, struct sockaddr_in address);
-        ~Client();
+		Client(int fd, struct sockaddr_in address);
+		~Client();
 
-		int			get_fd();
-		std::string	get_nick();
 		std::string	get_username();
 		std::string	get_rn();
 		std::string	get_ip() const;

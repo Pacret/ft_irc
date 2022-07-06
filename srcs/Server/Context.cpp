@@ -80,10 +80,10 @@ Action		Context::join_command(Client *client, struct parse_t *command)
 	else
 		_channels[channel_name]->addClient(client);
 	std::vector<Client *> usrs = _channels[channel_name]->get_users();
-	_channels[channel_name]->broadcastToClients(NULL, std::string(":" + client->get_nick() + "!" +  client->get_username() + "@" + server_name + " JOIN :" + channel_name + "\r\n"));
-	sendToClient(client->get_fd(), std::string(ft_irc::RPL_TOPIC(server_name, client->get_nick(), *_channels[channel_name])));
-	sendToClient(client->get_fd(), std::string(ft_irc::RPL_NAMREPLY(server_name, client->get_nick(), _channels[channel_name]->get_name(), _channels[channel_name]->get_users_names())));
-	sendToClient(client->get_fd(), std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->get_nick(), _channels[channel_name]->get_name())));
+	_channels[channel_name]->broadcastToClients(NULL, std::string(":" + client->nick + "!" +  client->nick + "@" + server_name + " JOIN :" + channel_name + "\r\n"));
+	sendToClient(client->fd, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
+	sendToClient(client->fd, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[channel_name]->get_name(), _channels[channel_name]->get_users_nicks())));
+	sendToClient(client->fd, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[channel_name]->get_name())));
 	return NOPE;
 }
 
@@ -105,7 +105,7 @@ Action		Context::kick_command(Client *client, struct parse_t *command)
 	Client *	victim = channel->getClientByNick(command->args[1]);
 	if (!victim)
 	{
-		sendToClient(client->fd, ft_irc::ERR_USERNOTINCHANNEL(server_name, client->get_nick(), command->args[1], channel_name));
+		sendToClient(client->fd, ft_irc::ERR_USERNOTINCHANNEL(server_name, client->nick, command->args[1], channel_name));
 		std::cout << "Victim not on channel" << std::endl;	
 		return NOPE;
 	}
@@ -113,7 +113,7 @@ Action		Context::kick_command(Client *client, struct parse_t *command)
 	//Check if client exists on given channel
 	if (!_channels[channel_name]->isChannelMember(client->nick))
 	{
-		sendToClient(client->fd, ft_irc::ERR_NOTONCHANNEL(server_name, client->get_nick(), channel_name));
+		sendToClient(client->fd, ft_irc::ERR_NOTONCHANNEL(server_name, client->nick, channel_name));
 		std::cout << "Client not on channel" << std::endl;
 		return NOPE;
 	}
@@ -121,7 +121,7 @@ Action		Context::kick_command(Client *client, struct parse_t *command)
 	//Check if client has operator's privilege
 	if (!channel->isOperator(client))
 	{
-		sendToClient(client->fd, ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->get_nick(), channel_name));
+		sendToClient(client->fd, ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->nick, channel_name));
 		std::cout << "Need op priv" << std::endl;
 		return NOPE;
 	}
@@ -156,7 +156,7 @@ Action		Context::part_command(Client *client, struct parse_t *command)
 		chan = _channels[channel_names[i]];
 		if (!chan->isChannelMember(client->nick))
 		{
-			sendToClient(client->fd, ft_irc::ERR_NOTONCHANNEL(server_name, client->get_nick(), chan->get_name()));
+			sendToClient(client->fd, ft_irc::ERR_NOTONCHANNEL(server_name, client->nick, chan->get_name()));
 		}
 		else
 		{
@@ -180,7 +180,7 @@ Action		Context::oper_command(Client *client, struct parse_t *command)
 	if (client->mode.o)
 	{
 		sendToClient(client->fd, ft_irc::RPL_YOUREOPER(
-							server_name, client->get_nick()));
+							server_name, client->nick));
 		return NOPE;
 	}
 
@@ -192,15 +192,15 @@ Action		Context::oper_command(Client *client, struct parse_t *command)
 			|| opConfig.password != command->args[1])
 		{
 			sendToClient(client->fd, ft_irc::ERR_PASSWDMISMATCH(
-							server_name, client->get_nick()));
+							server_name, client->nick));
 			return NOPE;
 		}
 		client->mode.o = true;
 		_addOperator(client);
-		sendToClient(client->fd, ft_irc::RPL_YOUREOPER(server_name, client->get_nick()));
+		sendToClient(client->fd, ft_irc::RPL_YOUREOPER(server_name, client->nick));
 	}
 	else
-		sendToClient(client->fd, ft_irc::ERR_NOOPERHOST(server_name, client->get_nick()));
+		sendToClient(client->fd, ft_irc::ERR_NOOPERHOST(server_name, client->nick));
 	return NOPE;
 }
 
@@ -216,7 +216,7 @@ Action		 Context::priv_msg_command(Client *client, struct parse_t *p)
 	size_t i = 0;
 	vector<Client *> client_vector;
 
-	start_msg = ":" + client->get_nick() + " " + "PRIVMSG ";
+	start_msg = ":" + client->nick + " " + "PRIVMSG ";
 	while (!buff.empty() && buff[i] != '\0')
 	{
 		if ((i = buff.find(',')) == string::npos)
@@ -279,13 +279,13 @@ Action		Context::nick_command(Client *client, struct parse_t *command)
 	std::map<clientSocket, Client *>::iterator it;
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
-		std::cout << it->second->get_nick() << std::endl;
-		if (it->second->get_fd() != client->get_fd() && it->second->get_nick() == client->get_nick())
+		std::cout << it->second->nick << std::endl;
+		if (it->second->fd != client->fd && it->second->nick == client->nick)
 		{
 			client->nick_inuse = true;
 			tmp = true;
 			if (client->get_statut() == CONNECTED)
-				sendToClient(client->get_fd(), ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->get_nick()));
+				sendToClient(client->fd, ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->nick));
 		}
 	}
 	if (client->get_statut() == CONNECTED && tmp == false)
@@ -303,7 +303,7 @@ Action		Context::user_command(Client *client, struct parse_t *command)
 
 	if (client->nick_inuse)
 	{
-		sendToClient(client->get_fd(), ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->get_nick()));
+		sendToClient(client->fd, ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->nick));
 		return NOPE;
 	}
 	_send_motd(client);
@@ -315,7 +315,7 @@ Action	Context::quit_command(Client *client, struct parse_t *command)
 	std::string message;
 	if (command->args.size())
 		message = command->args[0];
-	sendToClient(client->get_fd(), std::string("ERROR :Closing link: (" + client->get_nick() + "@127.0.0.1) [Quit: " + message + "]"));
+	sendToClient(client->fd, std::string("ERROR :Closing link: (" + client->nick + "@127.0.0.1) [Quit: " + message + "]"));
 	//client->set_statut(DELETE);
 	deleteClient(client);
 	return KILL_CONNECTION;
@@ -325,7 +325,7 @@ bool	Context::_not_enough_params(Client & client, struct parse_t * command, unsi
 {
 	if (command->args.size() < minSize)
 	{
-		sendToClient(client.fd, ft_irc::ERR_NEEDMOREPARAMS(server_name, client.get_nick(), command->cmd));
+		sendToClient(client.fd, ft_irc::ERR_NEEDMOREPARAMS(server_name, client.nick, command->cmd));
 		std::cout << "Not enough param" << std::endl;
 		return true;
 	}
@@ -338,7 +338,7 @@ bool	Context::_no_such_channel(Client & client, std::string & chanName)
 	it = _channels.find(chanName);
 	if (it == _channels.end())
 	{
-		sendToClient(client.fd, ft_irc::ERR_NOSUCHCHANNEL(server_name, client.get_nick(), chanName));
+		sendToClient(client.fd, ft_irc::ERR_NOSUCHCHANNEL(server_name, client.nick, chanName));
 		std::cout << "No such channel" << std::endl;
 		return true;
 	}
@@ -347,17 +347,17 @@ bool	Context::_no_such_channel(Client & client, std::string & chanName)
 
 void	Context::_send_motd(Client *client)
 {
-	sendToClient(client->get_fd(), ft_irc::RPL_WELCOME(server_name, client->get_nick(), client->get_nick(), "127.0.0.1"));
-	sendToClient(client->get_fd(), ft_irc::RPL_LUSERCLIENT(server_name, client->get_nick(), "0", "0"));
-	sendToClient(client->get_fd(), ft_irc::RPL_LUSERUNKNOWN(server_name, client->get_nick(), " 0"));
-	sendToClient(client->get_fd(), ft_irc::RPL_LUSERCHANNELS(server_name, client->get_nick(), int_to_string(_channels.size())));
-	sendToClient(client->get_fd(), ft_irc::RPL_LUSERME(server_name, client->get_nick(), int_to_string(_clients.size())));
+	sendToClient(client->fd, ft_irc::RPL_WELCOME(server_name, client->nick, client->nick, "127.0.0.1"));
+	sendToClient(client->fd, ft_irc::RPL_LUSERCLIENT(server_name, client->nick, "0", "0"));
+	sendToClient(client->fd, ft_irc::RPL_LUSERUNKNOWN(server_name, client->nick, " 0"));
+	sendToClient(client->fd, ft_irc::RPL_LUSERCHANNELS(server_name, client->nick, int_to_string(_channels.size())));
+	sendToClient(client->fd, ft_irc::RPL_LUSERME(server_name, client->nick, int_to_string(_clients.size())));
 	if (_motd.empty())
 		return;
-	sendToClient(client->get_fd(), ft_irc::RPL_MOTDSTART(server_name, client->get_nick(), server_name));
+	sendToClient(client->fd, ft_irc::RPL_MOTDSTART(server_name, client->nick, server_name));
 	for(unsigned long int i = 0; i < _motd.size(); i++)
-		sendToClient(client->get_fd(), ft_irc::RPL_MOTD(server_name, client->get_nick(), _motd[i]));
-	sendToClient(client->get_fd(), ft_irc::RPL_ENDOFMOTD(server_name, client->get_nick()));
+		sendToClient(client->fd, ft_irc::RPL_MOTD(server_name, client->nick, _motd[i]));
+	sendToClient(client->fd, ft_irc::RPL_ENDOFMOTD(server_name, client->nick));
 }
 
 Client*	 Context::_get_client_by_nickname(string &nick_name)
@@ -365,7 +365,7 @@ Client*	 Context::_get_client_by_nickname(string &nick_name)
 	std::map<clientSocket, Client *>::iterator it = _clients.begin();
 	for(; it != _clients.end(); it++)
 	{
-		if (it->second->get_nick() == nick_name)
+		if (it->second->nick == nick_name)
 			return (it->second);
 	}
 	return (NULL);
@@ -422,7 +422,7 @@ void	Context::deleteClient(Client * client)
 	std::set<Channel *>::iterator ite = client->channelSet.end();
 
 	//Erase client from context's client lists
-	_clients.erase(client->get_fd());
+	_clients.erase(client->fd);
 
 	//Remove client from all the channels that he joined
 	for (; it != ite; it++)

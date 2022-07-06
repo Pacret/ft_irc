@@ -56,33 +56,40 @@ std::vector<Client *>	Channel::get_users()
 	return (ret);
 }
 
-std::string		Channel::get_users_names()
+// std::string		Channel::get_users_names()
+// {
+// 	std::string						users_names;
+// 	std::set<Client *>::iterator	it = _clients.begin();
+// 	std::set<Client *>::iterator	ite = _clients.end();
+	
+// 	for (; it != ite; it++)
+// 	{
+// 		if (users_names != "")
+// 			users_names += " ";
+// 		if (isOperator(*it))
+// 			users_names += "@";
+// 		users_names += (*it)->get_username();
+// 	}
+// 	std::cout << users_names << std::endl;
+// 	return (users_names);
+// }
+
+std::string		Channel::get_users_nicks()
 {
-	std::string						users_names;
+	std::string						user_nicks;
 	std::set<Client *>::iterator	it = _clients.begin();
 	std::set<Client *>::iterator	ite = _clients.end();
 	
 	for (; it != ite; it++)
 	{
-		if (users_names != "")
-			users_names += " ";
+		if (user_nicks != "")
+			user_nicks += " ";
 		if (isOperator(*it))
-			users_names += "@";
-		users_names += (*it)->get_username();
+			user_nicks += "@";
+		user_nicks += (*it)->nick;
 	}
-	std::cout << users_names << std::endl;
-	return (users_names);
-}
-
-std::string		Channel::get_users_nicks()
-{
-	std::string						users_nicks;
-	std::set<Client *>::iterator	it = _clients.begin();
-	std::set<Client *>::iterator	ite = _clients.end();
-	
-	for (; it != ite; it++)
-		users_nicks += (*it)->nick;
-	return (users_nicks);
+	std::cout << user_nicks << std::endl;
+	return (user_nicks);
 }
 
 

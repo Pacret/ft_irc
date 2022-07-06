@@ -255,13 +255,13 @@ namespace ft_irc
 	
 	inline std::string RPL_UNAWAY(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":You are no longer marked as being away" + "\r\n");}
 	inline std::string RPL_NOWAWAY(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":You have been marked as being away" + "\r\n");}
-	inline std::string RPL_WHOISUSER(std::string sender, std::string receiver, Client& cli, std::string host) {return (format_prefix(sender, __func__, receiver) + cli.get_nick() + " " + cli.get_username() + " " + host + " * :" + cli.get_rn() + "\r\n");}
+	inline std::string RPL_WHOISUSER(std::string sender, std::string receiver, Client& cli, std::string host) {return (format_prefix(sender, __func__, receiver) + cli.nick + " " + cli.get_username() + " " + host + " * :" + cli.get_rn() + "\r\n");}
 	inline std::string RPL_WHOISSERVER(std::string sender, std::string receiver, std::string nick, std::string server_name, std::string info) {return (format_prefix(sender, __func__, receiver) + nick + " " + server_name + " :" + info + "\r\n");}
 	inline std::string RPL_WHOISOPERATOR(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :is an IRC operator" + "\r\n");}
 	inline std::string RPL_WHOISIDLE(std::string sender, std::string receiver, std::string nick, std::string sec) {return (format_prefix(sender, __func__, receiver) + nick + " " + sec + " :seconds idle" + "\r\n");}
 	inline std::string RPL_ENDOFWHOIS(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :End of /WHOIS list" + "\r\n");}
 	inline std::string RPL_WHOISCHANNELS(std::string sender, std::string receiver, std::string nick, std::string chan_info) {return (format_prefix(sender, __func__, receiver) + nick + " :" + chan_info + "\r\n");}
-	inline std::string RPL_WHOWASUSER(std::string sender, std::string receiver, Client& cli, std::string host) {return (format_prefix(sender, __func__, receiver) + cli.get_nick() + " " + cli.get_username() + " " + host + " * " + " :" + cli.get_rn() + "\r\n");}
+	inline std::string RPL_WHOWASUSER(std::string sender, std::string receiver, Client& cli, std::string host) {return (format_prefix(sender, __func__, receiver) + cli.nick + " " + cli.get_username() + " " + host + " * " + " :" + cli.get_rn() + "\r\n");}
 	inline std::string RPL_ENDOFWHOWAS(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :End of WHOWAS" + "\r\n");}
 	inline std::string RPL_LISTSTART(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + "Channel :Users  Name" + "\r\n");}
 	inline std::string RPL_LIST(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " " + int_to_string(chan.get_nbrUsers()) + " :" + chan.get_topic() + "\r\n");}
