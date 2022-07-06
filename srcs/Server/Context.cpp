@@ -127,13 +127,10 @@ Action		Context::kick_command(Client *client, struct parse_t *command)
 	}
 
 	//Broadcast to channel members
-	std::cout << "{" << _format_response(client->get_nickmask(), *command) << "}" << std::endl;
 	channel->broadcastToClients(0, _format_response(client->get_nickmask(), *command));
 
-	//Delete victim from channel
-	//Delete channel if there's no one left
-	if (channel->deleteClient(victim) == 0)
-		_channels.erase(channel->get_name());
+	//Remove victim from channel and cleanup
+	removeClientFromChannel(victim, channel);
 	return NOPE;
 }
 
@@ -161,13 +158,12 @@ Action		Context::part_command(Client *client, struct parse_t *command)
 		{
 			sendToClient(client->fd, ft_irc::ERR_NOTONCHANNEL(server_name, client->get_nick(), chan->get_name()));
 		}
-		//Broadcast PART msg, delete client
 		else
 		{
-			std::cout << "{" << _format_response(client->get_nickmask(), *command) << "}" << std::endl;
+			//Broadcast PART message
 			chan->broadcastToClients(0, _format_response(client->get_nickmask(), *command));
-			if (chan->deleteClient(client) == 0)
-				_channels.erase(chan->get_name());
+			//Remove client from channel and cleanup
+			removeClientFromChannel(client, chan);
 		}
 	}
 	return NOPE;
@@ -188,7 +184,7 @@ Action		Context::oper_command(Client *client, struct parse_t *command)
 		return NOPE;
 	}
 
-	//Load config file
+	//Compare params with op config
 	if (!config.empty() && (opConfig.host == client->get_ip()
 				|| opConfig.host == "" || opConfig.host == "*" ))
 	{
@@ -200,6 +196,7 @@ Action		Context::oper_command(Client *client, struct parse_t *command)
 			return NOPE;
 		}
 		client->mode.o = true;
+		_addOperator(client);
 		sendToClient(client->fd, ft_irc::RPL_YOUREOPER(server_name, client->get_nick()));
 	}
 	else
@@ -421,10 +418,26 @@ void	Context::addClient(int fd, struct sockaddr_in address)
 
 void	Context::deleteClient(Client * client)
 {
+	std::set<Channel *>::iterator it = client->channelSet.begin();
+	std::set<Channel *>::iterator ite = client->channelSet.end();
+
+	//Erase client from context's client lists
 	_clients.erase(client->get_fd());
-	//TODO: Erase client from all of her channels
-	//If no one left in that channel, delete channel
+
+	//Remove client from all the channels that he joined
+	for (; it != ite; it++)
+		removeClientFromChannel(client, *it);
 
 	delete client;
+}
+
+void	Context::removeClientFromChannel(Client *client, Channel *channel)
+{
+	client->channelSet.erase(channel);
+	if (channel->deleteClient(client) == 0)
+	{
+		_channels.erase(channel->get_name());
+		delete channel;
+	}
 }
 

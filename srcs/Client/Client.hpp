@@ -18,8 +18,11 @@
 #include <iostream>
 #include <unistd.h>
 #include <netdb.h>
+#include <set>
 
 #include "../Utils/utils.hpp"
+
+class Channel;
 
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE 1024
@@ -44,24 +47,24 @@ enum Statut
 class Client
 {
     private:
-		std::string			_username;
-		std::string			_real_name;
-		Statut				_statut;
-		struct sockaddr_in	_address;
-		struct hostent 		_host;
+		std::string				_username;
+		std::string				_real_name;
+		Statut					_statut;
+		struct sockaddr_in		_address;
+		struct hostent 			_host;
 
     public:
-        std::string buffer;
-		int			fd;
-		std::string	nick;
-		bool		nick_inuse;
-		user_mode_t	mode;
+        std::string			buffer;
+		int					fd;
+		std::string			nick;
+		bool				nick_inuse;
+		user_mode_t			mode;
+		std::set<Channel *>	channelSet;
 
         Client(int fd, struct sockaddr_in address);
         ~Client();
 
-		int	get_fd();
-
+		int			get_fd();
 		std::string	get_nick();
 		std::string	get_username();
 		std::string	get_rn();

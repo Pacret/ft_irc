@@ -98,6 +98,8 @@ public:
 	Client *	getClient(int clientFd);
 	void		addClient(int fd, struct sockaddr_in address);
 	void		deleteClient(Client * client);
+	void		removeClientFromChannel(Client *client, Channel *channel);
+
 
 };
 

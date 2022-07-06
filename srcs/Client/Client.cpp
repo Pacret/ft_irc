@@ -14,16 +14,12 @@
 
 using namespace std;
 
-		Client::Client( int fd, struct sockaddr_in address) : _statut(NONE), _address(address), fd(fd), nick_inuse(false)
-{
-	
-	return;
-}
+		Client::Client( int fd, struct sockaddr_in address)
+			: _statut(NONE), _address(address), fd(fd), nick_inuse(false)
+{}
 
 		Client::~Client()
-{
-    close(fd);
-}
+{}
 
 void	Client::set_nick(std::string nick)
 {
