@@ -67,7 +67,7 @@ Action		Context::parse_command(Client *client, struct parse_t *command)
 		return (this->*_commands[command->cmd])(client, command);
 	}
 	else
-		std::cout << "	/!\\ ERROR COMMAND /!\\" << std::endl;
+		sendToClient(client->fd, std::string(ft_irc::ERR_UNKNOWNCOMMAND(server_name, client->nick, command->cmd)));
 	return NOPE;
 }
 
@@ -260,13 +260,18 @@ Action		 Context::priv_msg_command(Client *client, struct parse_t *p)
 
 Action		Context::pass_command(Client *client, struct parse_t *command)
 {
-	if (command->args[0] != getPassword())
+
+	if (!command->args.size())
+		sendToClient(client->fd, ft_irc::ERR_NEEDMOREPARAMS(server_name, "*", command->cmd));
+	else if (client->get_statut() == NONE)
+		sendToClient(client->fd, ft_irc::ERR_ALREADYREGISTRED(server_name, client->nick));
+	else if (command->args[0] == getPassword())
+		client->set_statut(REGISTERED);
+	else
 	{
-		//client->set_statut(DELETE);
 		deleteClient(client);
 		return KILL_CONNECTION;
 	}
-	client->set_statut(REGISTERED);
 	return NOPE;
 }
 
@@ -274,9 +279,17 @@ Action		Context::nick_command(Client *client, struct parse_t *command)
 {
 	bool tmp = false;
 
+	if (!command->args.size())
+	{
+		std::string name = "*";
+		if (client->nick != "")
+			name = client->nick;
+		sendToClient(client->fd, ft_irc::ERR_NONICKNAMEGIVEN(server_name, name));
+		return (NOPE);
+	}
 	client->set_nick(command->args[0]);
 
-	std::map<clientSocket, Client *>::iterator it;
+	std::map<clientSocket, Client *>::iterator it; 
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
 		std::cout << it->second->nick << std::endl;

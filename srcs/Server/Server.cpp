@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/04 20:11:49 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/06 15:33:37 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,12 @@ void	Server::get_message(Client *client)
 		parse_t *p;
 		rn = client->buffer.find("\r\n");
 		if (rn == std::string::npos)
-			throw ("Bad data: Partial Data received");
+		{
+			context->sendToClient(client->fd, std::string(ft_irc::ERR_UNKNOWNCOMMAND(context->server_name, client->nick, client->buffer)));
+			client->buffer = "";
+			std::cout << "\\r\\n missing, skip message." << std::endl;
+			break;
+		}
 		std::string command = client->buffer.substr(0, rn);
 		p = fill_parse_t(command);
 		client->buffer.erase(0, rn + 2);
