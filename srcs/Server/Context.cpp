@@ -11,6 +11,7 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 	_motd.push_back("une deuxieme");
 	_motd.push_back("et c'est tout");
 
+	_commands["CAP"] = &Context::capls_command;
 	_commands["JOIN"] = &Context::join_command;
 	_commands["PASS"] = &Context::pass_command;
 	_commands["NICK"] = &Context::nick_command;
@@ -60,7 +61,7 @@ std::string	 Context::_format_response(std::string sender, parse_t & command)
 
 Action		Context::parse_command(Client *client, struct parse_t *command)
 {
-	if ((client->get_statut() == NONE && command->cmd == "PASS") || 
+	if ((client->get_statut() == NONE && (command->cmd == "PASS" || command->cmd == "CAP")) || 
 		(client->get_statut() == REGISTERED && (command->cmd == "USER" || command->cmd == "NICK")) ||
 		(client->get_statut() == CONNECTED && (_commands.count(command->cmd) && command->cmd != "PASS" && command->cmd != "USER")))
 	{
@@ -68,6 +69,13 @@ Action		Context::parse_command(Client *client, struct parse_t *command)
 	}
 	else
 		sendToClient(client->fd, std::string(ft_irc::ERR_UNKNOWNCOMMAND(server_name, client->nick, command->cmd)));
+	return NOPE;
+}
+
+Action		Context::capls_command(Client *client, struct parse_t *command)
+{
+	(void)client;
+	(void)command;
 	return NOPE;
 }
 
@@ -263,7 +271,7 @@ Action		Context::pass_command(Client *client, struct parse_t *command)
 
 	if (!command->args.size())
 		sendToClient(client->fd, ft_irc::ERR_NEEDMOREPARAMS(server_name, "*", command->cmd));
-	else if (client->get_statut() == NONE)
+	else if (client->get_statut() != NONE)
 		sendToClient(client->fd, ft_irc::ERR_ALREADYREGISTRED(server_name, client->nick));
 	else if (command->args[0] == getPassword())
 		client->set_statut(REGISTERED);
@@ -311,6 +319,11 @@ Action		Context::nick_command(Client *client, struct parse_t *command)
 
 Action		Context::user_command(Client *client, struct parse_t *command)
 {
+	if (!command->args.size())
+	{
+		sendToClient(client->fd, ft_irc::ERR_NEEDMOREPARAMS(server_name, "*", command->cmd));
+		return NOPE;
+	}
 	client->set_user(command->args[0]);
 	client->set_statut(CONNECTED);
 

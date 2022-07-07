@@ -77,6 +77,7 @@ public:
 
 	Action	parse_command(Client *client, struct parse_t *command);
 
+	Action	capls_command(Client *client, struct parse_t *command);
 	Action	pass_command(Client *client, struct parse_t *command);
 	Action	nick_command(Client *client, struct parse_t *command);
 	Action	user_command(Client *client, struct parse_t *command);
