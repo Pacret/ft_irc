@@ -18,6 +18,7 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 	_commands["USER"] = &Context::user_command;
 	_commands["OPER"] = &Context::oper_command;
 	_commands["QUIT"] = &Context::quit_command;
+	_commands["TOPIC"] = &Context::topic_command;
 
 	_commands["KICK"] = &Context::kick_command;
 	_commands["PART"] = &Context::part_command;
@@ -92,6 +93,35 @@ Action		Context::join_command(Client *client, struct parse_t *command)
 	sendToClient(client->fd, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
 	sendToClient(client->fd, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[channel_name]->get_name(), _channels[channel_name]->get_users_nicks())));
 	sendToClient(client->fd, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[channel_name]->get_name())));
+	return NOPE;
+}
+
+Action		Context::topic_command(Client *client, struct parse_t *command)
+{
+	std::string channel_name;
+
+	if (command->args.size() < 1 || command->args[0] == "")
+	{
+		sendToClient(client->fd, ft_irc::ERR_NEEDMOREPARAMS(server_name, client->nick, command->cmd));
+		return NOPE;
+	}
+	channel_name = command->args[0];
+	if (_no_such_channel(*client, channel_name))
+		return NOPE;
+	else if (command->args.size() == 1)
+	{
+		if (_channels[channel_name]->get_topic() == "")
+			sendToClient(client->fd, std::string(ft_irc::RPL_NOTOPIC(server_name, client->nick, channel_name)));
+		else
+			sendToClient(client->fd, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
+		return (NOPE);
+	}
+	else
+	{
+		std::string new_topic = command->args[1].substr(1);
+		_channels[channel_name]->set_topic(new_topic);
+		sendToClient(client->fd, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
+	}
 	return NOPE;
 }
 

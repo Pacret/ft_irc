@@ -83,7 +83,7 @@ public:
 	Action	user_command(Client *client, struct parse_t *command);
 	Action	oper_command(Client *client, struct parse_t *command);
 	Action	quit_command(Client *client, struct parse_t *command);
-
+	Action	topic_command(Client *client, struct parse_t *command);
 
 	Action	join_command(Client *client, struct parse_t *command);
 	Action	kick_command(Client *client, struct parse_t *command);

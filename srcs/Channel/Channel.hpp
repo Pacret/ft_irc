@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/06/30 16:01:07 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/08 22:27:02 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ class Channel
 		Client*		getClientByNick(std::string nickname);
 		void		addClient(Client * client);
 		clientSize	deleteClient(Client * client);
+		void	set_topic(const std::string &new_topic);
 
 		bool	isOperator(Client * client) const;
 		void	removeOperator(Client * client);
