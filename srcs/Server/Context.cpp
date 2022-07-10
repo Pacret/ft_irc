@@ -1,5 +1,7 @@
 #include "Context.hpp"
 
+#include <ctime>
+
 Context::Context(std::string & servname, const std::string &port, const std::string &password)
 {
 	this->server_name = servname;
@@ -21,6 +23,8 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 	_commands["KICK"] = &Context::kick_command;
 	_commands["PART"] = &Context::part_command;
 	_commands["PRIVMSG"] = &Context::priv_msg_command;
+	_commands["PING"] = &Context::ping_command;
+	_commands["PONG"] = &Context::pong_command;
 //	_commands["MODE"] = &Context::mode_command_dummy;
 }
 
@@ -30,7 +34,6 @@ Context::~Context()
 		delete it->second;
 	// Delete channels
 }
-
 
 void	Context::sendToClient(int fd, const std::string & msg)
 {
@@ -71,9 +74,21 @@ Action		Context::parse_command(Client *client, struct parse_t *command)
 	return NOPE;
 }
 
+// Action		Context::Ping(Client *client, struct parse_t *command)
+// {
+
+// 	return NOPE;
+// }
+
 Action		Context::join_command(Client *client, struct parse_t *command)
 {
 	std::string channel_name = command->args[0];
+
+	if (command->args[0].size() > 200)
+	{
+		sendToClient(client->fd, ft_irc::ERR_BADCHANMASK(server_name, client->nick, channel_name));
+		return NOPE;
+	}
 
 	if (_channels.find(channel_name) == _channels.end())
 		_channels[channel_name] = new Channel(client, channel_name);
@@ -225,35 +240,21 @@ Action		 Context::priv_msg_command(Client *client, struct parse_t *p)
 		buff.erase(0, i);
 		i = 0;
 	}
-	
-	// cout << "before for" << endl;
-
 	for (vector<string>::iterator it = destinators.begin(); it != destinators.end(); it++)
 	{
 		string final_msg(start_msg);
 		final_msg += *it;
 		final_msg += " " + p->args[1] + "\r\n";
 
-		// cout << "before if in for " << *it << endl;
-		// _channels.find(*it);
-		// cout << "channel cond" << endl;
-		// get_client_by_nickname(*it);
-		// cout << "by nickname" << endl;
 		if (_channels.find(*it) == _channels.end() && _get_client_by_nickname(*it) == NULL)
 		{
-			// cout << "in if not found" << endl;
+			//RPL NEEDED
 			return NOPE;
 		}
 		else if (_channels.find(*it) != _channels.end())
-		{
-			// cout << "before broadcast" << endl;
 			_channels[*it]->broadcastToClients(client, final_msg);
-			// cout << "after broadcast" << endl;
-		}
 		else
-		{
 			sendToClient(_get_client_by_nickname(*it)->fd, final_msg);
-		}
 	}
 	return NOPE;
 }
@@ -414,6 +415,7 @@ void	Context::setPassword(const std::string &password)
 void	Context::addClient(int fd, struct sockaddr_in address)
 {
 	_clients[fd] = new Client(fd, address);
+	_clients[fd]->last_req = clock();
 }
 
 void	Context::deleteClient(Client * client)
@@ -439,5 +441,48 @@ void	Context::removeClientFromChannel(Client *client, Channel *channel)
 		_channels.erase(channel->get_name());
 		delete channel;
 	}
+}
+
+Action	Context::pong_command(Client *client, parse_t *p)
+{
+	std::cout << "PONG Command received" << std::endl;
+	client->ping_delta = 0;
+	p->cmd.erase();
+	return NOPE;
+}
+
+Action Context::ping_command(Client *client, parse_t *p)
+{
+	std::cout << "PING command sent by client" << std::endl;
+	std::string msg = ":" + this->server_name + " PONG ";
+	msg += this->server_name + " :" + this->server_name;
+
+	sendToClient(client->fd, msg);
+	p->cmd.erase();
+	return NOPE;
+}
+
+Action	Context::check_alive(Client *client)
+{
+	
+	if (client == NULL)
+		return NOPE;
+	float tsn_req = ((float)clock() - (float)(client->last_req)) / CLOCKS_PER_SEC;
+
+	std::cout << "hello" << std::endl;
+	if (tsn_req >= PING_DELTA && client->ping_delta == 0)
+	{
+		std::cout << "ping sent" << std::endl;
+		std::string msg = "PING " + this->server_name + "\r\n";
+		sendToClient(client->fd, msg);
+		client->ping_delta = client->last_req;
+		return NOPE;
+	}
+	// float ping_tsn = ((float)clock() - (float)(client->last_req)) / CLOCKS_PER_SEC; 
+	if (tsn_req >= PING_DELTA && client->ping_delta >= PING_DELTA + PING_WAIT)
+	{
+		return KILL_CONNECTION;
+	}
+	return NOPE;
 }
 
