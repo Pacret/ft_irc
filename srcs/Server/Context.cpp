@@ -19,6 +19,8 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 	_commands["OPER"] = &Context::oper_command;
 	_commands["QUIT"] = &Context::quit_command;
 	_commands["TOPIC"] = &Context::topic_command;
+	_commands["NAMES"] = &Context::names_command;
+	_commands["LIST"] = &Context::list_command;
 
 	_commands["KICK"] = &Context::kick_command;
 	_commands["PART"] = &Context::part_command;
@@ -121,6 +123,42 @@ Action		Context::topic_command(Client *client, struct parse_t *command)
 		std::string new_topic = command->args[1].substr(1);
 		_channels[channel_name]->set_topic(new_topic);
 		sendToClient(client->fd, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
+	}
+	return NOPE;
+}
+
+Action		Context::names_command(Client *client, struct parse_t *command)
+{
+	// client->channelSet	
+	// sendToClient(client->fd, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[channel_name]->get_name(), _channels[channel_name]->get_users_nicks())));
+	// sendToClient(client->fd, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[channel_name]->get_name())));
+	(void)client;
+	(void)command;
+	// sendToClient(client->fd, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[channel_name]->get_name(), _channels[channel_name]->get_users_nicks())));
+	// sendToClient(client->fd, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[channel_name]->get_name())));
+	return NOPE;
+}
+
+Action		Context::list_command(Client *client, struct parse_t *command)
+{
+	if (!command->args.size() || command->args[0] == "")
+	{
+		std::map<channelName, Channel *>::iterator it = _channels.begin();
+
+		sendToClient(client->fd, std::string(ft_irc::RPL_LISTSTART(server_name, client->nick)));
+		while(it != _channels.end())
+    	{
+			sendToClient(client->fd, std::string(ft_irc::RPL_LIST(server_name, client->nick, *it->second)));
+        	it++;
+    	}
+		sendToClient(client->fd, std::string(ft_irc::RPL_LISTEND(server_name, client->nick)));
+	}
+	else
+	{
+		sendToClient(client->fd, std::string(ft_irc::RPL_LISTSTART(server_name, client->nick)));
+		if (_channels.count(command->args[0]))
+			sendToClient(client->fd, std::string(ft_irc::RPL_LIST(server_name, client->nick, *_channels[command->args[0]])));
+		sendToClient(client->fd, std::string(ft_irc::RPL_LISTEND(server_name, client->nick)));
 	}
 	return NOPE;
 }
