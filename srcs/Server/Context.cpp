@@ -22,6 +22,8 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 	_commands["PART"] = &Context::part_command;
 	_commands["PRIVMSG"] = &Context::priv_msg_command;
 //	_commands["MODE"] = &Context::mode_command_dummy;
+
+	_commands["WHOIS"] = &Context::whois_command;
 }
 
 Context::~Context()
@@ -101,12 +103,10 @@ Action		Context::kick_command(Client *client, struct parse_t *command)
 
 	//Check if victim exists on given channel
 	Channel *	channel = _channels[channel_name];
-	std::cout << "(" + channel->get_users_nicks() + ")" << std::endl;
 	Client *	victim = channel->getClientByNick(command->args[1]);
 	if (!victim)
 	{
 		sendToClient(client->fd, ft_irc::ERR_USERNOTINCHANNEL(server_name, client->nick, command->args[1], channel_name));
-		std::cout << "Victim not on channel" << std::endl;	
 		return NOPE;
 	}
 
@@ -114,7 +114,6 @@ Action		Context::kick_command(Client *client, struct parse_t *command)
 	if (!_channels[channel_name]->isChannelMember(client->nick))
 	{
 		sendToClient(client->fd, ft_irc::ERR_NOTONCHANNEL(server_name, client->nick, channel_name));
-		std::cout << "Client not on channel" << std::endl;
 		return NOPE;
 	}
 
@@ -122,7 +121,6 @@ Action		Context::kick_command(Client *client, struct parse_t *command)
 	if (!channel->isOperator(client))
 	{
 		sendToClient(client->fd, ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->nick, channel_name));
-		std::cout << "Need op priv" << std::endl;
 		return NOPE;
 	}
 
@@ -168,6 +166,27 @@ Action		Context::part_command(Client *client, struct parse_t *command)
 	}
 	return NOPE;
 }
+
+//WHOIS [<server>] <nickmask>[,<nickmask>[,...]]
+Action	Context::whois_command(Client *client, struct parse_t *command)
+{
+	std::string					servname;
+	std::vector<std::string>	nickmasks;
+
+	if (command->args.empty())
+	{
+		sendToClient(client->fd, ft_irc::ERR_NONICKNAMEGIVEN(this->server_name, client->nick));
+		return NOPE;
+	}
+
+	int i = 0;
+	if (command->args.size() == 2)
+		servname = command->args[i++];
+	nickmasks = string_split(command->args[i], ",");
+
+	return NOPE;
+}
+
 
 //OPER <user> <password>
 Action		Context::oper_command(Client *client, struct parse_t *command)

@@ -83,13 +83,15 @@ public:
 	Action	oper_command(Client *client, struct parse_t *command);
 	Action	quit_command(Client *client, struct parse_t *command);
 
-
 	Action	join_command(Client *client, struct parse_t *command);
 	Action	kick_command(Client *client, struct parse_t *command);
 	Action	part_command(Client *client, struct parse_t *command);
-	Action	priv_msg_command(Client *client, parse_t *p);
+	Action	topic_command(Client *client, struct parse_t *command);
+	Action	invite_command(Client *client, struct parse_t *command);
+	Action	priv_msg_command(Client *client, parse_t * command);
 
-	Action	mode_command_dummy(Client *c, struct parse_t*p);
+	Action	mode_command(Client *client, struct parse_t *command);
+	Action	whois_command(Client *client, struct parse_t *command);
 
 	void		setPort(const std::string &port);
 	void		setPassword(const std::string &password);
