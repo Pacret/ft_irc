@@ -62,6 +62,8 @@ private:
 	std::string	_format_response(std::string sender, parse_t & command);
 
 	Client *	_get_client_by_nickname(string &nick_name);
+	std::string	_get_client_channellist(Client * client) const;
+
 
 public:
 	std::string					server_name;
@@ -77,16 +79,19 @@ public:
 
 	Action	parse_command(Client *client, struct parse_t *command);
 
+	Action	capls_command(Client *client, struct parse_t *command);
 	Action	pass_command(Client *client, struct parse_t *command);
 	Action	nick_command(Client *client, struct parse_t *command);
 	Action	user_command(Client *client, struct parse_t *command);
 	Action	oper_command(Client *client, struct parse_t *command);
 	Action	quit_command(Client *client, struct parse_t *command);
+	Action	topic_command(Client *client, struct parse_t *command);
+	Action	names_command(Client *client, struct parse_t *command);
+	Action	list_command(Client *client, struct parse_t *command);
 
 	Action	join_command(Client *client, struct parse_t *command);
 	Action	kick_command(Client *client, struct parse_t *command);
 	Action	part_command(Client *client, struct parse_t *command);
-	Action	topic_command(Client *client, struct parse_t *command);
 	Action	invite_command(Client *client, struct parse_t *command);
 	Action	priv_msg_command(Client *client, parse_t * command);
 

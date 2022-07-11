@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/04 20:30:27 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/08 22:27:56 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,11 @@ std::string		Channel::get_users_nicks()
 	return (user_nicks);
 }
 
+
+void			Channel::set_topic(const std::string &new_topic)
+{
+	_topic = new_topic;
+}
 
 std::string		Channel::get_topic()
 {
