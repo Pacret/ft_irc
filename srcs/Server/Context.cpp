@@ -8,11 +8,6 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 	this->port = port;
 	this->_password = password;
 
-	// TEMP PART, FILL THE MOTD
-	_motd.push_back("une ligne de MOTD");
-	_motd.push_back("une deuxieme");
-	_motd.push_back("et c'est tout");
-
 	_commands["CAP"] = &Context::capls_command;
 	_commands["JOIN"] = &Context::join_command;
 	_commands["PASS"] = &Context::pass_command;
@@ -482,15 +477,19 @@ bool	Context::_no_such_channel(Client & client, std::string & chanName)
 void	Context::_send_motd(Client *client)
 {
 	sendToClient(client->fd, ft_irc::RPL_WELCOME(server_name, client->nick, client->nick, "127.0.0.1"));
+	sendToClient(client->fd, std::string(":" + server_name + " 001 " + client->nick + conf_file_inline + ":are supported by this server\r\n"));
 	sendToClient(client->fd, ft_irc::RPL_LUSERCLIENT(server_name, client->nick, "0", "0"));
 	sendToClient(client->fd, ft_irc::RPL_LUSERUNKNOWN(server_name, client->nick, " 0"));
 	sendToClient(client->fd, ft_irc::RPL_LUSERCHANNELS(server_name, client->nick, int_to_string(_channels.size())));
 	sendToClient(client->fd, ft_irc::RPL_LUSERME(server_name, client->nick, int_to_string(_clients.size())));
-	if (_motd.empty())
+	if (motd.empty())
+	{
+		sendToClient(client->fd, ft_irc::ERR_NOMOTD(server_name, client->nick));
 		return;
+	}
 	sendToClient(client->fd, ft_irc::RPL_MOTDSTART(server_name, client->nick, server_name));
-	for(unsigned long int i = 0; i < _motd.size(); i++)
-		sendToClient(client->fd, ft_irc::RPL_MOTD(server_name, client->nick, _motd[i]));
+	for(unsigned long int i = 0; i < motd.size(); i++)
+		sendToClient(client->fd, ft_irc::RPL_MOTD(server_name, client->nick, motd[i]));
 	sendToClient(client->fd, ft_irc::RPL_ENDOFMOTD(server_name, client->nick));
 }
 

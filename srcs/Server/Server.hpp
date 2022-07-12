@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 20:50:08 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/04 14:48:02 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/12 13:36:49 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ class Server
 
 	public:
 		Server();
-		Server(const std::string &port, const std::string &password, std::string configFile = "");
+		Server(const std::string &port, const std::string &password, std::string configFile = "config");
 		~Server();
 
 		void	init();

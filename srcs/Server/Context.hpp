@@ -52,7 +52,6 @@ private:
 
 	std::string					_password;
 	std::set<Client *>			_operatorList;
-	std::vector<std::string>	_motd;
 
 	void	_send_motd(Client *client);
 
@@ -74,6 +73,9 @@ public:
 	std::string					port;
 	std::vector<std::string>	config;
 	servop_t					opConfig;
+	std::map<std::string, std::string>	conf_file;
+	std::string conf_file_inline;
+	std::vector<std::string>	motd;
 
 	Context();
 	Context(std::string & server_name, const std::string &port, const std::string &password);

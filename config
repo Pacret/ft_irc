@@ -5,3 +5,39 @@
 #
 
 O:127.0.0.1:opPw:opName:
+
+# Use S-line to define server name
+S:ft_irc.42.com
+
+# Use M-line to add MOTD messages
+M:une ligne de MOTD
+M:une deuxieme
+M:et c'est tout
+
+# Config
+
+AWAYLEN=200
+CASEMAPPING=ascii
+CHANLIMIT=#:20
+CHANMODES=b,k,l,imnpst
+CHANNELLEN=60
+CHANTYPES=#
+ELIST=CMNTU
+HOSTLEN=64
+KEYLEN=32
+KICKLEN=300
+LINELEN=512
+MAXLIST=b:100
+MAXTARGETS=20
+MODES=20
+NAMELEN=130
+NETWORK=Omega
+NICKLEN=30
+PREFIX=(ov)@+
+SAFELIST
+STATUSMSG=@+
+TOPICLEN=330
+USERLEN=10
+USERMODES=,,s,iow
+
+# WHOX

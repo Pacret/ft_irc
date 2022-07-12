@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/06 15:33:37 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/12 18:20:40 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,20 +193,35 @@ bool	Server::_load_server_config(std::string configFileNamepath)
 	}
 
 	//Parse O-lines for server operator, only the last line is accepted
-	std::vector<std::string>	op_config;
+	std::vector<std::string>	line_config;
 	for (unsigned long int i = 0; i < context->config.size(); i++)
 	{
-		if (context->config[i][0] == 'O')
+		line_config = string_split(context->config[i], ":");
+		if (context->config[i][1] == ':')
 		{
-			op_config = string_split(context->config[i], ":");
-			if (op_config.size() > 3)
+			if (context->config[i][0] == 'O' && line_config.size() > 3)
 			{
-				context->opConfig.host = op_config[1];
-				context->opConfig.password = op_config[2];
-				context->opConfig.username = op_config[3];
+				context->opConfig.host = line_config[1];
+				context->opConfig.password = line_config[2];
+				context->opConfig.username = line_config[3];
 			}
+			else if (context->config[i][0] == 'S' && line_config.size() == 2)
+				context->server_name = line_config[1];
+			else if (context->config[i][0] == 'M' && line_config.size() == 2)
+				context->motd.push_back(line_config[1]);
+		}
+		else
+		{
+			std::vector<std::string> line = string_split(context->config[i], "=");
+			if (line.size() == 2)
+				context->conf_file[line[0]] = line[1];
 		}
 	}
+	std::map<std::string, std::string>::iterator it;
+	std::string inline_conf;
 
+	for (it = context->conf_file.begin(); it != context->conf_file.end(); it++)
+		inline_conf += " " + it->first + "=" + it->second;
+	context->conf_file_inline = inline_conf;
 	return (true);
 }
