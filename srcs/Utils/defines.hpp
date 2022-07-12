@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/07/09 07:51:13 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/12 14:35:43 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,7 +264,7 @@ namespace ft_irc
 	inline std::string RPL_WHOISCHANNELS(std::string sender, std::string receiver, std::string nick, std::string chan_info) {return (format_prefix(sender, __func__, receiver) + nick + " :" + chan_info + "\r\n");}
 	inline std::string RPL_WHOWASUSER(std::string sender, std::string receiver, Client& cli, std::string host) {return (format_prefix(sender, __func__, receiver) + cli.nick + " " + cli.get_username() + " " + host + " * " + " :" + cli.get_rn() + "\r\n");}
 	inline std::string RPL_ENDOFWHOWAS(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :End of WHOWAS" + "\r\n");}
-	inline std::string RPL_LISTSTART(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + "Channel :Users  Name" + "\r\n");}
+	inline std::string RPL_LISTSTART(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + "Channel :Users Name" + "\r\n");}
 	inline std::string RPL_LIST(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " " + int_to_string(chan.get_nbrUsers()) + " :" + chan.get_topic() + "\r\n");}
 	inline std::string RPL_LISTEND(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":End of /LIST" + "\r\n");}
 	inline std::string RPL_CHANNELMODEIS(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " " + chan.get_mode() + " " + chan.get_mode_params() + " :Cannot send to channel" + "\r\n");}
