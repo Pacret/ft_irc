@@ -60,7 +60,7 @@ private:
 
 	std::string	_format_response(std::string sender, parse_t & command);
 
-	Client *	_get_client_by_nickname(string &nick_name);
+	Client *	_get_client_by_nickname(std::string &nick_name);
 	std::string	_get_client_channellist(Client * client) const;
 
 
@@ -98,6 +98,8 @@ public:
 	Action	priv_msg_command(Client *client, parse_t * command);
 
 	Action	mode_command(Client *client, struct parse_t *command);
+	Action	user_mode_command(Client *client, struct parse_t *command);
+	Action	chan_mode_command(Client *client, struct parse_t *command, Channel * chan);
 	Action	whois_command(Client *client, struct parse_t *command);
 
 	void		setPort(const std::string &port);

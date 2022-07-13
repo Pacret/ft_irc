@@ -17,22 +17,20 @@
 # include <vector>
 # include <iostream>
 
-using namespace std;
-
 struct parse_t
 {
-	string original_msg;
-	string cmd;
-	string prefix;
-	string msg_to_send;
-	vector<string> args;
+	std::string original_msg;
+	std::string cmd;
+	std::string prefix;
+	std::string msg_to_send;
+	std::vector<std::string> args;
 };
 
 
 // Fill the structure, args are sequencial and separated by every space found, except when entering a trailling,
-// if trailling is found then all the rest of the string is put into it. Function throw and error if partial data is found.
-parse_t		*fill_parse_t(string &msg);
-string		get_command(const string& msg);
+// if trailling is found then all the rest of the std::string is put into it. Function throw and error if partial data is found.
+parse_t		*fill_parse_t(std::string &msg);
+std::string	get_command(const std::string& msg);
 void		print_parse_t(const parse_t& p);
 
 

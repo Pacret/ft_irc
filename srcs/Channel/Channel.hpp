@@ -19,13 +19,14 @@
 # include <vector>
 # include <set>
 # include <map>
+# include <sstream>
 
 # include "../Utils/utils.hpp"
 # include "../Client/Client.hpp"
 
 typedef struct chan_mode_s
 {
-	bool	o; // give/take channel operator privileges;
+	bool	o; // give channel operator privileges;
 	bool	i; // invite-only channel flag;
 	bool	t; // topic settable by channel operator only flag;
 
@@ -61,7 +62,7 @@ class Channel
         // void promote(Client& client);
 
 		std::string get_name();
-		std::string get_mode();
+		std::string get_mode() const;
 		std::string get_mode_params();
 		std::string get_topic();
 

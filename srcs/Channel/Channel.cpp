@@ -185,3 +185,15 @@ void	Channel::addOperator(Client * client)
 {
 	_operatorList.insert(client);
 }
+
+std::string Channel::get_mode() const
+{
+	std::ostringstream	os;
+
+	os << "+";
+	if (mode.i)
+		os << "i";
+	if (mode.t)
+		os << "t";
+	return (os.str());
+}

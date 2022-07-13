@@ -19,9 +19,8 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 
 	_commands["KICK"] = &Context::kick_command;
 	_commands["PART"] = &Context::part_command;
+	_commands["MODE"] = &Context::mode_command;
 	_commands["PRIVMSG"] = &Context::priv_msg_command;
-//	_commands["MODE"] = &Context::mode_command_dummy;
-
 	_commands["WHOIS"] = &Context::whois_command;
 }
 
@@ -265,8 +264,8 @@ Action	Context::whois_command(Client *client, struct parse_t *command)
 	}
 
 	//Return info for each nickname
-	Client *		target;
-	ostringstream	os;
+	Client *			target;
+	std::ostringstream	os;
 	for (unsigned long i = 0; i < nickmasks.size(); i++)
 	{
 		if (!(target = _get_client_by_nickname(nickmasks[i])))
@@ -285,11 +284,129 @@ Action	Context::whois_command(Client *client, struct parse_t *command)
 	return NOPE;
 }
 
+//MODE <channel> {[+|-]|o|i|t} [<limit>] [<user>] [<ban mask>]
+//MODE <nickname> {[+|-]|i|o}
+Action	Context::mode_command(Client *client, struct parse_t *command)
+{
+	if (_not_enough_params(*client, command, 1))
+		return NOPE;
+
+	Client * target = _get_client_by_nickname(command->args[0]);
+	if (target)
+	{
+		if (target->nick != client->nick)
+		{
+			sendToClient(client->fd, ft_irc::ERR_USERSDONTMATCH(server_name, client->nick));
+			return NOPE;
+		}
+		else
+			return (user_mode_command(client, command));
+	}
+
+	std::map<channelName, Channel *>::iterator it = _channels.find(command->args[0]);
+	if (it == _channels.end())
+	{
+		sendToClient(client->fd, ft_irc::ERR_NOSUCHCHANNEL(server_name, client->nick, command->args[0]));
+		return NOPE;
+	}
+	else
+		return (chan_mode_command(client, command, it->second));
+}
+
+Action	Context::user_mode_command(Client *client, struct parse_t *command)
+{
+	if (command->args.size() > 1)
+	{
+		std::ostringstream	os;
+		if (command->args[1][0] == '-' && (client->mode.i || client->mode.o))
+		{
+			os << "-";
+			if (command->args[1].find("i") != std::string::npos && client->mode.i == true)
+			{
+				client->mode.i = false;
+				os << "i";
+			}
+			if (command->args[1].find("o") != std::string::npos && client->mode.o == true)
+			{
+				client->mode.o = false;
+				os << "o";
+			}
+		}
+		else if (command->args[1][0] != '-' && client->mode.i == false && command->args[1].find("i") != std::string::npos)
+		{
+			client->mode.i = true;
+			os << "+i";
+		}
+		if (os.str().size() > 1)
+			sendToClient(client->fd, ":" + client->nick + " MODE " + client->nick
+							+ " :" + os.str() + "\r\n");
+	}
+	else
+		sendToClient(client->fd, ft_irc::RPL_UMODEIS(server_name, client->nick, *client));
+	return NOPE;
+}
+
+Action	Context::chan_mode_command(Client *client, struct parse_t *command, Channel * chan)
+{
+	if (!chan->isOperator(client))
+		sendToClient(client->fd, ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->nick, chan->get_name()));
+	else if (command->args.size() > 1)
+	{
+		std::ostringstream os;
+		if (command->args[1][0] == '-' && (chan->mode.i || chan->mode.t))
+		{
+			os << "-";
+			if (command->args[1].find("i") != std::string::npos && chan->mode.i)
+			{
+				chan->mode.i = false;
+				os << "i";
+			}
+			if (command->args[1].find("t") != std::string::npos && chan->mode.t)
+			{
+				chan->mode.t = false;
+				os << "t";
+			}
+			if (command->args[1].find("o") != std::string::npos && command->args.size() > 2
+					&& chan->isOperator(_get_client_by_nickname(command->args[2])))
+			{
+				chan->removeOperator(_get_client_by_nickname(command->args[2]));
+				os << "o " + command->args[2];
+			}
+		}
+		else if (command->args[1][0] != '-')
+		{
+			os << "+";
+			if (command->args[1].find("i") != std::string::npos)
+			{
+				chan->mode.i = true;
+				os << "i";
+			}
+			if (command->args[1].find("t") != std::string::npos)
+			{
+				chan->mode.t = true;
+				os << "t";
+			}
+			if (command->args[1].find("o") != std::string::npos && command->args.size() > 2
+					&& chan->isChannelMember(command->args[2]))
+			{
+				chan->addOperator(_get_client_by_nickname(command->args[2]));
+				os << "o " + command->args[2];
+			}
+		}
+		if (os.str().size() > 1)
+			chan->broadcastToClients(0, ":" + client->nick + " MODE " + chan->get_name()
+							+ " " + os.str() + "\r\n");
+	}
+	else
+	{
+		sendToClient(client->fd, ft_irc::RPL_CHANNELMODEIS(server_name, client->nick, *chan));
+	}
+	return NOPE;
+}
 
 //OPER <user> <password>
 Action		Context::oper_command(Client *client, struct parse_t *command)
 {
-	//Check if there's enough parameters 
 	if (_not_enough_params(*client, command, 2))
 		return NOPE;
 
@@ -327,16 +444,16 @@ Action		 Context::priv_msg_command(Client *client, struct parse_t *p)
 	//vector<string> destinators;
 	//if (parsed->args.size() != 2)
 		//ERROR
-	string start_msg;
-	vector<string> destinators;
-	string buff = p->args[0];
-	size_t i = 0;
-	vector<Client *> client_vector;
+	std::string start_msg;
+	std::vector<std::string> destinators;
+	std::string buff = p->args[0];
+	std::size_t i = 0;
+	std::vector<Client *> client_vector;
 
 	start_msg = ":" + client->nick + " " + "PRIVMSG ";
 	while (!buff.empty() && buff[i] != '\0')
 	{
-		if ((i = buff.find(',')) == string::npos)
+		if ((i = buff.find(',')) == std::string::npos)
 			i = buff.size() + 1;
 		destinators.push_back(buff.substr(0, i - 1));
 		buff.erase(0, i);
@@ -345,9 +462,9 @@ Action		 Context::priv_msg_command(Client *client, struct parse_t *p)
 	
 	// cout << "before for" << endl;
 
-	for (vector<string>::iterator it = destinators.begin(); it != destinators.end(); it++)
+	for (std::vector<std::string>::iterator it = destinators.begin(); it != destinators.end(); it++)
 	{
-		string final_msg(start_msg);
+		std::string final_msg(start_msg);
 		final_msg += *it;
 		final_msg += " " + p->args[1] + "\r\n";
 
@@ -499,7 +616,7 @@ void	Context::_send_motd(Client *client)
 	sendToClient(client->fd, ft_irc::RPL_ENDOFMOTD(server_name, client->nick));
 }
 
-Client*	 Context::_get_client_by_nickname(string &nick_name)
+Client*	 Context::_get_client_by_nickname(std::string &nick_name)
 {
 	std::map<clientSocket, Client *>::iterator it = _clients.begin();
 	for(; it != _clients.end(); it++)

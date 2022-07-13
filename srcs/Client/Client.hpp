@@ -31,7 +31,7 @@ class Channel;
 typedef struct user_mode_s
 {
 	bool	i; // marks a users as invisible
-	bool	o; // operator falg
+	bool	o; // operator flag
 
 	user_mode_s(): i(false), o(false) {}
 }	user_mode_t;
@@ -69,6 +69,7 @@ class Client
 		std::string	get_ip() const;
 		Statut		get_statut();
 		std::string	get_nickmask() const;
+		std::string	get_mode() const;
 		
 		void	set_nick(std::string nick);
 		void	set_user(std::string user);
