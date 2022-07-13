@@ -6,8 +6,11 @@
 
 O:127.0.0.1:opPw:opName:
 
-# Use S-line to define server name
-S:ft_irc.42.com
+# Use H-line to define server hostname
+H:ft_irc.42.com
+
+# Use S-line to define server name (visible with VERSION command)
+S:ft_irc
 
 # Use M-line to add MOTD messages
 M:une ligne de MOTD

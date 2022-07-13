@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/12 18:20:40 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/13 21:58:05 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,8 +205,10 @@ bool	Server::_load_server_config(std::string configFileNamepath)
 				context->opConfig.password = line_config[2];
 				context->opConfig.username = line_config[3];
 			}
-			else if (context->config[i][0] == 'S' && line_config.size() == 2)
+			else if (context->config[i][0] == 'H' && line_config.size() == 2)
 				context->server_name = line_config[1];
+			else if (context->config[i][0] == 'S' && line_config.size() == 2)
+				context->version_name = line_config[1];
 			else if (context->config[i][0] == 'M' && line_config.size() == 2)
 				context->motd.push_back(line_config[1]);
 		}

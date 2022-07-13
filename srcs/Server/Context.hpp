@@ -70,6 +70,7 @@ private:
 
 public:
 	std::string					server_name;
+	std::string					version_name;
 	std::string					port;
 	std::vector<std::string>	config;
 	servop_t					opConfig;
@@ -95,6 +96,7 @@ public:
 	Action	names_command(Client *client, struct parse_t *command);
 	Action	list_command(Client *client, struct parse_t *command);
 	Action	invite_command(Client *client, struct parse_t *command);
+	Action	version_command(Client *client, struct parse_t *command);
 
 	Action	join_command(Client *client, struct parse_t *command);
 	Action	kick_command(Client *client, struct parse_t *command);

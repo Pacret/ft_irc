@@ -19,6 +19,7 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 	_commands["NAMES"] = &Context::names_command;
 	_commands["LIST"] = &Context::list_command;
 	_commands["INVITE"] = &Context::invite_command;
+	_commands["VERSION"] = &Context::version_command;
 
 	_commands["KICK"] = &Context::kick_command;
 	_commands["PART"] = &Context::part_command;
@@ -80,6 +81,14 @@ Action		Context::capls_command(Client *client, struct parse_t *command)
 {
 	(void)client;
 	(void)command;
+	return NOPE;
+}
+
+Action		Context::version_command(Client *client, struct parse_t *command)
+{
+	(void)command;
+	sendToClient(client->fd, std::string(":" + server_name + " 001 " + client->nick + conf_file_inline + ":are supported by this server\r\n"));
+	sendToClient(client->fd, std::string(ft_irc::RPL_VERSION(server_name, client->nick, version_name, "42", server_name, "")));
 	return NOPE;
 }
 
