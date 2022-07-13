@@ -14,12 +14,16 @@
 # include <vector>
 # include <set>
 # include <string>
+# include <ctime>
 
 # include "../Utils/utils.hpp"
 # include "../Client/Client.hpp"
 # include "../Channel/Channel.hpp"
 # include "../Utils/parser_utils.hpp"
 # include "../Utils/defines.hpp"
+
+# define PING_WAIT 1
+# define PING_DELTA 15
 
 enum Action
 {
@@ -94,8 +98,12 @@ public:
 	Action	join_command(Client *client, struct parse_t *command);
 	Action	kick_command(Client *client, struct parse_t *command);
 	Action	part_command(Client *client, struct parse_t *command);
+
+	Action	priv_msg_command(Client *client, struct parse_t *p);
+	Action	pong_command(Client *client, struct parse_t *p);
+	Action	ping_command(Client *client, struct parse_t *p);
 	Action	invite_command(Client *client, struct parse_t *command);
-	Action	priv_msg_command(Client *client, parse_t * command);
+
 
 	Action	mode_command(Client *client, struct parse_t *command);
 	Action	user_mode_command(Client *client, struct parse_t *command);
@@ -110,8 +118,6 @@ public:
 	void		addClient(int fd, struct sockaddr_in address);
 	void		deleteClient(Client * client);
 	void		removeClientFromChannel(Client *client, Channel *channel);
-
-
 };
 
 #endif

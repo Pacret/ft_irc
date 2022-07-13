@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   defines.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/07/10 16:49:44 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/12 14:35:43 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,6 +242,7 @@ namespace ft_irc
 	inline std::string ERR_NOOPERHOST(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":No O-lines for your host" + "\r\n");}
 	inline std::string ERR_UMODEUNKNOWNFLAG(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":Unknown MODE flag" + "\r\n");}
 	inline std::string ERR_USERSDONTMATCH(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":Cant change mode for other users" + "\r\n");}
+	inline std::string ERR_BADCHANMASK(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :Invalid channel name" + "\r\n");};
 
 	//
 	//
@@ -301,6 +302,5 @@ namespace ft_irc
 	inline std::string RPL_LUSERUNKNOWN(std::string sender, std::string receiver, std::string nbr_unk) {return (format_prefix(sender, __func__, receiver) + nbr_unk + " :unknow connection(s)" + "\r\n");}
 	inline std::string RPL_LUSERCHANNELS(std::string sender, std::string receiver, std::string nbr_channel) {return (format_prefix(sender, __func__, receiver) + " " + nbr_channel + " :channels formed" + "\r\n");}
 	inline std::string RPL_LUSERME(std::string sender, std::string receiver, std::string nbr_clients) {return (format_prefix(sender, __func__, receiver) + " :I have " + nbr_clients + " clients and 1 servers" + "\r\n");}
-
 }
 #endif
