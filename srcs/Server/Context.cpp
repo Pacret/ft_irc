@@ -18,6 +18,7 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 	_commands["TOPIC"] = &Context::topic_command;
 	_commands["NAMES"] = &Context::names_command;
 	_commands["LIST"] = &Context::list_command;
+	_commands["INVITE"] = &Context::invite_command;
 
 	_commands["KICK"] = &Context::kick_command;
 	_commands["PART"] = &Context::part_command;
@@ -84,6 +85,8 @@ Action		Context::capls_command(Client *client, struct parse_t *command)
 
 Action		Context::join_command(Client *client, struct parse_t *command)
 {
+	if (_not_enough_params(*client, command, 1))
+		return NOPE;
 	std::string channel_name = command->args[0];
 
 	if (command->args[0].size() > 200)
@@ -91,16 +94,56 @@ Action		Context::join_command(Client *client, struct parse_t *command)
 		sendToClient(client->fd, ft_irc::ERR_BADCHANMASK(server_name, client->nick, channel_name));
 		return NOPE;
 	}
-
-	if (_channels.find(channel_name) == _channels.end())
+	if (!_channels.count(channel_name))		
 		_channels[channel_name] = new Channel(client, channel_name);
+	else if (_channels[channel_name]->mode.i)
+	{
+		if (client->pending_invites.count(channel_name))
+			client->pending_invites.erase(channel_name);
+		else
+		{
+			sendToClient(client->fd, std::string(ft_irc::ERR_INVITEONLYCHAN(server_name, client->nick, channel_name)));
+			return NOPE;
+		}
+		_channels[channel_name]->addClient(client);
+	}
 	else
 		_channels[channel_name]->addClient(client);
 	std::vector<Client *> usrs = _channels[channel_name]->get_users();
 	_channels[channel_name]->broadcastToClients(NULL, std::string(":" + client->nick + "!" +  client->nick + "@" + server_name + " JOIN :" + channel_name + "\r\n"));
-	sendToClient(client->fd, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
+	if (_channels[channel_name]->get_topic() != "")
+		sendToClient(client->fd, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
 	sendToClient(client->fd, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[channel_name]->get_name(), _channels[channel_name]->get_users_nicks())));
 	sendToClient(client->fd, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[channel_name]->get_name())));
+	return NOPE;
+}
+
+Action		Context::invite_command(Client *client, struct parse_t *command)
+{
+	if (_not_enough_params(*client, command, 2))
+		return NOPE;
+
+	Client *to_invite = _get_client_by_nickname(command->args[0]);
+	std::string channel_name = command->args[1];
+	
+	if (to_invite == NULL)
+		sendToClient(client->fd, std::string(ft_irc::ERR_NOSUCHNICK(server_name, client->nick, command->args[0])));
+	else if (!_channels.count(channel_name))
+		 sendToClient(client->fd, std::string(ft_irc::ERR_NOSUCHCHANNEL(server_name, client->nick, channel_name))); 
+	else if (!_channels[channel_name]->isChannelMember(client->nick))
+		sendToClient(client->fd, std::string(ft_irc::ERR_NOTONCHANNEL(server_name, client->nick, channel_name)));
+	else if (to_invite == client)
+		return (NOPE);         
+	else if (_channels[channel_name]->isChannelMember(command->args[0]))
+		sendToClient(client->fd, std::string(ft_irc::ERR_USERONCHANNEL(server_name, client->nick, command->args[0], channel_name)));      
+	else if (_channels[channel_name]->mode.i && !_channels[channel_name]->isOperator(client))
+		sendToClient(client->fd, std::string(ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->nick, channel_name)));    
+	else
+	{
+		sendToClient(client->fd, std::string(ft_irc::RPL_INVITING(server_name, client->nick, command->args[0], channel_name)));
+		if (!to_invite->pending_invites.count(channel_name))
+			to_invite->pending_invites.insert(channel_name);
+	}
 	return NOPE;
 }
 
@@ -126,9 +169,14 @@ Action		Context::topic_command(Client *client, struct parse_t *command)
 	}
 	else
 	{
-		std::string new_topic = command->args[1].substr(1);
-		_channels[channel_name]->set_topic(new_topic);
-		sendToClient(client->fd, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
+		if (_channels[channel_name]->mode.t && !_channels[channel_name]->isOperator(client))
+			sendToClient(client->fd, std::string(ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->nick, _channels[channel_name]->get_name())));
+		else
+		{
+			std::string new_topic = command->args[1].substr(1);
+			_channels[channel_name]->set_topic(new_topic);
+			sendToClient(client->fd, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
+		}
 	}
 	return NOPE;
 }
@@ -490,7 +538,6 @@ Action		 Context::priv_msg_command(Client *client, struct parse_t *p)
 
 Action		Context::pass_command(Client *client, struct parse_t *command)
 {
-
 	if (!command->args.size())
 		sendToClient(client->fd, ft_irc::ERR_NEEDMOREPARAMS(server_name, "*", command->cmd));
 	else if (client->get_statut() != NONE)

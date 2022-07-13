@@ -94,6 +94,7 @@ public:
 	Action	topic_command(Client *client, struct parse_t *command);
 	Action	names_command(Client *client, struct parse_t *command);
 	Action	list_command(Client *client, struct parse_t *command);
+	Action	invite_command(Client *client, struct parse_t *command);
 
 	Action	join_command(Client *client, struct parse_t *command);
 	Action	kick_command(Client *client, struct parse_t *command);
@@ -102,7 +103,6 @@ public:
 	Action	priv_msg_command(Client *client, struct parse_t *p);
 	Action	pong_command(Client *client, struct parse_t *p);
 	Action	ping_command(Client *client, struct parse_t *p);
-	Action	invite_command(Client *client, struct parse_t *command);
 
 
 	Action	mode_command(Client *client, struct parse_t *command);

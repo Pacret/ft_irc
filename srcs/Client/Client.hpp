@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/02 16:58:37 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/13 20:53:29 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,13 @@ class Client
 		struct hostent 			_host;
 
     public:
-        std::string			buffer;
-		int					fd;
-		std::string			nick;
-		bool				nick_inuse;
-		user_mode_t			mode;
-		std::set<Channel *>	channelSet;
+        std::string				buffer;
+		int						fd;
+		std::string				nick;
+		bool					nick_inuse;
+		user_mode_t				mode;
+		std::set<Channel *>		channelSet;
+		std::set<std::string>	pending_invites;
 
 		Client(int fd, struct sockaddr_in address);
 		~Client();
