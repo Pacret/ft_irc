@@ -18,6 +18,7 @@
 
 # include "../Utils/utils.hpp"
 # include "../Client/Client.hpp"
+# include "../Client/Bot.hpp"
 # include "../Channel/Channel.hpp"
 # include "../Utils/parser_utils.hpp"
 # include "../Utils/defines.hpp"
@@ -52,6 +53,7 @@ private:
 
 	std::string					_password;
 	std::set<Client *>			_operatorList;
+	Bot *						_bot;
 
 	void	_send_motd(Client *client);
 
@@ -59,8 +61,8 @@ private:
 	void	_removeOperator(Client * client);
 	void	_addOperator(Client * client);
 
-	bool	_not_enough_params(Client & client, struct parse_t * command, unsigned int minSize);
-	bool	_no_such_channel(Client & client, std::string & chanName);
+	bool	_not_enough_params(Client * client, struct parse_t * command, unsigned int minSize);
+	bool	_no_such_channel(Client * client, std::string & chanName);
 
 	std::string	_format_response(std::string sender, parse_t & command);
 
@@ -82,7 +84,7 @@ public:
 	Context(std::string & server_name, const std::string &port, const std::string &password);
 	~Context();
 
-	void	sendToClient(int clientSocket, const std::string & msg);
+	void	sendToClient(Client *client, const std::string & msg, Client * sender = 0);
 
 	Action	parse_command(Client *client, struct parse_t *command);
 
@@ -122,6 +124,8 @@ public:
 	void		addClient(int fd, struct sockaddr_in address);
 	void		deleteClient(Client * client);
 	void		removeClientFromChannel(Client *client, Channel *channel);
+
+	void		initServBot();
 };
 
 #endif

@@ -63,6 +63,7 @@ class Client
 		std::set<std::string>	pending_invites;
 
 		Client(int fd, struct sockaddr_in address);
+		Client();
 		~Client();
 
 		std::string	get_username();

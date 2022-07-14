@@ -16,6 +16,9 @@
 			: _statut(NONE), _address(address), fd(fd), nick_inuse(false)
 {}
 
+		Client::Client()
+{}
+
 		Client::~Client()
 {}
 

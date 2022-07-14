@@ -137,7 +137,7 @@ void	Server::get_message(Client *client)
 		rn = client->buffer.find("\r\n");
 		if (rn == std::string::npos)
 		{
-			context->sendToClient(client->fd, std::string(ft_irc::ERR_UNKNOWNCOMMAND(context->server_name, client->nick, client->buffer)));
+			context->sendToClient(client, std::string(ft_irc::ERR_UNKNOWNCOMMAND(context->server_name, client->nick, client->buffer)));
 			client->buffer = "";
 			std::cout << "\\r\\n missing, skip message." << std::endl;
 			break;

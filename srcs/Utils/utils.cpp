@@ -40,3 +40,13 @@ std::string int_to_string(int code)
 	sstream << code;
 	return (sstream.str());
 };
+
+std::string	& string_to_lower(std::string & str)
+{
+	for (std::size_t i = 0; i < str.size(); i++)
+	{
+		if (str[i] >= 'A' && str[i] <= 'Z')
+			str[i] -= 'A' - 'a';
+	}
+	return str;
+}

@@ -14,7 +14,8 @@
 
 		Channel::Channel(Client *owner, const std::string &channel_name): _channel_name(channel_name)
 {
-	_clients.insert(owner);
+	if (owner)
+		_clients.insert(owner);
 	addOperator(owner);
 	return;
 }
@@ -120,6 +121,10 @@ void	Channel::broadcastToClients(Client * client, std::string msg)
 
 void	Channel::sendToClient(Client * client, std::string msg)
 {
+	//Bot has negative fd -1
+	if (!client || client->fd < 0) 
+		return ;
+
 	if (send(client->fd, msg.c_str(), msg.size(), 0) == -1)
 	{
 		//error handler
@@ -183,6 +188,8 @@ void	Channel::removeOperator(Client * client)
 
 void	Channel::addOperator(Client * client)
 {
+	if (!isChannelMember(client->nick))
+		addClient(client);
 	_operatorList.insert(client);
 }
 
