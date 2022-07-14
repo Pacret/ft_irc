@@ -415,11 +415,15 @@ Action	Context::user_mode_command(Client *client, struct parse_t *command)
 
 Action	Context::chan_mode_command(Client *client, struct parse_t *command, Channel * chan)
 {
-	if (!chan->isOperator(client))
-		sendToClient(client->fd, ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->nick, chan->get_name()));
-	else if (command->args.size() > 1)
+	std::ostringstream	os;
+
+	if (command->args.size() > 1)
 	{
-		std::ostringstream os;
+		if (!chan->isOperator(client))
+		{
+			sendToClient(client->fd, ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->nick, chan->get_name()));
+			return NOPE;
+		}
 		if (command->args[1][0] == '-' && (chan->mode.i || chan->mode.t))
 		{
 			os << "-";

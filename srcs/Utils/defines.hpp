@@ -268,7 +268,7 @@ namespace ft_irc
 	inline std::string RPL_LIST(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " " + int_to_string(chan.get_nbrUsers()) + " :" + chan.get_topic() + "\r\n");}
 	inline std::string RPL_LISTEND(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":End of /LIST" + "\r\n");}
 	inline std::string RPL_CHANNELMODEIS(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " " + chan.get_mode() + "\r\n");}
-	inline std::string RPL_UMODEIS(std::string sender, std::string receiver, Client & client) {return (format_prefix(sender, __func__, receiver) + client.nick + " " + client.get_mode() + "\r\n");}
+	inline std::string RPL_UMODEIS(std::string sender, std::string receiver, Client & client) {return (format_prefix(sender, __func__, receiver) + client.get_mode() + "\r\n");}
 	inline std::string RPL_NOTOPIC(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :No topic is set" + "\r\n");}
 	inline std::string RPL_TOPIC(std::string sender, std::string receiver, Channel& chan) {return (format_prefix(sender, __func__, receiver) + chan.get_name() + " :" + chan.get_topic() + "\r\n");}
 	inline std::string RPL_INVITING(std::string sender, std::string receiver, std::string chan, std::string nick) {return (format_prefix(sender, __func__, receiver) + chan + " " + nick + "\r\n");}
