@@ -78,6 +78,7 @@ std::string	 Context::_format_response(std::string sender, parse_t & command)
 
 Action		Context::time_command(Client *client, parse_t *p)
 {
+	(void)p;
 	std::ostringstream os;
 	time_t c_time = time(NULL);
 	tm *tm_local = localtime(&c_time);

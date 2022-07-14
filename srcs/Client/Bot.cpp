@@ -102,7 +102,7 @@ void	Bot::privmsg_handler(Client * sender, std::string msg, Channel * chan)
 	if (chan)
 		chan->broadcastToClients(this, reply.str());
 	else if (send(sender->fd, reply.str().c_str(), reply.str().size(), 0) == -1)
-		; // !!!error handler!!!
+		{}; // !!!error handler!!!
 }
 
 Channel *	Bot::_getChannel(std::string channelName)
