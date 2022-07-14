@@ -17,6 +17,7 @@ SRCS		=	srcs/main.cpp 				\
 				srcs/Server/Context.cpp		\
 				srcs/Client/Client.cpp		\
 				srcs/Channel/Channel.cpp	\
+				srcs/Client/Bot.cpp			\
 				srcs/Utils/parser_utils.cpp \
 				srcs/Utils/defines.cpp		\
 				srcs/Utils/utils.cpp		
