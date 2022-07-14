@@ -103,6 +103,8 @@ public:
 	Action	part_command(Client *client, struct parse_t *command);
 
 	Action	priv_msg_command(Client *client, struct parse_t *p);
+	Action	notice_command(Client *client, struct parse_t *p);
+	Action	time_command(Client *client, parse_t *p);
 	Action	pong_command(Client *client, struct parse_t *p);
 	Action	ping_command(Client *client, struct parse_t *p);
 

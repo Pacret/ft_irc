@@ -27,6 +27,8 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 	_commands["PRIVMSG"] = &Context::priv_msg_command;
 	_commands["PING"] = &Context::ping_command;
 	_commands["PONG"] = &Context::pong_command;
+	_commands["NOTICE"] = &Context::notice_command;
+	_commands["TIME"] = &Context::time_command;
 
 	_commands["WHOIS"] = &Context::whois_command;
 }
@@ -62,6 +64,19 @@ std::string	 Context::_format_response(std::string sender, parse_t & command)
 	}
 	os << "\r\n";
 	return (os.str());
+}
+
+Action		Context::time_command(Client *client, parse_t *p)
+{
+	std::ostringstream os;
+	time_t c_time = time(NULL);
+	tm *tm_local = localtime(&c_time);
+	
+	p = NULL;
+	os << tm_local->tm_hour << ":" << tm_local->tm_min << ":" << tm_local->tm_sec;
+	// std::string s_time = tm_local->tm_hour + ":" + tm_local->tm_min + ":" + tm_local->tm_sec;
+	sendToClient(client->fd, ft_irc::RPL_TIME(server_name, client->nick, server_name, os.str()));
+	return NOPE;
 }
 
 Action		Context::parse_command(Client *client, struct parse_t *command)
@@ -509,12 +524,14 @@ Action		Context::oper_command(Client *client, struct parse_t *command)
 	return NOPE;
 }
 
-Action		 Context::priv_msg_command(Client *client, struct parse_t *p)
+Action		Context::notice_command(Client *client, struct parse_t *p)
 {
-	// NOT FINISHED
-	//vector<string> destinators;
-	//if (parsed->args.size() != 2)
-		//ERROR
+	if (p->args.size() == 0 || p->args[0][0] == ':')
+		
+		return NOPE;
+	else if (p->args.size() == 1)
+		return NOPE;
+
 	std::string start_msg;
 	std::vector<std::string> destinators;
 	std::string buff = p->args[0];
@@ -532,17 +549,99 @@ Action		 Context::priv_msg_command(Client *client, struct parse_t *p)
 	}
 	for (std::vector<std::string>::iterator it = destinators.begin(); it != destinators.end(); it++)
 	{
+		for (std::vector<std::string>::iterator ite = it + 1; ite != destinators.end(); ite++)
+		{
+			if (*it == *ite)
+				return NOPE;
+		}
+	}
+
+	for (std::vector<std::string>::iterator it = destinators.begin(); it != destinators.end(); it++)
+	{
+		std::string final_msg(start_msg);
+		final_msg += *it;
+		final_msg += " " + p->args[1] + "\r\n";
+
+		if (_channels.find(*it) == _channels.end() && _get_client_by_nickname(*it) == NULL)
+			return NOPE;
+		else if (_channels.find(*it) != _channels.end())
+		{
+			Channel *target = _channels.find(*it)->second;
+			if ((target->get_mode().find('n') == std::string::npos && target->isChannelMember(client->nick) == false)
+				|| (target->get_mode().find('m') != std::string::npos && target->isOperator(client) == false && 
+					target->get_mode().find('v') == std::string::npos))
+				return NOPE;
+			_channels[*it]->broadcastToClients(client, final_msg);
+		}
+		else
+			sendToClient(_get_client_by_nickname(*it)->fd, final_msg);
+	}
+	return NOPE;
+}
+
+Action		Context::priv_msg_command(Client *client, struct parse_t *p)
+{
+	if (p->args.size() == 0 || p->args[0][0] == ':')
+	{
+		sendToClient(client->fd, ft_irc::ERR_NORECIPIENT(server_name, client->nick, "PRIVMSG"));
+		return NOPE;
+	}
+	else if (p->args.size() == 1)
+	{
+		sendToClient(client->fd, ft_irc::ERR_NOTEXTTOSEND(server_name, client->nick));
+		return NOPE;
+	}
+
+	std::string start_msg;
+	std::vector<std::string> destinators;
+	std::string buff = p->args[0];
+	std::size_t i = 0;
+	std::vector<Client *> client_vector;
+
+	start_msg = ":" + client->nick + " " + "PRIVMSG ";
+	while (!buff.empty() && buff[i] != '\0')
+	{
+		if ((i = buff.find(',')) == std::string::npos)
+			i = buff.size() + 1;
+		destinators.push_back(buff.substr(0, i - 1));
+		buff.erase(0, i);
+		i = 0;
+	}
+	for (std::vector<std::string>::iterator it = destinators.begin(); it != destinators.end(); it++)
+	{
+		for (std::vector<std::string>::iterator ite = it + 1; ite != destinators.end(); ite++)
+		{
+			if (*it == *ite)
+			{
+				sendToClient(client->fd, ft_irc::ERR_TOOMANYTARGETS(server_name, client->nick, *it));
+				return NOPE;
+			}
+		}
+	}
+
+	for (std::vector<std::string>::iterator it = destinators.begin(); it != destinators.end(); it++)
+	{
 		std::string final_msg(start_msg);
 		final_msg += *it;
 		final_msg += " " + p->args[1] + "\r\n";
 
 		if (_channels.find(*it) == _channels.end() && _get_client_by_nickname(*it) == NULL)
 		{
-			//RPL NEEDED
+			sendToClient(client->fd, ft_irc::ERR_NOSUCHNICK(server_name, client->nick, p->args[0].c_str()));
 			return NOPE;
 		}
 		else if (_channels.find(*it) != _channels.end())
+		{
+			Channel *target = _channels.find(*it)->second;
+			if ((target->get_mode().find('n') == std::string::npos && target->isChannelMember(client->nick) == false)
+				|| (target->get_mode().find('m') != std::string::npos && target->isOperator(client) == false && 
+					target->get_mode().find('v') == std::string::npos))
+			{
+				sendToClient(client->fd, ft_irc::ERR_CANNOTSENDTOCHAN(server_name, client->nick, *it));
+				return NOPE;
+			}
 			_channels[*it]->broadcastToClients(client, final_msg);
+		}
 		else
 			sendToClient(_get_client_by_nickname(*it)->fd, final_msg);
 	}
