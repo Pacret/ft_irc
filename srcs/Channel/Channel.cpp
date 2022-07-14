@@ -15,9 +15,7 @@
 		Channel::Channel(Client *owner, const std::string &channel_name): _channel_name(channel_name)
 {
 	if (owner)
-		_clients.insert(owner);
-	addOperator(owner);
-	return;
+		addOperator(owner);
 }
 
 		Channel::~Channel()
@@ -57,24 +55,6 @@ std::vector<Client *>	Channel::get_users()
 	return (ret);
 }
 
-// std::string		Channel::get_users_names()
-// {
-// 	std::string						users_names;
-// 	std::set<Client *>::iterator	it = _clients.begin();
-// 	std::set<Client *>::iterator	ite = _clients.end();
-	
-// 	for (; it != ite; it++)
-// 	{
-// 		if (users_names != "")
-// 			users_names += " ";
-// 		if (isOperator(*it))
-// 			users_names += "@";
-// 		users_names += (*it)->get_username();
-// 	}
-// 	std::cout << users_names << std::endl;
-// 	return (users_names);
-// }
-
 std::string		Channel::get_users_nicks()
 {
 	std::string						user_nicks;
@@ -92,7 +72,6 @@ std::string		Channel::get_users_nicks()
 	std::cout << user_nicks << std::endl;
 	return (user_nicks);
 }
-
 
 void			Channel::set_topic(const std::string &new_topic)
 {
