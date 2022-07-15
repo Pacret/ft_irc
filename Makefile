@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+         #
+#    By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/18 20:59:10 by pbonilla          #+#    #+#              #
-#    Updated: 2022/07/04 15:13:21 by pbonilla         ###   ########.fr        #
+#    Updated: 2022/07/15 14:40:42 by tmerrien         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,12 @@ COMP		= c++
 
 FLAGS		= -Wall -Wextra -Werror -fsanitize=address -std=c++98 
 
+VAL			=	valgrind
+
+VALF		=	--tool=memcheck --leak-check=full --leak-resolution=high \
+				--show-reachable=yes --track-origin=yes --log-file=valgrind_log \
+				--xtree-momery=full
+
 OBJS		= $(SRCS:.cpp=.o)
 
 .cpp.o:
@@ -37,6 +43,10 @@ all: $(NAME)
 
 $(NAME): ${OBJS}
 	 $(COMP) $(FLAGS) $(OBJS) -o $(NAME) 
+
+leaks: $(NAME)
+		$(VAL) $(VALF) ./$(NAME)
+		grep -A1 "valgrind" valgrind_log | grep $(NAME) || echo -n
 
 debugflag:
 		$(eval FLAGS=-D DEBUG)

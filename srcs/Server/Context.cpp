@@ -38,7 +38,7 @@ Context::~Context()
 {
 	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 		delete it->second;
-	// Delete channels
+	// Delete channels TODO
 }
 
 void	Context::sendToClient(Client * client, const std::string & msg, Client * sender)
@@ -556,7 +556,7 @@ Action		Context::notice_command(Client *client, struct parse_t *p)
 	std::size_t i = 0;
 	std::vector<Client *> client_vector;
 
-	start_msg = ":" + client->nick + " " + "NOTICE ";
+	start_msg = ":" + client->nick + " NOTICE ";
 	while (!buff.empty() && buff[i] != '\0')
 	{
 		if ((i = buff.find(',')) == std::string::npos)
