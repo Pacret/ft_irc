@@ -68,9 +68,7 @@ std::string	 Context::_format_response(std::string sender, parse_t & command)
 	{
 		os << command.cmd;
 		for (unsigned long i = 0; i < command.args.size(); i++)
-		{
 			os << " " << command.args[i];
-		}
 	}
 	os << "\r\n";
 	return (os.str());
@@ -297,9 +295,17 @@ Action		Context::kick_command(Client *client, struct parse_t *command)
 
 	//Add client nick as kick comment if no comment provided
 	if (command->args.size() < 3 )
+	{
 		command->args.push_back(":" + client->nick);
-	else if (command->args[2].size() == 1)
-		command->args[2] = ":" + client->nick;
+		command->original_msg += " :" + client->nick;
+	}
+	else if (command->args[2] == ":")
+	{
+		command->args[2] += client->nick;
+		command->original_msg += client->nick;
+	}
+
+	//Broadcast to clients on channel
 	channel->broadcastToClients(0, _format_response(client->get_nickmask(), *command));
 
 	//Remove victim from channel and cleanup
