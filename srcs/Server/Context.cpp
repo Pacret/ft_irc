@@ -743,11 +743,19 @@ Action		Context::user_command(Client *client, struct parse_t *command)
 
 Action	Context::quit_command(Client *client, struct parse_t *command)
 {
-	std::string message;
-	if (command->args.size())
-		message = command->args[0];
-	sendToClient(client, std::string("ERROR :Closing link: (" + client->nick + "@" + client->ip + ") [Quit: " + message + "]"));
-	//client->set_statut(DELETE);
+	std::string message = "leaving";
+	if (command->args.size() && command->args[0][0] == ':' && command->args[0][1])
+		message = command->args[0].substr(1);
+	
+	sendToClient(client, std::string("ERROR :Closing link: (" + client->nick + "@" + client->ip + ") [Quit: " + message + "]\r\n"));
+	
+	std::map<channelName, Channel *>::iterator	it_chan = _channels.begin();
+	std::map<channelName, Channel *>::iterator	it_chan_e = _channels.end();	
+	for (; it_chan != it_chan_e; it_chan++)
+	{
+		if ((*it_chan->second).isChannelMember(client->nick))
+			(*it_chan->second).broadcastToClients(NULL, std::string(":" + client->nick + "!" + client->get_username() + "@" + client->ip + " QUIT :Quit: " + message + "\r\n"));
+	}
 	deleteClient(client);
 	return KILL_CONNECTION;
 }
