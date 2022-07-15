@@ -909,17 +909,18 @@ void	Context::removeClientFromChannel(Client *client, Channel *channel)
 Action	Context::pong_command(Client *client, struct parse_t *p)
 {
 	std::cout << "PONG Command received" << std::endl;
-	client->buffer.erase();
+	client = NULL;
 	p->cmd.erase();
 	return NOPE;
 }
 
 Action Context::ping_command(Client *client, struct parse_t *p)
 {
-	std::cout << "PING command sent by client" << std::endl;
-	// std::string msg = ":" + this->server_name + " PONG ";
-	// std::string msg = "PONG ";
-	// msg += client->nick + " :" + client->nick;
+	if (p->args.size() != 1)
+	{
+		sendToClient(client, ft_irc::ERR_NOORIGIN(server_name, client->nick));
+		return NOPE;
+	}
 	std::string msg = ":" + this->server_name + " PONG ";
 	msg += p->args[0] + " :" + p->args[0] + "\r\n";
 
