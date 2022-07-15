@@ -39,6 +39,7 @@ void	Bot::onMessageReceive(Client * sender, std::string raw_msg)
 	}
 	else if (head.size() == 2 && head[0][0] == ':' && head[1] == "JOIN")
 	{
+		std::cout << "JOIN msg's comment : " << comment << std::endl;
 		chan = _getChannel(comment);
 		if (!chan)
 			return ;
@@ -71,31 +72,32 @@ void	Bot::privmsg_handler(Client * sender, std::string msg, Channel * chan)
 
 	//Generate a response according to the received message
 	msg = string_to_lower(msg);
-	if (msg.compare(0, 5, "hello") || msg.compare(0, 2, "hi") || msg.compare(0, 3, "hey"))
-		reply << "Hello " + sender->nick + "! \n";
+	if (msg.compare(0, 5, "hello") == 0 || msg.compare(0, 2, "hi") == 0 || msg.compare(0, 3, "hey") == 0)
+		reply << "Hello " + sender->nick + "! ";
 	
-	if (msg.find("mode i"))
+	if (msg.find("mode i") != std::string::npos)
 		reply << "User mode i marks a user as invisible. ";
-	else if (msg.find("mode o"))
+	else if (msg.find("mode o") != std::string::npos)
 		reply << "User mode o marks a user as server operator. ";
-	else if (msg.find("file") && msg.find("transfer"))
+	else if (msg.find("file") != std::string::npos
+				&& msg.find("transfer") != std::string::npos)
 	{
-		reply << "To send and receive files:\n";
-		reply << "- /dcc send <receiver_nick> <file1> [<file2>] ... [<fileN>]\n";
-		reply << "- /dcc get <sender_nick> [<file>]\n";
-		reply << "\nTo check and change default upload and download path\n";
-		reply << "- /set dcc_upload_path [<path>]\n";
-		reply << "- /set dcc_download_path [<path>]\n";
+		reply << "1. To send and receive files: ";
+		reply << "- /dcc send <receiver_nick> <file1> [<file2>] ... [<fileN>] ";
+		reply << "- /dcc get <sender_nick> [<file>] ";
+		reply << " 2. To check and change default upload and download path ";
+		reply << "- /set dcc_upload_path [<path>] ";
+		reply << "- /set dcc_download_path [<path>] ";
 	}
-	else if (msg.find("nickmask"))
+	else if (msg.find("nickmask") != std::string::npos)
 	{
-		reply << "Nickmask standard format: <nick>!<username>@<host>\n";
+		reply << "Nickmask standard format: <nick>!<username>@<host>";
 		reply << "Your nickmask is " + sender->get_nickmask() + ".";
 	}
 
-	if (msg.find("thank"))
+	if (msg.find("thank") != std::string::npos)
 		reply << "You are welcome! ";
-	else if (msg.find("bye"))
+	else if (msg.find("bye") != std::string::npos)
 		reply << "Bye bye, " + sender->nick + "! Have a nice day!";
 
 	reply << "\r\n";

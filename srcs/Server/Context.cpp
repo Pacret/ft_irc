@@ -527,6 +527,8 @@ Action		Context::oper_command(Client *client, struct parse_t *command)
 	if (!config.empty() && (opConfig.host == client->get_ip()
 				|| opConfig.host == "" || opConfig.host == "*" ))
 	{
+		std::cout << "config host:" << opConfig.host << std::endl;
+		std::cout << "client ip:" << client->get_ip();
 		if (opConfig.username != command->args[0]
 			|| opConfig.password != command->args[1])
 		{
@@ -536,6 +538,7 @@ Action		Context::oper_command(Client *client, struct parse_t *command)
 		}
 		client->mode.o = true;
 		_addOperator(client);
+		sendToClient(client, ":" + client->nick + " MODE " + client->nick + " :+o\r\n");
 		sendToClient(client, ft_irc::RPL_YOUREOPER(server_name, client->nick));
 	}
 	else
@@ -926,10 +929,10 @@ std::string	Context::_get_client_channellist(Client * client) const
 
 void Context::initServBot()
 {
-	Channel *	chan = new Channel(0, "ServBot");
+	Channel *	chan = new Channel(0, "#ServBot");
 
 	_bot = new Bot("0-Robert", chan);
 	chan->addOperator(_bot);
-	_channels["ServBot"] = chan;
+	_channels["#ServBot"] = chan;
 	_clients[-1] = _bot;
 }
