@@ -772,9 +772,17 @@ bool	Context::_no_such_channel(Client * client, std::string & chanName)
 	return false;
 }
 
+// int		Context::nbr_invisible()
+// {
+// 	for (std::map<clientSocket, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+// 	{
+
+// 	}
+// }
+
 void	Context::_send_motd(Client *client)
 {
-	sendToClient(client, ft_irc::RPL_WELCOME(server_name, client->nick, client->nick, "127.0.0.1"));
+	sendToClient(client, ft_irc::RPL_WELCOME(server_name, client->nick, client->nick, client->get_username(), "127.0.0.1"));
 	sendToClient(client, std::string(":" + server_name + " 001 " + client->nick + conf_file_inline + ":are supported by this server\r\n"));
 	sendToClient(client, ft_irc::RPL_LUSERCLIENT(server_name, client->nick, "0", "0"));
 	sendToClient(client, ft_irc::RPL_LUSERUNKNOWN(server_name, client->nick, " 0"));

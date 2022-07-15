@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/07/12 14:35:43 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/15 08:42:11 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,7 +248,7 @@ namespace ft_irc
 	//
 	//
 
-	inline std::string RPL_WELCOME(std::string sender, std::string receiver, std::string nick, std::string host) {return (format_prefix(sender, __func__, receiver) + " :Welcome to the Internet Relay Network " + nick + "! " + nick + "@" + host + "\r\n");}
+	inline std::string RPL_WELCOME(std::string sender, std::string receiver, std::string nick, std::string user, std::string host) {return (format_prefix(sender, __func__, receiver) + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host + "\r\n");}
 	inline std::string RPL_NONE(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + "" + "\r\n");}
 	inline std::string RPL_USERHOST(std::string sender, std::string receiver, std::string reply) {return (format_prefix(sender, __func__, receiver) + ":" + reply + "\r\n");}
 	inline std::string RPL_ISON(std::string sender, std::string receiver, std::string reply) {return (format_prefix(sender, __func__, receiver) + ":" + reply + "\r\n");}
