@@ -175,14 +175,15 @@ Action		Context::invite_command(Client *client, struct parse_t *command)
 	else if (!_channels[channel_name]->isChannelMember(client->nick))
 		sendToClient(client, std::string(ft_irc::ERR_NOTONCHANNEL(server_name, client->nick, channel_name)));
 	else if (to_invite == client)
-		return (NOPE);         
+		return (NOPE);
 	else if (_channels[channel_name]->isChannelMember(command->args[0]))
-		sendToClient(client, std::string(ft_irc::ERR_USERONCHANNEL(server_name, client->nick, command->args[0], channel_name)));      
+		sendToClient(client, std::string(ft_irc::ERR_USERONCHANNEL(server_name, client->nick, command->args[0], channel_name)));
 	else if (_channels[channel_name]->mode.i && !_channels[channel_name]->isOperator(client))
-		sendToClient(client, std::string(ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->nick, channel_name)));    
+		sendToClient(client, std::string(ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->nick, channel_name)));
 	else
 	{
-		sendToClient(to_invite, std::string(ft_irc::RPL_INVITING(server_name, client->nick, command->args[0], channel_name)));
+		sendToClient(client, std::string(ft_irc::RPL_INVITING(server_name, client->nick, command->args[0], channel_name)));
+		sendToClient(to_invite, _format_response(client->get_nickmask(), *command));
 		if (!to_invite->pending_invites.count(channel_name))
 			to_invite->pending_invites.insert(channel_name);
 	}

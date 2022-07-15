@@ -20,7 +20,7 @@
 
 		Channel::~Channel()
 {
-    std::cout << "aurevoir channel" << std::endl;
+	//std::cout << "aurevoir channel" << std::endl;
 }
 
 std::string		Channel::get_name()
@@ -138,6 +138,8 @@ Client *	Channel::getClientByNick(std::string nickname)
 
 Channel::clientSize	Channel::deleteClient(Client * client)
 {
+	if (client && client->channelSet.find(this) != client->channelSet.end())
+		client->channelSet.erase(this);
 	_clients.erase(client);
 	_operatorList.erase(client);
 	return (_clients.size());
