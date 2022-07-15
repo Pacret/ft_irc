@@ -908,8 +908,8 @@ void	Context::removeClientFromChannel(Client *client, Channel *channel)
 
 Action	Context::pong_command(Client *client, struct parse_t *p)
 {
-	std::cout << "PONG Command received" << std::endl;
-	client = NULL;
+	// std::cout << "PONG Command received" << std::endl;
+	client->get_ip();
 	p->cmd.erase();
 	return NOPE;
 }
