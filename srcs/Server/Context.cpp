@@ -68,9 +68,7 @@ std::string	 Context::_format_response(std::string sender, parse_t & command)
 	{
 		os << command.cmd;
 		for (unsigned long i = 0; i < command.args.size(); i++)
-		{
 			os << " " << command.args[i];
-		}
 	}
 	os << "\r\n";
 	return (os.str());
@@ -175,14 +173,15 @@ Action		Context::invite_command(Client *client, struct parse_t *command)
 	else if (!_channels[channel_name]->isChannelMember(client->nick))
 		sendToClient(client, std::string(ft_irc::ERR_NOTONCHANNEL(server_name, client->nick, channel_name)));
 	else if (to_invite == client)
-		return (NOPE);         
+		return (NOPE);
 	else if (_channels[channel_name]->isChannelMember(command->args[0]))
-		sendToClient(client, std::string(ft_irc::ERR_USERONCHANNEL(server_name, client->nick, command->args[0], channel_name)));      
+		sendToClient(client, std::string(ft_irc::ERR_USERONCHANNEL(server_name, client->nick, command->args[0], channel_name)));
 	else if (_channels[channel_name]->mode.i && !_channels[channel_name]->isOperator(client))
-		sendToClient(client, std::string(ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->nick, channel_name)));    
+		sendToClient(client, std::string(ft_irc::ERR_CHANOPRIVSNEEDED(server_name, client->nick, channel_name)));
 	else
 	{
 		sendToClient(client, std::string(ft_irc::RPL_INVITING(server_name, client->nick, command->args[0], channel_name)));
+		sendToClient(to_invite, _format_response(client->get_nickmask(), *command));
 		if (!to_invite->pending_invites.count(channel_name))
 			to_invite->pending_invites.insert(channel_name);
 	}
@@ -217,7 +216,7 @@ Action		Context::topic_command(Client *client, struct parse_t *command)
 		{
 			std::string new_topic = command->args[1].substr(1);
 			_channels[channel_name]->set_topic(new_topic);
-			sendToClient(client, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
+			_channels[channel_name]->broadcastToClients(0, _format_response(client->get_nickmask(), *command));
 		}
 	}
 	return NOPE;
@@ -294,7 +293,19 @@ Action		Context::kick_command(Client *client, struct parse_t *command)
 		return NOPE;
 	}
 
-	//Broadcast to channel members
+	//Add client nick as kick comment if no comment provided
+	if (command->args.size() < 3 )
+	{
+		command->args.push_back(":" + client->nick);
+		command->original_msg += " :" + client->nick;
+	}
+	else if (command->args[2] == ":")
+	{
+		command->args[2] += client->nick;
+		command->original_msg += client->nick;
+	}
+
+	//Broadcast to clients on channel
 	channel->broadcastToClients(0, _format_response(client->get_nickmask(), *command));
 
 	//Remove victim from channel and cleanup
@@ -762,11 +773,19 @@ Action		Context::user_command(Client *client, struct parse_t *command)
 
 Action	Context::quit_command(Client *client, struct parse_t *command)
 {
-	std::string message;
-	if (command->args.size())
-		message = command->args[0];
-	sendToClient(client, std::string("ERROR :Closing link: (" + client->nick + "@" + client->ip + ") [Quit: " + message + "]"));
-	//client->set_statut(DELETE);
+	std::string message = "leaving";
+	if (command->args.size() && command->args[0][0] == ':' && command->args[0][1])
+		message = command->args[0].substr(1);
+	
+	sendToClient(client, std::string("ERROR :Closing link: (" + client->nick + "@" + client->ip + ") [Quit: " + message + "]\r\n"));
+	
+	std::map<channelName, Channel *>::iterator	it_chan = _channels.begin();
+	std::map<channelName, Channel *>::iterator	it_chan_e = _channels.end();	
+	for (; it_chan != it_chan_e; it_chan++)
+	{
+		if ((*it_chan->second).isChannelMember(client->nick))
+			(*it_chan->second).broadcastToClients(NULL, std::string(":" + client->nick + "!" + client->get_username() + "@" + client->ip + " QUIT :Quit: " + message + "\r\n"));
+	}
 	deleteClient(client);
 	return KILL_CONNECTION;
 }

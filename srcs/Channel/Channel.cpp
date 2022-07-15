@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/08 22:27:56 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/15 16:35:19 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 		Channel::~Channel()
 {
-    std::cout << "aurevoir channel" << std::endl;
+	//std::cout << "aurevoir channel" << std::endl;
 }
 
 std::string		Channel::get_name()
@@ -138,6 +138,8 @@ Client *	Channel::getClientByNick(std::string nickname)
 
 Channel::clientSize	Channel::deleteClient(Client * client)
 {
+	if (client && client->channelSet.find(this) != client->channelSet.end())
+		client->channelSet.erase(this);
 	_clients.erase(client);
 	_operatorList.erase(client);
 	return (_clients.size());
