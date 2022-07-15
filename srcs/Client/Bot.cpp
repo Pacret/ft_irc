@@ -23,7 +23,7 @@ void	Bot::onMessageReceive(Client * sender, std::string raw_msg)
 	if (!sender || pos == std::string::npos || pos == 0)
 		return ;
 	head = string_split(raw_msg.substr(0, pos - 1), " ");
-	comment = raw_msg.substr(pos + 1, raw_msg.size() - 2);
+	comment = raw_msg.substr(pos + 1, raw_msg.size() - pos - 3);
 
 	if (head.size() == 3 && head[0][0] == ':' && head[1] == "PRIVMSG")
 	{
@@ -61,6 +61,7 @@ void	Bot::join_handler(Client * sender, Channel * chan)
 void	Bot::privmsg_handler(Client * sender, std::string msg, Channel * chan)
 {
 	std::ostringstream			reply;
+	std::size_t					tmp_size;
 
 	//Set up bot's reply header
 	reply << ":" + this->nick + " PRIVMSG ";
@@ -68,35 +69,41 @@ void	Bot::privmsg_handler(Client * sender, std::string msg, Channel * chan)
 		reply << chan->get_name() + " :";
 	else
 		reply << sender->nick + " :";
+	tmp_size = reply.str().size();
 
 	//Generate a response according to the received message
 	msg = string_to_lower(msg);
-	if (msg.compare(0, 5, "hello") || msg.compare(0, 2, "hi") || msg.compare(0, 3, "hey"))
-		reply << "Hello " + sender->nick + "! \n";
+	if (msg.compare(0, 5, "hello") == 0 || msg.compare(0, 2, "hi") == 0 || msg.compare(0, 3, "hey") == 0)
+		reply << "Hello " + sender->nick + "! ";
 	
-	if (msg.find("mode i"))
+	if (msg.find("mode i") != std::string::npos)
 		reply << "User mode i marks a user as invisible. ";
-	else if (msg.find("mode o"))
+	else if (msg.find("mode o") != std::string::npos)
 		reply << "User mode o marks a user as server operator. ";
-	else if (msg.find("file") && msg.find("transfer"))
+	else if (msg.find("file") != std::string::npos
+				&& msg.find("transfer") != std::string::npos)
 	{
-		reply << "To send and receive files:\n";
-		reply << "- /dcc send <receiver_nick> <file1> [<file2>] ... [<fileN>]\n";
-		reply << "- /dcc get <sender_nick> [<file>]\n";
-		reply << "\nTo check and change default upload and download path\n";
-		reply << "- /set dcc_upload_path [<path>]\n";
-		reply << "- /set dcc_download_path [<path>]\n";
+		reply << "1. To send and receive files: ";
+		reply << "- /dcc send <receiver_nick> <file1> [<file2>] ... [<fileN>] ";
+		reply << "- /dcc get <sender_nick> [<file>] ";
+		reply << " 2. To check and change default upload and download path ";
+		reply << "- /set dcc_upload_path [<path>] ";
+		reply << "- /set dcc_download_path [<path>] ";
 	}
-	else if (msg.find("nickmask"))
+	else if (msg.find("nickmask") != std::string::npos)
 	{
-		reply << "Nickmask standard format: <nick>!<username>@<host>\n";
+		reply << "Nickmask standard format: <nick>!<username>@<host> ";
 		reply << "Your nickmask is " + sender->get_nickmask() + ".";
 	}
 
-	if (msg.find("thank"))
+	if (msg.find("thank") != std::string::npos)
 		reply << "You are welcome! ";
-	else if (msg.find("bye"))
+	else if (msg.find("bye") != std::string::npos)
 		reply << "Bye bye, " + sender->nick + "! Have a nice day!";
+
+	//No reply if no Q&A match
+	if (reply.str().size() == tmp_size)
+		return ;
 
 	reply << "\r\n";
 	if (chan)

@@ -38,7 +38,7 @@ Context::~Context()
 {
 	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 		delete it->second;
-	// Delete channels
+	// Delete channels TODO
 }
 
 void	Context::sendToClient(Client * client, const std::string & msg, Client * sender)
@@ -146,7 +146,7 @@ Action		Context::join_command(Client *client, struct parse_t *command)
 		_channels[channel_name]->addClient(client);
 
 	std::vector<Client *>	usrs = _channels[channel_name]->get_users();
-	std::string				str = ":" + client->nick + "!" +  client->nick + "@" + server_name + " JOIN :" + channel_name + "\r\n";
+	std::string				str = ":" + client->get_nickmask() + " JOIN :" + channel_name + "\r\n";
 
 	_channels[channel_name]->broadcastToClients(NULL, str);
 	if (_channels[channel_name]->get_topic() != "")
@@ -527,6 +527,8 @@ Action		Context::oper_command(Client *client, struct parse_t *command)
 	if (!config.empty() && (opConfig.host == client->get_ip()
 				|| opConfig.host == "" || opConfig.host == "*" ))
 	{
+		std::cout << "config host:" << opConfig.host << std::endl;
+		std::cout << "client ip:" << client->get_ip();
 		if (opConfig.username != command->args[0]
 			|| opConfig.password != command->args[1])
 		{
@@ -536,6 +538,7 @@ Action		Context::oper_command(Client *client, struct parse_t *command)
 		}
 		client->mode.o = true;
 		_addOperator(client);
+		sendToClient(client, ":" + client->nick + " MODE " + client->nick + " :+o\r\n");
 		sendToClient(client, ft_irc::RPL_YOUREOPER(server_name, client->nick));
 	}
 	else
@@ -556,7 +559,7 @@ Action		Context::notice_command(Client *client, struct parse_t *p)
 	std::size_t i = 0;
 	std::vector<Client *> client_vector;
 
-	start_msg = ":" + client->nick + " " + "NOTICE ";
+	start_msg = ":" + client->nick + " NOTICE ";
 	while (!buff.empty() && buff[i] != '\0')
 	{
 		if ((i = buff.find(',')) == std::string::npos)
@@ -784,15 +787,30 @@ bool	Context::_no_such_channel(Client * client, std::string & chanName)
 	return false;
 }
 
-// std::string		Context::nbr_invisible()
-// {
-// 	int i = 0;
+std::string		Context::nbr_invisible(Client *client)
+{
+	int i = 0;
 
-// 	for (std::map<clientSocket, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
-// 	{
-// 		if ((*it))
-// 	}
-// }
+	for (std::map<clientSocket, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+	{
+		if (client != it->second && it->second->get_mode().find("i") != std::string::npos)
+			++i;
+	}
+	return (int_to_string(i));
+}
+
+std::string		Context::nbr_visible(Client *client)
+{
+	int i = 0;
+
+	for (std::map<clientSocket, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+	{
+		std::cout << "MODES " << (*it).second->get_mode() << std::endl;
+		if (client != it->second && it->second->get_mode().find("i") == std::string::npos)
+			++i;
+	}
+	return (int_to_string(i));
+}
 
 void	Context::_send_motd(Client *client)
 {
@@ -800,7 +818,7 @@ void	Context::_send_motd(Client *client)
 	sendToClient(client, ft_irc::RPL_WELCOME(server_name, client->nick, client->nick, client->get_username(), client->ip));
 	if (conf_file_inline != "")
 		sendToClient(client, std::string(":" + server_name + " 001 " + client->nick + conf_file_inline + ":are supported by this server\r\n"));
-	sendToClient(client, ft_irc::RPL_LUSERCLIENT(server_name, client->nick, "0", "0"));
+	sendToClient(client, ft_irc::RPL_LUSERCLIENT(server_name, client->nick, nbr_visible(client), nbr_invisible(client)));
 	sendToClient(client, ft_irc::RPL_LUSERUNKNOWN(server_name, client->nick, " 0"));
 	sendToClient(client, ft_irc::RPL_LUSERCHANNELS(server_name, client->nick, int_to_string(_channels.size())));
 	sendToClient(client, ft_irc::RPL_LUSERME(server_name, client->nick, int_to_string(_clients.size())));
@@ -898,20 +916,23 @@ void	Context::removeClientFromChannel(Client *client, Channel *channel)
 
 Action	Context::pong_command(Client *client, struct parse_t *p)
 {
-	std::cout << "PONG Command received" << std::endl;
-	client->buffer.erase();
+	// std::cout << "PONG Command received" << std::endl;
+	client->get_ip();
 	p->cmd.erase();
 	return NOPE;
 }
 
 Action Context::ping_command(Client *client, struct parse_t *p)
 {
-	std::cout << "PING command sent by client" << std::endl;
+	if (p->args.size() != 1)
+	{
+		sendToClient(client, ft_irc::ERR_NOORIGIN(server_name, client->nick));
+		return NOPE;
+	}
 	std::string msg = ":" + this->server_name + " PONG ";
-	msg += this->server_name + " :" + this->server_name;
+	msg += p->args[0] + " :" + p->args[0] + "\r\n";
 
 	sendToClient(client, msg);
-	p->cmd.erase();
 	return NOPE;
 }
 
@@ -935,10 +956,10 @@ std::string	Context::_get_client_channellist(Client * client) const
 
 void Context::initServBot()
 {
-	Channel *	chan = new Channel(0, "ServBot");
+	Channel *	chan = new Channel(0, "#ServBot");
 
 	_bot = new Bot("0-Robert", chan);
 	chan->addOperator(_bot);
-	_channels["ServBot"] = chan;
+	_channels["#ServBot"] = chan;
 	_clients[-1] = _bot;
 }
