@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/13 21:58:05 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/15 11:52:45 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,8 +112,8 @@ void	Server::process()
 		{
 			kill_connection(*it);
 		}
-		std::cout << pollfds[0].revents << std::endl;
-		std::cout << "here\n" << std::endl;
+		//std::cout << pollfds[0].revents << std::endl;
+		//std::cout << "here\n" << std::endl;
 	}
 }
 
@@ -127,7 +127,11 @@ void	Server::get_message(Client *client)
 	if ((size = recv(client->fd, &buff, BUFFER_SIZE, 0)) == -1) //?? Should be a while? Need to check max size IRC REQUEST
 		return;
 	if (!size)
+	{
+		context->deleteClient(client);
+		_clients_to_kill.push_back(clientFd);
 		return;
+	}
 	buff[size] = 0;
 	client->buffer += buff;
 
@@ -164,7 +168,7 @@ void	Server::kill_connection(int clientFd)
 		if ((*it).fd == clientFd)
 		{
 			pollfds.erase(it);
-			close(clientFd);
+			//close(clientFd);
 			return ;
 		}
 	}
