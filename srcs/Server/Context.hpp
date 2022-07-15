@@ -116,7 +116,8 @@ public:
 	Action	chan_mode_command(Client *client, struct parse_t *command, Channel * chan);
 	Action	whois_command(Client *client, struct parse_t *command);
 
-	std::string		nbr_invisible();
+	std::string		nbr_invisible(Client *client);
+	std::string		nbr_visible(Client *client);
 
 	void		setPort(const std::string &port);
 	void		setPassword(const std::string &password);

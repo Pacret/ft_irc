@@ -6,7 +6,7 @@
 #    By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/18 20:59:10 by pbonilla          #+#    #+#              #
-#    Updated: 2022/07/15 14:40:42 by tmerrien         ###   ########.fr        #
+#    Updated: 2022/07/15 14:46:08 by tmerrien         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,9 +42,10 @@ RM			= rm -rf
 all: $(NAME)
 
 $(NAME): ${OBJS}
-	 $(COMP) $(FLAGS) $(OBJS) -o $(NAME) 
+	 $(COMP) $(FLAGS) $(OBJS) -o $(NAME)
 
 leaks: $(NAME)
+		echo "Launching server with Valgrind all leaks enabled"
 		$(VAL) $(VALF) ./$(NAME)
 		grep -A1 "valgrind" valgrind_log | grep $(NAME) || echo -n
 

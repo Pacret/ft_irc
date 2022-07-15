@@ -8,7 +8,7 @@ make: *** No rule to make target 'srcs/main.o', needed by 'ircserv'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Jul 14 22:20:43 2022
+# Make data base, printed on Fri Jul 15 14:46:09 2022
 
 # Variables
 
@@ -30,7 +30,7 @@ WSLENV = ELECTRON_RUN_AS_NODE/w:
 CURDIR := /home/tmerrien/42/Cercle6/irc/pacret
 # makefile
 SHELL = /bin/sh
-# makefile (from 'Makefile', line 34)
+# makefile (from 'Makefile', line 40)
 RM = rm -rf
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
@@ -44,7 +44,7 @@ COMP = c++
 GNUMAKEFLAGS := 
 # environment
 XDG_DATA_DIRS = /usr/local/share:/usr/share:/var/lib/snapd/desktop
-# makefile (from 'Makefile', line 29)
+# makefile (from 'Makefile', line 35)
 OBJS = $(SRCS:.cpp=.o)
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
@@ -85,6 +85,7 @@ LESSCLOSE = /usr/bin/lesspipe %s %s
 # environment
 LOGNAME = tmerrien
 # environment
+ 
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
@@ -128,6 +129,8 @@ MFLAGS = -pqrR
 +D = $(patsubst %/,%,$(dir $+))
 # automatic
 +F = $(notdir $+)
+# makefile (from 'Makefile', line 29)
+VAL = valgrind
 # environment
 VSCODE_HANDLES_SIGPIPE = true
 # default
@@ -156,8 +159,10 @@ LANG = C
 TERM = xterm-256color
 # environment
 WSL_DISTRO_NAME = Ubuntu
+# makefile (from 'Makefile', line 31)
+VALF = --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --track-origin=yes --log-file=valgrind_log --xtree-momery=full
 # variable set hash-table stats:
-# Load=72/1024=7%, Rehash=0, Collisions=7/102=7%
+# Load=74/1024=7%, Rehash=0, Collisions=9/105=9%
 
 # Pattern-specific Variable Values
 
@@ -191,7 +196,7 @@ debugflag:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 42):
+#  recipe to execute (from 'Makefile', line 53):
 		$(eval FLAGS=-D DEBUG)
 
 all: ircserv
@@ -209,7 +214,7 @@ all: ircserv
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-07-14 22:19:01.821859863
+#  Last modified 2022-07-15 14:46:08.781086441
 #  File has been updated.
 #  Successfully updated.
 
@@ -217,8 +222,8 @@ ircserv: srcs/main.o srcs/Server/Server.o srcs/Server/Context.o srcs/Client/Clie
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 39):
-	 $(COMP) $(FLAGS) $(OBJS) -o $(NAME) 
+#  recipe to execute (from 'Makefile', line 45):
+	 $(COMP) $(FLAGS) $(OBJS) -o $(NAME)
 
 debug: debugflag run
 #  Implicit rule search has not been done.
@@ -236,7 +241,7 @@ fclean: clean
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 50):
+#  recipe to execute (from 'Makefile', line 61):
 	$(RM) $(NAME)
 
 # Not a target:
@@ -244,6 +249,15 @@ srcs/Client/Bot.o:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
+
+leaks: ircserv
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 48):
+		echo "Launching server with Valgrind all leaks enabled"
+		$(VAL) $(VALF) ./$(NAME)
+		grep -A1 "valgrind" valgrind_log | grep $(NAME) || echo -n
 
 # Not a target:
 .DEFAULT:
@@ -273,16 +287,15 @@ run:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 32):
+#  recipe to execute (from 'Makefile', line 38):
 			$(COMP) -c $(FLAGS) $(FLAG) $< -o $(<:.cpp=.o)
 
 clean:
- 
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 47):
+#  recipe to execute (from 'Makefile', line 58):
 	$(RM) $(OBJS)
 
 # Not a target:
@@ -310,19 +323,19 @@ srcs/Client/Client.o:
 #  File has not been updated.
 
 # files hash-table stats:
-# Load=22/1024=2%, Rehash=0, Collisions=2/53=4%
+# Load=23/1024=2%, Rehash=0, Collisions=2/55=4%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 34 / storage = 365 B / avg = 10 B
-# current buf: size = 8162 B / used = 365 B / count = 34 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 35 / storage = 371 B / avg = 10 B
+# current buf: size = 8162 B / used = 371 B / count = 35 / avg = 10 B
 
-# strcache performance: lookups = 57 / hit rate = 40%
+# strcache performance: lookups = 60 / hit rate = 41%
 # hash-table stats:
-# Load=34/8192=0%, Rehash=0, Collisions=3/57=5%
-# Finished Make data base on Thu Jul 14 22:20:43 2022
+# Load=35/8192=0%, Rehash=0, Collisions=3/60=5%
+# Finished Make data base on Fri Jul 15 14:46:09 2022
 
  
