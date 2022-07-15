@@ -218,7 +218,7 @@ Action		Context::topic_command(Client *client, struct parse_t *command)
 		{
 			std::string new_topic = command->args[1].substr(1);
 			_channels[channel_name]->set_topic(new_topic);
-			sendToClient(client, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
+			_channels[channel_name]->broadcastToClients(0, _format_response(client->get_nickmask(), *command));
 		}
 	}
 	return NOPE;
@@ -295,7 +295,11 @@ Action		Context::kick_command(Client *client, struct parse_t *command)
 		return NOPE;
 	}
 
-	//Broadcast to channel members
+	//Add client nick as kick comment if no comment provided
+	if (command->args.size() < 3 )
+		command->args.push_back(":" + client->nick);
+	else if (command->args[2].size() == 1)
+		command->args[2] = ":" + client->nick;
 	channel->broadcastToClients(0, _format_response(client->get_nickmask(), *command));
 
 	//Remove victim from channel and cleanup
