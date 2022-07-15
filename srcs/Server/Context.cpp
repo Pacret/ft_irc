@@ -788,7 +788,7 @@ bool	Context::_no_such_channel(Client * client, std::string & chanName)
 
 void	Context::_send_motd(Client *client)
 {
-	sendToClient(client, std::string(":" + server_name + " NOTICE " + client->nick + " :*** Could not resolve your hostname: Malformed answer; using your IP address (127.0.0.1) instead.\r\n"));
+	sendToClient(client, std::string(":" + server_name + " NOTICE " + client->nick + " :*** Could not resolve your hostname: Malformed answer; using your IP address (" + client->ip + ") instead.\r\n"));
 	sendToClient(client, ft_irc::RPL_WELCOME(server_name, client->nick, client->nick, client->get_username(), client->ip));
 	if (conf_file_inline != "")
 		sendToClient(client, std::string(":" + server_name + " 001 " + client->nick + conf_file_inline + ":are supported by this server\r\n"));
