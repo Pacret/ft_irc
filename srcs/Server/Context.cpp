@@ -38,7 +38,7 @@ Context::~Context()
 {
 	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 		delete it->second;
-	// Delete channels
+	// Delete channels TODO
 }
 
 void	Context::sendToClient(Client * client, const std::string & msg, Client * sender)
@@ -559,7 +559,7 @@ Action		Context::notice_command(Client *client, struct parse_t *p)
 	std::size_t i = 0;
 	std::vector<Client *> client_vector;
 
-	start_msg = ":" + client->nick + " " + "NOTICE ";
+	start_msg = ":" + client->nick + " NOTICE ";
 	while (!buff.empty() && buff[i] != '\0')
 	{
 		if ((i = buff.find(',')) == std::string::npos)
@@ -779,15 +779,30 @@ bool	Context::_no_such_channel(Client * client, std::string & chanName)
 	return false;
 }
 
-// std::string		Context::nbr_invisible()
-// {
-// 	int i = 0;
+std::string		Context::nbr_invisible(Client *client)
+{
+	int i = 0;
 
-// 	for (std::map<clientSocket, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
-// 	{
-// 		if ((*it))
-// 	}
-// }
+	for (std::map<clientSocket, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+	{
+		if (client != it->second && it->second->get_mode().find("i") != std::string::npos)
+			++i;
+	}
+	return (int_to_string(i));
+}
+
+std::string		Context::nbr_visible(Client *client)
+{
+	int i = 0;
+
+	for (std::map<clientSocket, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
+	{
+		std::cout << "MODES " << (*it).second->get_mode() << std::endl;
+		if (client != it->second && it->second->get_mode().find("i") == std::string::npos)
+			++i;
+	}
+	return (int_to_string(i));
+}
 
 void	Context::_send_motd(Client *client)
 {
@@ -795,7 +810,7 @@ void	Context::_send_motd(Client *client)
 	sendToClient(client, ft_irc::RPL_WELCOME(server_name, client->nick, client->nick, client->get_username(), client->ip));
 	if (conf_file_inline != "")
 		sendToClient(client, std::string(":" + server_name + " 001 " + client->nick + conf_file_inline + ":are supported by this server\r\n"));
-	sendToClient(client, ft_irc::RPL_LUSERCLIENT(server_name, client->nick, "0", "0"));
+	sendToClient(client, ft_irc::RPL_LUSERCLIENT(server_name, client->nick, nbr_visible(client), nbr_invisible(client)));
 	sendToClient(client, ft_irc::RPL_LUSERUNKNOWN(server_name, client->nick, " 0"));
 	sendToClient(client, ft_irc::RPL_LUSERCHANNELS(server_name, client->nick, int_to_string(_channels.size())));
 	sendToClient(client, ft_irc::RPL_LUSERME(server_name, client->nick, int_to_string(_clients.size())));
