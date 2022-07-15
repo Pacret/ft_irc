@@ -23,7 +23,7 @@ void	Bot::onMessageReceive(Client * sender, std::string raw_msg)
 	if (!sender || pos == std::string::npos || pos == 0)
 		return ;
 	head = string_split(raw_msg.substr(0, pos - 1), " ");
-	comment = raw_msg.substr(pos + 1, raw_msg.size() - 2);
+	comment = raw_msg.substr(pos + 1, raw_msg.size() - pos - 3);
 
 	if (head.size() == 3 && head[0][0] == ':' && head[1] == "PRIVMSG")
 	{
@@ -39,7 +39,6 @@ void	Bot::onMessageReceive(Client * sender, std::string raw_msg)
 	}
 	else if (head.size() == 2 && head[0][0] == ':' && head[1] == "JOIN")
 	{
-		std::cout << "JOIN msg's comment : " << comment << std::endl;
 		chan = _getChannel(comment);
 		if (!chan)
 			return ;
@@ -62,6 +61,7 @@ void	Bot::join_handler(Client * sender, Channel * chan)
 void	Bot::privmsg_handler(Client * sender, std::string msg, Channel * chan)
 {
 	std::ostringstream			reply;
+	std::size_t					tmp_size;
 
 	//Set up bot's reply header
 	reply << ":" + this->nick + " PRIVMSG ";
@@ -69,6 +69,7 @@ void	Bot::privmsg_handler(Client * sender, std::string msg, Channel * chan)
 		reply << chan->get_name() + " :";
 	else
 		reply << sender->nick + " :";
+	tmp_size = reply.str().size();
 
 	//Generate a response according to the received message
 	msg = string_to_lower(msg);
@@ -91,7 +92,7 @@ void	Bot::privmsg_handler(Client * sender, std::string msg, Channel * chan)
 	}
 	else if (msg.find("nickmask") != std::string::npos)
 	{
-		reply << "Nickmask standard format: <nick>!<username>@<host>";
+		reply << "Nickmask standard format: <nick>!<username>@<host> ";
 		reply << "Your nickmask is " + sender->get_nickmask() + ".";
 	}
 
@@ -99,6 +100,10 @@ void	Bot::privmsg_handler(Client * sender, std::string msg, Channel * chan)
 		reply << "You are welcome! ";
 	else if (msg.find("bye") != std::string::npos)
 		reply << "Bye bye, " + sender->nick + "! Have a nice day!";
+
+	//No reply if no Q&A match
+	if (reply.str().size() == tmp_size)
+		return ;
 
 	reply << "\r\n";
 	if (chan)

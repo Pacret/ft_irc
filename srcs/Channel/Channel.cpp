@@ -148,6 +148,8 @@ void	Channel::addClient(Client * client)
 	if (isChannelMember(client->nick))
 		return ; // send an err ?
 	_clients.insert(client);
+	if (client->channelSet.find(this) == client->channelSet.end())
+		client->channelSet.insert(this);
 }
 
 bool	Channel::isOperator(Client * client) const

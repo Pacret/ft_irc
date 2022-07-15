@@ -146,7 +146,7 @@ Action		Context::join_command(Client *client, struct parse_t *command)
 		_channels[channel_name]->addClient(client);
 
 	std::vector<Client *>	usrs = _channels[channel_name]->get_users();
-	std::string				str = ":" + client->nick + "!" +  client->nick + "@" + server_name + " JOIN :" + channel_name + "\r\n";
+	std::string				str = ":" + client->get_nickmask() + " JOIN :" + channel_name + "\r\n";
 
 	_channels[channel_name]->broadcastToClients(NULL, str);
 	if (_channels[channel_name]->get_topic() != "")
