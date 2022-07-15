@@ -917,11 +917,13 @@ Action	Context::pong_command(Client *client, struct parse_t *p)
 Action Context::ping_command(Client *client, struct parse_t *p)
 {
 	std::cout << "PING command sent by client" << std::endl;
+	// std::string msg = ":" + this->server_name + " PONG ";
+	// std::string msg = "PONG ";
+	// msg += client->nick + " :" + client->nick;
 	std::string msg = ":" + this->server_name + " PONG ";
-	msg += this->server_name + " :" + this->server_name;
+	msg += p->args[0] + " :" + p->args[0] + "\r\n";
 
 	sendToClient(client, msg);
-	p->cmd.erase();
 	return NOPE;
 }
 
