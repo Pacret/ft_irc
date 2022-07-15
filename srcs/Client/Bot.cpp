@@ -61,6 +61,7 @@ void	Bot::join_handler(Client * sender, Channel * chan)
 void	Bot::privmsg_handler(Client * sender, std::string msg, Channel * chan)
 {
 	std::ostringstream			reply;
+	std::size_t					tmp_size;
 
 	//Set up bot's reply header
 	reply << ":" + this->nick + " PRIVMSG ";
@@ -68,6 +69,7 @@ void	Bot::privmsg_handler(Client * sender, std::string msg, Channel * chan)
 		reply << chan->get_name() + " :";
 	else
 		reply << sender->nick + " :";
+	tmp_size = reply.str().size();
 
 	//Generate a response according to the received message
 	msg = string_to_lower(msg);
@@ -98,6 +100,10 @@ void	Bot::privmsg_handler(Client * sender, std::string msg, Channel * chan)
 		reply << "You are welcome! ";
 	else if (msg.find("bye") != std::string::npos)
 		reply << "Bye bye, " + sender->nick + "! Have a nice day!";
+
+	//No reply if no Q&A match
+	if (reply.str().size() == tmp_size)
+		return ;
 
 	reply << "\r\n";
 	if (chan)
