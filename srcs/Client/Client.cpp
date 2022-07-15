@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:23:56 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/02 16:58:47 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/15 14:32:01 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	Client::set_rn(std::string rn)
 	_real_name = rn;
 }
 
-std::string Client::get_ip() const {return (int_to_string(_address.sin_addr.s_addr));}
+std::string Client::get_ip() const {return (ip);}
 
 std::string	Client::get_username() {return (_username);}
 
