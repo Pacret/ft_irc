@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/13 20:53:29 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/15 13:57:20 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ class Client
         std::string				buffer;
 		int						fd;
 		std::string				nick;
+		std::string				ip;
 		bool					nick_inuse;
 		user_mode_t				mode;
 		std::set<Channel *>		channelSet;

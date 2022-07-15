@@ -374,7 +374,7 @@ Action	Context::whois_command(Client *client, struct parse_t *command)
 		}
 		else
 		{
-			os << ft_irc::RPL_WHOISUSER(server_name, client->nick, *target, "127.0.0.1");
+			os << ft_irc::RPL_WHOISUSER(server_name, client->nick, *target, client->ip);
 			os << ft_irc::RPL_WHOISSERVER(server_name, client->nick, target->nick, server_name, "");
 			if (client->channelSet.size())
 				os << ft_irc::RPL_WHOISCHANNELS(server_name, client->nick, target->nick, _get_client_channellist(target));
@@ -720,16 +720,17 @@ Action		Context::nick_command(Client *client, struct parse_t *command)
 
 Action		Context::user_command(Client *client, struct parse_t *command)
 {
-	if (!command->args.size())
+	if (command->args.size() != 4)
 	{
 		sendToClient(client, ft_irc::ERR_NEEDMOREPARAMS(server_name, "*", command->cmd));
 		return NOPE;
 	}
 	client->set_user(command->args[0]);
 	client->set_rn(client->nick);
+	client->ip = command->args[2];
 	client->set_statut(CONNECTED);
 
-	sendToClient(client, std::string(server_name + " NOTICE * :*** Looking up your hostname...\r\n"));
+	sendToClient(client, std::string(":" + server_name + " NOTICE * :*** Looking up your hostname...\r\n"));
 
 	if (client->nick_inuse)
 	{
@@ -745,7 +746,7 @@ Action	Context::quit_command(Client *client, struct parse_t *command)
 	std::string message;
 	if (command->args.size())
 		message = command->args[0];
-	sendToClient(client, std::string("ERROR :Closing link: (" + client->nick + "@127.0.0.1) [Quit: " + message + "]"));
+	sendToClient(client, std::string("ERROR :Closing link: (" + client->nick + "@" + client->ip + ") [Quit: " + message + "]"));
 	//client->set_statut(DELETE);
 	deleteClient(client);
 	return KILL_CONNECTION;
@@ -787,8 +788,8 @@ bool	Context::_no_such_channel(Client * client, std::string & chanName)
 
 void	Context::_send_motd(Client *client)
 {
-	sendToClient(client, std::string(server_name + " NOTICE " + client->nick + " :*** Could not resolve your hostname: Malformed answer; using your IP address (127.0.0.1) instead.\r\n"));
-	sendToClient(client, ft_irc::RPL_WELCOME(server_name, client->nick, client->nick, client->get_username(), "127.0.0.1"));
+	sendToClient(client, std::string(":" + server_name + " NOTICE " + client->nick + " :*** Could not resolve your hostname: Malformed answer; using your IP address (" + client->ip + ") instead.\r\n"));
+	sendToClient(client, ft_irc::RPL_WELCOME(server_name, client->nick, client->nick, client->get_username(), client->ip));
 	if (conf_file_inline != "")
 		sendToClient(client, std::string(":" + server_name + " 001 " + client->nick + conf_file_inline + ":are supported by this server\r\n"));
 	sendToClient(client, ft_irc::RPL_LUSERCLIENT(server_name, client->nick, "0", "0"));
