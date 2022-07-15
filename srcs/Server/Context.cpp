@@ -556,7 +556,7 @@ Action		Context::notice_command(Client *client, struct parse_t *p)
 	std::size_t i = 0;
 	std::vector<Client *> client_vector;
 
-	start_msg = ":" + client->nick + " " + "PRIVMSG ";
+	start_msg = ":" + client->nick + " " + "NOTICE ";
 	while (!buff.empty() && buff[i] != '\0')
 	{
 		if ((i = buff.find(',')) == std::string::npos)
@@ -776,11 +776,13 @@ bool	Context::_no_such_channel(Client * client, std::string & chanName)
 	return false;
 }
 
-// int		Context::nbr_invisible()
+// std::string		Context::nbr_invisible()
 // {
+// 	int i = 0;
+
 // 	for (std::map<clientSocket, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
 // 	{
-
+// 		if ((*it))
 // 	}
 // }
 
