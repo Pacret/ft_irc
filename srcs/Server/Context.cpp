@@ -121,7 +121,7 @@ Action		Context::join_command(Client *client, struct parse_t *command)
 		return NOPE;
 	std::string channel_name = command->args[0];
 
-	if (command->args[0].size() > 200)
+	if (command->args[0].size() > 200 || command->args[0].find_first_of("@&-+") != std::string::npos)
 	{
 		sendToClient(client, ft_irc::ERR_BADCHANMASK(server_name, client->nick, channel_name));
 		return NOPE;
@@ -738,7 +738,6 @@ Action		Context::pass_command(Client *client, struct parse_t *command)
 Action		Context::nick_command(Client *client, struct parse_t *command)
 {
 	std::string msg;
-
 	msg = ":" + client->get_nickmask();
 	msg += " NICK :" + command->args[0] + "\r\n";
 	if (!command->args.size())
@@ -749,10 +748,19 @@ Action		Context::nick_command(Client *client, struct parse_t *command)
 		sendToClient(client, ft_irc::ERR_NONICKNAMEGIVEN(server_name, name));
 		return (NOPE);
 	}
-	// if (command->args[0].find_first_of("@#-+") != std::string::npos && command->args[0].size() > 9)
-	// {
-	// 	sendToClient(client, ft_irc::ERR_ERRONEUSNICKNAME(server_name, client->nick));
-	// }
+	if (command->args[0].find_first_of("@#-+&*") != std::string::npos || command->args[0].size() > 9)
+	{
+		if (client->nick == "")
+		{
+			sendToClient(client, ft_irc::ERR_ERRONEUSNICKNAME(server_name, "*", command->args[0]));
+			return KILL_CONNECTION;
+		}
+		else if (client->nick != "")
+		{
+			sendToClient(client, ft_irc::ERR_ERRONEUSNICKNAME(server_name, client->nick, command->args[0]));
+			return NOPE;
+		}
+	}
 
 	std::map<clientSocket, Client *>::iterator it; 
 	for (it = _clients.begin(); it != _clients.end(); it++)
@@ -778,17 +786,11 @@ Action		Context::nick_command(Client *client, struct parse_t *command)
 		_send_motd(client);
 		return NOPE;
 	}
-	// msg = ":" + old_nick + "!" + client->get_username() + "@" + client->get_ip() 
-	// msg += "\r\n";
+
 	sendToClient(client, msg);
 	for (std::set<Channel *>::iterator it = client->channelSet.begin(); it != client->channelSet.end(); it++)
 		(*it)->broadcastToClients(client, msg);
 
-	// for (std::map<channelName, Channel *>::iterator it = _channels.begin(); it != _channels.end(); it++)
-	// {
-	// 	if (it->second->isChannelMember(client->nick) == true)
-	// 		it->second->broadcastToClients(client, msg);
-	// }
 	return NOPE;
 }
 

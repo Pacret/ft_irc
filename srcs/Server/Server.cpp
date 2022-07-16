@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/16 14:04:08 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/16 19:39:31 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,8 @@ void	Server::get_message(Client *client)
 	{
 		parse_t *p;
 		rn = client->buffer.find("\r\n");
+		if (client->buffer.find("KILLS") != std::string::npos)
+			close_server("Error: test");
 		if (rn == std::string::npos)
 		{
 			std::cout << "No \\r\\n found for now, break" << std::endl;
@@ -271,5 +273,5 @@ void	Server::close_server(const std::string &msg_error)
 {
 	std::cerr << msg_error << std::endl;
 	clean();
-	exit(EXIT_FAILURE);
+	exit(0);
 }

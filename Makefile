@@ -6,7 +6,7 @@
 #    By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/18 20:59:10 by pbonilla          #+#    #+#              #
-#    Updated: 2022/07/15 14:46:08 by tmerrien         ###   ########.fr        #
+#    Updated: 2022/07/16 19:45:56 by tmerrien         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,13 +24,13 @@ SRCS		=	srcs/main.cpp 				\
 	
 COMP		= c++
 
-FLAGS		= -Wall -Wextra -Werror -fsanitize=address -std=c++98 
+FLAGS		= -Wall -Wextra -Werror -std=c++98 
 
 VAL			=	valgrind
 
 VALF		=	--tool=memcheck --leak-check=full --leak-resolution=high \
-				--show-reachable=yes --track-origin=yes --log-file=valgrind_log \
-				--xtree-momery=full
+				--show-reachable=yes --track-origins=yes --log-file=valgrind_log \
+				--xtree-memory=full
 
 OBJS		= $(SRCS:.cpp=.o)
 
@@ -46,7 +46,7 @@ $(NAME): ${OBJS}
 
 leaks: $(NAME)
 		echo "Launching server with Valgrind all leaks enabled"
-		$(VAL) $(VALF) ./$(NAME)
+		$(VAL) $(VALF) ./$(NAME) 4241 mdp
 		grep -A1 "valgrind" valgrind_log | grep $(NAME) || echo -n
 
 debugflag:

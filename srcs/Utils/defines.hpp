@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 06:19:02 by tmerrien          #+#    #+#             */
-/*   Updated: 2022/07/15 08:42:11 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/16 19:24:09 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,6 +195,10 @@ namespace ft_irc
 {
 	std::string	format_prefix(std::string sender, std::string const & code, std::string receiver);
 	
+	// 
+	// ERRORS
+	// 
+
 	inline std::string ERR_NOSUCHNICK(std::string sender, std::string receiver, std::string nick) {return (format_prefix(sender, __func__, receiver) + nick + " :No such nick/channel" + "\r\n");}
 	inline std::string ERR_NOSUCHSERVER(std::string sender, std::string receiver, std::string serv) {return (format_prefix(sender, __func__, receiver) + serv + " :No such server" + "\r\n");}
 	inline std::string ERR_NOSUCHCHANNEL(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :No such channel" + "\r\n");}
@@ -243,9 +247,10 @@ namespace ft_irc
 	inline std::string ERR_UMODEUNKNOWNFLAG(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":Unknown MODE flag" + "\r\n");}
 	inline std::string ERR_USERSDONTMATCH(std::string sender, std::string receiver) {return (format_prefix(sender, __func__, receiver) + ":Cant change mode for other users" + "\r\n");}
 	inline std::string ERR_BADCHANMASK(std::string sender, std::string receiver, std::string chan) {return (format_prefix(sender, __func__, receiver) + chan + " :Invalid channel name" + "\r\n");};
-
+	inline std::string ERR_ERRONEUSNICKNAME(std::string sender, std::string receiver, std::string nick_b) {return (format_prefix(sender, __func__, receiver) + nick_b + " :Erroneus nickname" + "\r\n");};
+	
 	//
-	//
+	// REPLIES
 	//
 
 	inline std::string RPL_WELCOME(std::string sender, std::string receiver, std::string nick, std::string user, std::string host) {return (format_prefix(sender, __func__, receiver) + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host + "\r\n");}
