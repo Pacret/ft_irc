@@ -52,8 +52,7 @@ void	Context::sendToClient(Client * client, const std::string & msg, Client * se
 
 	std::cout << "Send: {" << msg << "}" << std::endl;
 	if (send(client->fd, msg.c_str(), msg.size(), 0) == -1)
-		throw std::runtime_error("Error: send");
-
+		std::cout << "Error: send message" << std::endl; //Add an error handler
 }
 
 std::string	 Context::_format_response(std::string sender, parse_t & command)
@@ -126,45 +125,33 @@ Action		Context::join_command(Client *client, struct parse_t *command)
 		sendToClient(client, ft_irc::ERR_BADCHANMASK(server_name, client->nick, channel_name));
 		return NOPE;
 	}
-
-	std::vector<std::string> channels = string_split(channel_name, ",");
-	if (!channels.size())
-		channels.push_back(channel_name);
-
-	for (unsigned int i = 0; i < channels.size(); i++)
+	if (!_channels.count(channel_name))		
+		_channels[channel_name] = new Channel(client, channel_name);
+	else if (_channels[channel_name]->mode.i)
 	{
-		std::string chan = channels[i];
-		if (chan[0] == '#')
+		if (client->pending_invites.count(channel_name))
+			client->pending_invites.erase(channel_name);
+		else
 		{
-			if (!_channels.count(chan))
-				_channels[chan] = new Channel(client, chan);
-			else if (_channels[chan]->mode.i)
-			{
-				if (client->pending_invites.count(chan))
-					client->pending_invites.erase(chan);
-				else
-				{
-					sendToClient(client, std::string(ft_irc::ERR_INVITEONLYCHAN(server_name, client->nick, chan)));
-					return NOPE;
-				}
-				_channels[chan]->addClient(client);
-			}
-			else
-				_channels[chan]->addClient(client); 
-		
-			std::vector<Client *>	usrs = _channels[chan]->get_users();
-			std::string				str = ":" + client->get_nickmask() + " JOIN :" + chan + "\r\n";
-
-			_channels[chan]->broadcastToClients(NULL, str);
-			if (_channels[chan]->get_topic() != "")
-				sendToClient(client, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[chan])));
-			sendToClient(client, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[chan]->get_name(), _channels[chan]->get_users_nicks())));
-			sendToClient(client, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[chan]->get_name())));
-
-			if (chan == _bot->defaultChanName)
-				_bot->onMessageReceive(client, str);
+			sendToClient(client, std::string(ft_irc::ERR_INVITEONLYCHAN(server_name, client->nick, channel_name)));
+			return NOPE;
 		}
+		_channels[channel_name]->addClient(client);
 	}
+	else
+		_channels[channel_name]->addClient(client);
+
+	std::vector<Client *>	usrs = _channels[channel_name]->get_users();
+	std::string				str = ":" + client->get_nickmask() + " JOIN :" + channel_name + "\r\n";
+
+	_channels[channel_name]->broadcastToClients(NULL, str);
+	if (_channels[channel_name]->get_topic() != "")
+		sendToClient(client, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
+	sendToClient(client, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[channel_name]->get_name(), _channels[channel_name]->get_users_nicks())));
+	sendToClient(client, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[channel_name]->get_name())));
+
+	if (channel_name == _bot->defaultChanName)
+		_bot->onMessageReceive(client, str);
 
 	return NOPE;
 }
@@ -737,9 +724,10 @@ Action		Context::pass_command(Client *client, struct parse_t *command)
 
 Action		Context::nick_command(Client *client, struct parse_t *command)
 {
-	// bool tmp = false;
 	std::string msg;
 
+	msg = client->get_nickmask();
+	msg += " NICK :" + command->args[0] + "\r\n";
 	if (!command->args.size())
 	{
 		std::string name = "*";
@@ -748,47 +736,45 @@ Action		Context::nick_command(Client *client, struct parse_t *command)
 		sendToClient(client, ft_irc::ERR_NONICKNAMEGIVEN(server_name, name));
 		return (NOPE);
 	}
-	// If it's client first nick, wether it's good or bad we give to him, to be able to references him
-	if (client->get_statut() != CONNECTED)
-		client->set_nick(command->args[0]);
+	// if (command->args[0].find_first_of("@#-+") != std::string::npos && command->args[0].size() > 9)
+	// {
+	// 	sendToClient(client, ft_irc::ERR_ERRONEUSNICKNAME(server_name, client->nick));
+	// }
 
-	//We check If the nickname is already in use and if yes we send ERR_NICKNAMEINUSE and return
 	std::map<clientSocket, Client *>::iterator it; 
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
 		std::cout << it->second->nick << std::endl;
 		if (it->second->fd != client->fd && it->second->nick == command->args[0])
 		{
-			client->nick_inuse = true;
-			// tmp = true;
-			if (client->get_statut() == CONNECTED)
-				sendToClient(client, ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->nick));
+			if (client->nick == "")
+			{
+				sendToClient(client, ft_irc::ERR_NICKNAMEINUSE(server_name, "*", command->args[0]));
+			}
+			else if (client->nick != "")
+			{
+				sendToClient(client, ft_irc::ERR_NICKNAMEINUSE(server_name, client->nick, command->args[0]));
+			}
 			return NOPE;
 		}
 	}
-	//If it's the client first NICK message no need to after this as he isn't on any channel and doesn't need anything else
-	if (client->get_statut() == REGISTERED)
-		return NOPE;
-	//Else we prepare a message to announce he has changed nick
-	
-	msg = ":" + client->nick + "!" + client->get_username() + "@" + client->get_ip() + " ";
-	msg += "NICK :" + command->args[0];
-	msg += "\r\n";
-	//Set his nickname now, fixes a little problem
+	std::string old_nick = client->nick;
 	client->set_nick(command->args[0]);
-	//Send the message to him and every channel he is in
-	sendToClient(client, msg);
-	for (std::map<channelName, Channel *>::iterator it = _channels.begin(); it != _channels.end(); it++)
+	if (old_nick == "" && client->get_statut() == CONNECTED)
 	{
-		if (it->second->isChannelMember(client->nick) == true)
-			it->second->broadcastToClients(client, msg);
+		_send_motd(client);
+		return NOPE;
 	}
-	//Finnaly set his nick. We haven't done it before 
-	// client->set_nick(command->args[0]);
-	// if (client->get_statut() == CONNECTED && tmp == false && client->nick_inuse == true)
+	// msg = ":" + old_nick + "!" + client->get_username() + "@" + client->get_ip() 
+	// msg += "\r\n";
+	sendToClient(client, msg);
+	for (std::set<Channel *>::iterator it = client->channelSet.begin(); it != client->channelSet.end(); it++)
+		(*it)->broadcastToClients(client, msg);
+
+	// for (std::map<channelName, Channel *>::iterator it = _channels.begin(); it != _channels.end(); it++)
 	// {
-	// 	client->nick_inuse = false;
-	// 	_send_motd(client);
+	// 	if (it->second->isChannelMember(client->nick) == true)
+	// 		it->second->broadcastToClients(client, msg);
 	// }
 	return NOPE;
 }
@@ -807,12 +793,13 @@ Action		Context::user_command(Client *client, struct parse_t *command)
 
 	sendToClient(client, std::string(":" + server_name + " NOTICE * :*** Looking up your hostname...\r\n"));
 
-	if (client->nick_inuse)
-	{
-		sendToClient(client, ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->nick));
+	// if (client->nick_inuse)
+	// {
+		// sendToClient(client, ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->nick));
 		// return NOPE;
-	}
-	_send_motd(client);
+	// }
+	if (client->nick != "")
+		_send_motd(client);
 	return NOPE;
 }
 
