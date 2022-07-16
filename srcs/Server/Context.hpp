@@ -129,6 +129,7 @@ public:
 	void		removeClientFromChannel(Client *client, Channel *channel);
 
 	void		initServBot();
+	void		clean();
 };
 
 #endif

@@ -19,7 +19,6 @@
 # include <string>
 # include <sstream>
 
-void						close_server(const std::string &msg_error);
 std::vector<std::string>	string_split(std::string str, std::string const& delim);
 std::string	&				string_to_lower(std::string &);
 std::string					int_to_string(int code);
