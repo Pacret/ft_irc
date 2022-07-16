@@ -15,6 +15,7 @@
 # include <set>
 # include <string>
 # include <ctime>
+# include <stdexcept>
 
 # include "../Utils/utils.hpp"
 # include "../Client/Client.hpp"

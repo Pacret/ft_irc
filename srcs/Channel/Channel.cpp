@@ -20,7 +20,7 @@
 
 		Channel::~Channel()
 {
-	//std::cout << "aurevoir channel" << std::endl;
+
 }
 
 std::string		Channel::get_name()
@@ -105,9 +105,7 @@ void	Channel::sendToClient(Client * client, std::string msg)
 		return ;
 
 	if (send(client->fd, msg.c_str(), msg.size(), 0) == -1)
-	{
-		//error handler
-	}
+		throw std::runtime_error("Error: send");
 }
 
 bool	Channel::isChannelMember(std::string nickname) const

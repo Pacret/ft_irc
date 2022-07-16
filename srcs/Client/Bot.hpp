@@ -1,6 +1,8 @@
 #ifndef BOT_HPP
 # define BOT_HPP
 
+# include <stdexcept>
+
 # include "Client.hpp"
 # include "../Channel/Channel.hpp"
 # include "../Utils/utils.hpp"

@@ -52,7 +52,8 @@ void	Context::sendToClient(Client * client, const std::string & msg, Client * se
 
 	std::cout << "Send: {" << msg << "}" << std::endl;
 	if (send(client->fd, msg.c_str(), msg.size(), 0) == -1)
-		std::cout << "Error: send message" << std::endl; //Add an error handler
+		throw std::runtime_error("Error: send");
+
 }
 
 std::string	 Context::_format_response(std::string sender, parse_t & command)

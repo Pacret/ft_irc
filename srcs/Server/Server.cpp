@@ -153,7 +153,7 @@ void	Server::get_message(Client *client)
 		rn = client->buffer.find("\r\n");
 		if (rn == std::string::npos)
 		{
-			std::cout << "No \r\n found for now, break" << std::endl;
+			std::cout << "No \\r\\n found for now, break" << std::endl;
 			break;
 		}
 		std::string command = client->buffer.substr(0, rn);
@@ -162,10 +162,17 @@ void	Server::get_message(Client *client)
 		if (p->original_msg.size())
 		{
 			std::cout << std::endl;
-			if (context->parse_command(client, p) == KILL_CONNECTION)
+			try
 			{
-				_clients_to_kill.push_back(clientFd);
-				return;
+				if (context->parse_command(client, p) == KILL_CONNECTION)
+				{
+					_clients_to_kill.push_back(clientFd);
+					return;
+				}
+			}
+			catch (const std::runtime_error& e)
+			{
+				close_server(e.what());
 			}
 		}
 	}
@@ -198,7 +205,7 @@ bool	Server::_load_server_config(std::string configFileNamepath)
 	//Get config file's content into a string and split into lines 
   	if (!ifs.good())
 	{
-		std::cout << "Error: open config file " << configFileNamepath << " failed" << std::endl;
+		std::cerr << "Error: open config file " << configFileNamepath << " failed" << std::endl;
 		return (false);
 	}
 	buffer << ifs.rdbuf();
