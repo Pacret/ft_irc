@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/15 17:03:33 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/16 12:15:19 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,13 @@ void	Server::process()
 			for (std::vector<struct pollfd>::iterator it = pollfds.begin(); it != pollfds.end(); ++it)
 			{
 				if ((*it).revents == POLLIN)
+				{
+					if (context->getClient((*it).fd))
+						std::cout << "tout va bvien" << std::endl;
+					else
+						std::cout << "aie aie" << std::endl;
 					get_message(context->getClient((*it).fd));
+				}
 			}
 		}
 		for (std::vector<int>::iterator it = _clients_to_kill.begin(); it != _clients_to_kill.end(); ++it)
@@ -168,7 +174,7 @@ void	Server::kill_connection(int clientFd)
 		if ((*it).fd == clientFd)
 		{
 			pollfds.erase(it);
-			//close(clientFd);
+			close(clientFd);
 			return ;
 		}
 	}
