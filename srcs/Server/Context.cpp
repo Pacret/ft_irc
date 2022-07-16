@@ -127,33 +127,44 @@ Action		Context::join_command(Client *client, struct parse_t *command)
 		sendToClient(client, ft_irc::ERR_BADCHANMASK(server_name, client->nick, channel_name));
 		return NOPE;
 	}
-	if (!_channels.count(channel_name))		
-		_channels[channel_name] = new Channel(client, channel_name);
-	else if (_channels[channel_name]->mode.i)
+
+	std::vector<std::string> channels = string_split(channel_name, ",");
+	if (!channels.size())
+		channels.push_back(channel_name);
+
+	for (unsigned int i = 0; i < channels.size(); i++)
 	{
-		if (client->pending_invites.count(channel_name))
-			client->pending_invites.erase(channel_name);
-		else
+		std::string chan = channels[i];
+		if (chan[0] == '#')
 		{
-			sendToClient(client, std::string(ft_irc::ERR_INVITEONLYCHAN(server_name, client->nick, channel_name)));
-			return NOPE;
+			if (!_channels.count(chan))
+				_channels[chan] = new Channel(client, chan);
+			else if (_channels[chan]->mode.i)
+			{
+				if (client->pending_invites.count(chan))
+					client->pending_invites.erase(chan);
+				else
+				{
+					sendToClient(client, std::string(ft_irc::ERR_INVITEONLYCHAN(server_name, client->nick, chan)));
+					return NOPE;
+				}
+				_channels[chan]->addClient(client);
+			}
+			else
+				_channels[chan]->addClient(client); 
 		}
-		_channels[channel_name]->addClient(client);
-	}
-	else
-		_channels[channel_name]->addClient(client);
+		std::vector<Client *>	usrs = _channels[chan]->get_users();
+		std::string				str = ":" + client->get_nickmask() + " JOIN :" + chan + "\r\n";
 
-	std::vector<Client *>	usrs = _channels[channel_name]->get_users();
-	std::string				str = ":" + client->get_nickmask() + " JOIN :" + channel_name + "\r\n";
+		_channels[chan]->broadcastToClients(NULL, str);
+		if (_channels[chan]->get_topic() != "")
+			sendToClient(client, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[chan])));
+		sendToClient(client, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[chan]->get_name(), _channels[chan]->get_users_nicks())));
+		sendToClient(client, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[chan]->get_name())));
 
-	_channels[channel_name]->broadcastToClients(NULL, str);
-	if (_channels[channel_name]->get_topic() != "")
-		sendToClient(client, std::string(ft_irc::RPL_TOPIC(server_name, client->nick, *_channels[channel_name])));
-	sendToClient(client, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[channel_name]->get_name(), _channels[channel_name]->get_users_nicks())));
-	sendToClient(client, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[channel_name]->get_name())));
-
-	if (channel_name == _bot->defaultChanName)
-		_bot->onMessageReceive(client, str);
+		if (chan == _bot->defaultChanName)
+			_bot->onMessageReceive(client, str);
+		}
 
 	return NOPE;
 }
