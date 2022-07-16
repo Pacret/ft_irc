@@ -27,6 +27,7 @@
 # include <vector>
 # include <set>
 # include <string>
+# include <cstring>
 
 # include "Context.hpp"
 

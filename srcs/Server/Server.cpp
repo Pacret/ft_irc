@@ -130,15 +130,17 @@ void	Server::get_message(Client *client)
 	size_t	rn;
 	int		clientFd = client->fd;
 
+	std::memset(buff, '\0', BUFFER_SIZE);
 	if ((size = recv(client->fd, &buff, BUFFER_SIZE, 0)) == -1) //?? Should be a while? Need to check max size IRC REQUEST
 		return;
 	if (!size)
 	{
+		std::cout << "!! recv() size == 0 !! client fd == " << client->fd << std::endl;
 		context->deleteClient(client);
 		_clients_to_kill.push_back(clientFd);
 		return;
 	}
-	buff[size] = 0;
+//	buff[size] = '\0';
 	client->buffer += buff;
 
 	while (client && client->buffer.size())
@@ -147,9 +149,7 @@ void	Server::get_message(Client *client)
 		rn = client->buffer.find("\r\n");
 		if (rn == std::string::npos)
 		{
-			context->sendToClient(client, std::string(ft_irc::ERR_UNKNOWNCOMMAND(context->server_name, client->nick, client->buffer)));
-			client->buffer = "";
-			std::cout << "\\r\\n missing, skip message." << std::endl;
+			std::cout << "No \r\n found for now, break" << std::endl;
 			break;
 		}
 		std::string command = client->buffer.substr(0, rn);
