@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/16 13:00:11 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/16 14:04:08 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,13 @@ void	Server::addClient()
 	struct sockaddr_in client_address;
 	socklen_t len = sizeof(client_address);
 
+	std::cout << "1" << std::endl;
 	if ((fd_client = accept(fd_socket, (struct sockaddr *)&client_address, &len)) == -1)
 		close_server("Error: accept");
+	std::cout << "2" << std::endl;
 	if (fcntl(fd_client, F_SETFL, O_NONBLOCK) == -1) // Non blocking socket
 		close_server("Error: fcntl client");
-
+	std::cout << "3" << std::endl;
 	struct pollfd pfd;
 	
 	pfd.fd = fd_client;
@@ -53,11 +55,17 @@ void	Server::addClient()
 	pfd.revents = 0;
 	pollfds.push_back(pfd);
 
+	std::cout << "listen: " << fd_socket << std::endl;
+	std::cout << "client: " << fd_client << std::endl;
+	for (unsigned int i = 0; i < pollfds.size(); i++)
+		std::cout << "poll fd:" << pollfds[i].fd  << std::endl;
 	//struct hostent *host;
 
 
-
 	context->addClient(fd_client, client_address);
+
+	for (unsigned int i = 0; i < pollfds.size(); i++)
+		std::cout << "poll fd:" << pollfds[i].fd  << std::endl;
 
 	log_file << "Client " << inet_ntoa(client_address.sin_addr) << ":" << ntohs(client_address.sin_port) << " fd: " << fd_client << std::endl; 
 }
@@ -82,6 +90,7 @@ void	Server::init()
 	if (listen(fd_socket, 128) == -1)
 		close_server("Error: listen");
 	
+
 	struct pollfd pfd;
 	pfd.fd = fd_socket;
 	pfd.events = POLLIN;
@@ -102,16 +111,23 @@ void	Server::process()
 			addClient();
 		else
 		{
+			std::cout << "ELSE" << std::endl;
 			for (std::vector<struct pollfd>::iterator it = pollfds.begin(); it != pollfds.end(); ++it)
 			{
 				if ((*it).revents == POLLIN)
+				{
+					std::cout << "POLLIN" << std::endl;
 					get_message(context->getClient((*it).fd));
+				}
 			}
 		}
+
 		for (std::vector<int>::iterator it = _clients_to_kill.begin(); it != _clients_to_kill.end(); ++it)
 		{
+
 			kill_connection(*it);
 		}
+		_clients_to_kill.clear();
 		//std::cout << pollfds[0].revents << std::endl;
 		//std::cout << "here\n" << std::endl;
 	}
@@ -170,6 +186,8 @@ void	Server::kill_connection(int clientFd)
 	{
 		if ((*it).fd == clientFd)
 		{
+			
+			std::cout << "erase: " << (*it).fd << std::endl;
 			pollfds.erase(it);
 			close(clientFd);
 			return ;
