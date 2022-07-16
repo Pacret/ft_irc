@@ -9,37 +9,29 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 	this->_password = password;
 	initServBot();
 
-	// RFC  4.1 Connection Registration
+	_commands["CAP"] = &Context::capls_command;
+	_commands["JOIN"] = &Context::join_command;
 	_commands["PASS"] = &Context::pass_command;
 	_commands["NICK"] = &Context::nick_command;
 	_commands["USER"] = &Context::user_command;
 	_commands["OPER"] = &Context::oper_command;
 	_commands["QUIT"] = &Context::quit_command;
-
-	// RFC 4.2 Channel operations
-	_commands["JOIN"] = &Context::join_command;
-	_commands["PART"] = &Context::part_command;
-	_commands["MODE"] = &Context::mode_command;
 	_commands["TOPIC"] = &Context::topic_command;
 	_commands["NAMES"] = &Context::names_command;
 	_commands["LIST"] = &Context::list_command;
 	_commands["INVITE"] = &Context::invite_command;
-	_commands["KICK"] = &Context::kick_command;
-
-	// RFC 4.3 Server queries and commands
 	_commands["VERSION"] = &Context::version_command;
-	_commands["TIME"] = &Context::time_command;
 
-	// RFC 4.4 Sending messages
+	_commands["KICK"] = &Context::kick_command;
+	_commands["PART"] = &Context::part_command;
+	_commands["MODE"] = &Context::mode_command;
 	_commands["PRIVMSG"] = &Context::priv_msg_command;
-	_commands["NOTICE"] = &Context::notice_command;
-
-	// RFC 4.5 User-based queries
-	_commands["WHOIS"] = &Context::whois_command;
-
-	// RFC 4.6 Miscellaneous messages
 	_commands["PING"] = &Context::ping_command;
 	_commands["PONG"] = &Context::pong_command;
+	_commands["NOTICE"] = &Context::notice_command;
+	_commands["TIME"] = &Context::time_command;
+
+	_commands["WHOIS"] = &Context::whois_command;
 }
 
 Context::~Context()
@@ -97,8 +89,6 @@ Action		Context::time_command(Client *client, parse_t *p)
 
 Action		Context::parse_command(Client *client, struct parse_t *command)
 {
-	if (command->cmd == "CAP")
-		return NOPE;
 	if ((client->get_statut() == NONE && (command->cmd == "PASS" || command->cmd == "CAP")) || 
 		(client->get_statut() == REGISTERED && (command->cmd == "USER" || command->cmd == "NICK")) ||
 		(client->get_statut() == CONNECTED && (_commands.count(command->cmd) && command->cmd != "PASS" && command->cmd != "USER")))
@@ -107,6 +97,13 @@ Action		Context::parse_command(Client *client, struct parse_t *command)
 	}
 	else
 		sendToClient(client, std::string(ft_irc::ERR_UNKNOWNCOMMAND(server_name, client->nick, command->cmd)));
+	return NOPE;
+}
+
+Action		Context::capls_command(Client *client, struct parse_t *command)
+{
+	(void)client;
+	(void)command;
 	return NOPE;
 }
 
