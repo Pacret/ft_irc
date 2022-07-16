@@ -142,7 +142,10 @@ void	Server::get_message(Client *client)
 		parse_t *p;
 		rn = client->buffer.find("\r\n");
 		if (rn == std::string::npos)
+		{
+			std::cout << "No \r\n found for now, break" << std::endl;
 			break;
+		}
 		std::string command = client->buffer.substr(0, rn);
 		p = fill_parse_t(command);
 		client->buffer.erase(0, rn + 2);
