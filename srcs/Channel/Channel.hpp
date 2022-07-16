@@ -20,6 +20,7 @@
 # include <set>
 # include <map>
 # include <sstream>
+# include <stdexcept>
 
 # include "../Utils/utils.hpp"
 # include "../Client/Client.hpp"
