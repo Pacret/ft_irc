@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+         #
+#    By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/18 20:59:10 by pbonilla          #+#    #+#              #
-#    Updated: 2022/07/15 14:46:08 by tmerrien         ###   ########.fr        #
+#    Updated: 2022/07/16 18:41:13 by pbonilla         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,7 +46,7 @@ $(NAME): ${OBJS}
 
 leaks: $(NAME)
 		echo "Launching server with Valgrind all leaks enabled"
-		$(VAL) $(VALF) ./$(NAME)
+		$(VAL) $(VALF) ./$(NAME) 4245 mdp
 		grep -A1 "valgrind" valgrind_log | grep $(NAME) || echo -n
 
 debugflag:

@@ -91,7 +91,7 @@ Action		Context::parse_command(Client *client, struct parse_t *command)
 {
 	if ((client->get_statut() == NONE && (command->cmd == "PASS" || command->cmd == "CAP")) || 
 		(client->get_statut() == REGISTERED && (command->cmd == "USER" || command->cmd == "NICK")) ||
-		(client->get_statut() == CONNECTED && (_commands.count(command->cmd) && command->cmd != "PASS" && command->cmd != "USER")))
+		(client->nick != "" && client->get_statut() == CONNECTED && (_commands.count(command->cmd) && command->cmd != "PASS" && command->cmd != "USER")))
 	{
 		return (this->*_commands[command->cmd])(client, command);
 	}
