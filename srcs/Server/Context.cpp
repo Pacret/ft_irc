@@ -36,9 +36,7 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 
 Context::~Context()
 {
-	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
-		delete it->second;
-	// Delete channels TODO
+	clean();
 }
 
 void	Context::sendToClient(Client * client, const std::string & msg, Client * sender)
@@ -1000,4 +998,12 @@ void Context::initServBot()
 	chan->addOperator(_bot);
 	_channels["#ServBot"] = chan;
 	_clients[-1] = _bot;
+}
+
+void	Context::clean()
+{
+	for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
+		delete it->second;
+	for (std::map<channelName, Channel *>::iterator it = _channels.begin(); it != _channels.end(); it++)
+		delete it->second;
 }

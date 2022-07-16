@@ -19,7 +19,7 @@
 
 		Server::Server(const std::string &port, const std::string &password, std::string configFile)
 {
-	std::string server_name = "paco.com";
+	std::string server_name = "ft_irc.42.com";
  
 	context = new Context(server_name, port, password);
 	if (!configFile.empty())
@@ -29,10 +29,7 @@
 		Server::~Server()
 {
 	std::cout << "Fermeture du serveur" << std::endl;
-	// !!! Delete client and channels in context !!!
-	delete context;
-	close(fd_socket);
-	log_file.close();
+	clean();
 }
 
 void	Server::addClient()
@@ -101,8 +98,6 @@ void	Server::init()
 
 void	Server::process()
 {
-	// int test = 0;
-
 	while (1)
 	{
 		if (poll(&pollfds[0], pollfds.size(), -1) == -1)
@@ -128,8 +123,8 @@ void	Server::process()
 			kill_connection(*it);
 		}
 		_clients_to_kill.clear();
-		//std::cout << pollfds[0].revents << std::endl;
-		//std::cout << "here\n" << std::endl;
+		std::cout << pollfds[0].revents << std::endl;
+		std::cout << "here\n" << std::endl;
 	}
 }
 
@@ -150,7 +145,6 @@ void	Server::get_message(Client *client)
 		_clients_to_kill.push_back(clientFd);
 		return;
 	}
-//	buff[size] = '\0';
 	client->buffer += buff;
 
 	while (client && client->buffer.size())
@@ -251,4 +245,24 @@ bool	Server::_load_server_config(std::string configFileNamepath)
 		inline_conf += " " + it->first + "=" + it->second;
 	context->conf_file_inline = inline_conf;
 	return (true);
+}
+
+void	Server::clean()
+{
+	//Close listen fd
+	close(fd_socket);
+
+	//Close all clients connection 
+	for (std::size_t i = 0; i < pollfds.size(); i++)
+		close(pollfds[i].fd);
+
+	delete context;
+	log_file.close();
+}
+
+void	Server::close_server(const std::string &msg_error)
+{
+	std::cerr << msg_error << std::endl;
+	clean();
+	exit(EXIT_FAILURE);
 }
