@@ -60,6 +60,8 @@ class Server
 
 		void	get_message(Client *client);
 		void	kill_connection(int clientFd);
+		void	clean();
+		void	close_server(const std::string &msg_error);
 };
 
 #endif
