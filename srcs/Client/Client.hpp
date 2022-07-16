@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 14:19:41 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/15 13:57:20 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/16 14:15:41 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class Channel;
 typedef struct user_mode_s
 {
 	bool	i; // marks a users as invisible
-	bool	o; // operator flag
+	bool	o; // server operator flag
 
 	user_mode_s(): i(false), o(false) {}
 }	user_mode_t;
