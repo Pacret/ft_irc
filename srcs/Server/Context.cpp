@@ -222,13 +222,39 @@ Action		Context::topic_command(Client *client, struct parse_t *command)
 	return NOPE;
 }
 
-Action		Context::names_command(Client *client, struct parse_t *command)
+Action		Context::names_command(Client *client, struct parse_t *p)
 {
 	// client->channelSet	
 	// sendToClient(client, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[channel_name]->get_name(), _channels[channel_name]->get_users_nicks())));
 	// sendToClient(client, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[channel_name]->get_name())));
-	(void)client;
-	(void)command;
+	std::vector<std::string> v_channel;
+	if (p->args.size() >= 1)
+	{
+		std::string buff = p->args[0];
+		size_t i = 0;
+		while (!buff.empty() && buff[i] != '\0')
+		{
+			if ((i = buff.find(',')) == std::string::npos)
+				i = buff.size() + 1;
+			v_channel.push_back(buff.substr(0, i - 1));
+			buff.erase(0, i);
+			i = 0;
+		}
+		for (std::vector<std::string>::iterator it = v_channel.begin(); it != v_channel.end(); it++)
+		{
+			if (_channels.find(*it) != _channels.end())
+			{
+				sendToClient(client, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[*it]->get_name(), _channels[*it]->get_users_nicks())));
+				sendToClient(client, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[*it]->get_name())));
+			}
+		}
+		return NOPE;
+	}
+	for (std::map<channelName, Channel *>::iterator it = _channels.begin(); it != _channels.end(); it++)
+	{
+		sendToClient(client, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, it->second->get_name(), it->second->get_users_nicks())));
+				sendToClient(client, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, it->second->get_name())));
+	}
 	// sendToClient(client, std::string(ft_irc::RPL_NAMREPLY(server_name, client->nick, _channels[channel_name]->get_name(), _channels[channel_name]->get_users_nicks())));
 	// sendToClient(client, std::string(ft_irc::RPL_ENDOFNAMES(server_name, client->nick, _channels[channel_name]->get_name())));
 	return NOPE;
