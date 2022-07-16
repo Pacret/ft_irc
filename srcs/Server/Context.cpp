@@ -711,39 +711,47 @@ Action		Context::nick_command(Client *client, struct parse_t *command)
 		sendToClient(client, ft_irc::ERR_NONICKNAMEGIVEN(server_name, name));
 		return (NOPE);
 	}
+	// If it's client first nick, wether it's good or bad we give to him, to be able to references him
 	if (client->get_statut() != CONNECTED)
 		client->set_nick(command->args[0]);
 
+	//We check If the nickname is already in use and if yes we send ERR_NICKNAMEINUSE and return
 	std::map<clientSocket, Client *>::iterator it; 
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
 		std::cout << it->second->nick << std::endl;
 		if (it->second->fd != client->fd && it->second->nick == command->args[0])
 		{
-			// client->nick_inuse = true;
+			client->nick_inuse = true;
 			// tmp = true;
-			// if (client->get_statut() == CONNECTED)
-			sendToClient(client, ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->nick));
+			if (client->get_statut() == CONNECTED)
+				sendToClient(client, ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->nick));
 			return NOPE;
 		}
 	}
+	//If it's the client first NICK message no need to after this as he isn't on any channel and doesn't need anything else
 	if (client->get_statut() == REGISTERED)
 		return NOPE;
-	msg = ":" + client->nick + "!" + client->get_username() + "@" + client->get_ip() + " ";
+	//Else we prepare a message to announce he has changed nick
 	
+	msg = ":" + client->nick + "!" + client->get_username() + "@" + client->get_ip() + " ";
 	msg += "NICK :" + command->args[0];
 	msg += "\r\n";
+	//Set his nickname now, fixes a little problem
+	client->set_nick(command->args[0]);
+	//Send the message to him and every channel he is in
 	sendToClient(client, msg);
 	for (std::map<channelName, Channel *>::iterator it = _channels.begin(); it != _channels.end(); it++)
 	{
 		if (it->second->isChannelMember(client->nick) == true)
 			it->second->broadcastToClients(client, msg);
 	}
-	client->set_nick(command->args[0]);
-	// if (client->get_statut() == CONNECTED && tmp == false)
+	//Finnaly set his nick. We haven't done it before 
+	// client->set_nick(command->args[0]);
+	// if (client->get_statut() == CONNECTED && tmp == false && client->nick_inuse == true)
 	// {
-		// client->nick_inuse = false;
-		// _send_motd(client);
+	// 	client->nick_inuse = false;
+	// 	_send_motd(client);
 	// }
 	return NOPE;
 }
@@ -762,11 +770,11 @@ Action		Context::user_command(Client *client, struct parse_t *command)
 
 	sendToClient(client, std::string(":" + server_name + " NOTICE * :*** Looking up your hostname...\r\n"));
 
-	// if (client->nick_inuse)
-	// {
-	// 	sendToClient(client, ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->nick));
-	// 	return NOPE;
-	// }
+	if (client->nick_inuse)
+	{
+		sendToClient(client, ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->nick));
+		// return NOPE;
+	}
 	_send_motd(client);
 	return NOPE;
 }
