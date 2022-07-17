@@ -169,14 +169,17 @@ void	Server::get_message(Client *client)
 				if (context->parse_command(client, p) == KILL_CONNECTION)
 				{
 					_clients_to_kill.push_back(clientFd);
+					delete p;
 					return;
 				}
 			}
 			catch (const std::runtime_error& e)
 			{
+				delete p;
 				close_server(e.what());
 			}
 		}
+		delete p;
 	}
 }
 

@@ -89,33 +89,39 @@ public:
 
 	Action	parse_command(Client *client, struct parse_t *command);
 
-	Action	capls_command(Client *client, struct parse_t *command);
+	// RFC  4.1 Connection Registration
 	Action	pass_command(Client *client, struct parse_t *command);
 	Action	nick_command(Client *client, struct parse_t *command);
 	Action	user_command(Client *client, struct parse_t *command);
 	Action	oper_command(Client *client, struct parse_t *command);
 	Action	quit_command(Client *client, struct parse_t *command);
+
+	// RFC 4.2 Channel operations
+	Action	join_command(Client *client, struct parse_t *command);
+	Action	part_command(Client *client, struct parse_t *command);
+	Action	mode_command(Client *client, struct parse_t *command);
+	Action	user_mode_command(Client *client, struct parse_t *command);
+	Action	chan_mode_command(Client *client, struct parse_t *command, Channel * chan);
 	Action	topic_command(Client *client, struct parse_t *command);
 	Action	names_command(Client *client, struct parse_t *command);
 	Action	list_command(Client *client, struct parse_t *command);
 	Action	invite_command(Client *client, struct parse_t *command);
-	Action	version_command(Client *client, struct parse_t *command);
-
-	Action	join_command(Client *client, struct parse_t *command);
 	Action	kick_command(Client *client, struct parse_t *command);
-	Action	part_command(Client *client, struct parse_t *command);
 
+	// RFC 4.3 Server queries and commands
+	Action	version_command(Client *client, struct parse_t *command);
+	Action	time_command(Client *client, parse_t *p);
+
+	// RFC 4.4 Sending messages
 	Action	priv_msg_command(Client *client, struct parse_t *p);
 	Action	notice_command(Client *client, struct parse_t *p);
-	Action	time_command(Client *client, parse_t *p);
+
+	// RFC 4.5 User-based queries
+	Action	whois_command(Client *client, struct parse_t *command);
+
+	// RFC 4.6 Miscellaneous messages
 	Action	pong_command(Client *client, struct parse_t *p);
 	Action	ping_command(Client *client, struct parse_t *p);
-
-
-	Action	mode_command(Client *client, struct parse_t *command);
-	Action	user_mode_command(Client *client, struct parse_t *command);
-	Action	chan_mode_command(Client *client, struct parse_t *command, Channel * chan);
-	Action	whois_command(Client *client, struct parse_t *command);
 
 	std::string		nbr_invisible(Client *client);
 	std::string		nbr_visible(Client *client);
