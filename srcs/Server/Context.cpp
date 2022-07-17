@@ -770,6 +770,7 @@ Action		Context::nick_command(Client *client, struct parse_t *command)
 		if (client->nick == "")
 		{
 			sendToClient(client, ft_irc::ERR_ERRONEUSNICKNAME(server_name, "*", command->args[0]));
+			deleteClient(client);
 			return KILL_CONNECTION;
 		}
 		else if (client->nick != "")

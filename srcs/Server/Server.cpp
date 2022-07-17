@@ -122,7 +122,8 @@ void	Server::process()
 
 			kill_connection(*it);
 		}
-		_clients_to_kill.clear();
+		//_clients_to_kill.clear();
+		std::vector<Server::clientFd>().swap(_clients_to_kill);
 		std::cout << pollfds[0].revents << std::endl;
 		std::cout << "here\n" << std::endl;
 	}
