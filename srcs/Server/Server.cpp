@@ -132,8 +132,6 @@ void	Server::get_message(Client *client)
 	{
 		parse_t *p;
 		rn = client->buffer.find("\r\n");
-		if (client->buffer.find("KILLS") != std::string::npos)
-			close_server("Error: test");
 		if (rn == std::string::npos)
 		{
 			std::cout << "Partial message received..." << std::endl;
