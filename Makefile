@@ -6,7 +6,7 @@
 #    By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/18 20:59:10 by pbonilla          #+#    #+#              #
-#    Updated: 2022/07/16 19:47:08 by tmerrien         ###   ########.fr        #
+#    Updated: 2022/07/17 12:04:27 by tmerrien         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ SRCS		=	srcs/main.cpp 				\
 	
 COMP		= c++
 
-FLAGS		= -Wall -Wextra -Werror -std=c++98 
+FLAGS		= -Wall -Wextra -Werror -g -std=c++98 
 
 VAL			=	valgrind
 

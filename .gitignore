@@ -5,3 +5,5 @@ a.out
 *.o
 ircserv
 lol
+valgrind_log
+xtmemory.kcg.*

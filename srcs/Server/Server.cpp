@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/16 19:39:31 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/17 12:08:51 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,6 +256,7 @@ bool	Server::_load_server_config(std::string configFileNamepath)
 	for (it = context->conf_file.begin(); it != context->conf_file.end(); it++)
 		inline_conf += " " + it->first + "=" + it->second;
 	context->conf_file_inline = inline_conf;
+	ifs.close();
 	return (true);
 }
 
