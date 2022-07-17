@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/17 12:49:01 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/17 13:09:00 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,6 +269,9 @@ void	Server::clean()
 	for (std::size_t i = 0; i < pollfds.size(); i++)
 		close(pollfds[i].fd);
 
+	//LOL Nuking leaks since cpp98
+	std::vector<pollfd>().swap(pollfds);
+	
 	delete context;
 	log_file.close();
 }
