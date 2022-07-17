@@ -30,7 +30,6 @@ std::string get_prefix(std::string &msg)
 
 parse_t *fill_parse_t(std::string &msg)
 {
-	std::cout << msg << std::endl;
 	parse_t *p = new parse_t;
 
 	p->original_msg = msg;
@@ -55,8 +54,6 @@ parse_t *fill_parse_t(std::string &msg)
 		p->args.push_back(msg.substr(0, msg.find_first_of(" " + end_set)));
 		msg.erase(0, p->args.back().size());
 	}
-	//if (msg.size() < 2 || msg[0] != '\r' || msg[1] != '\n')
-	//	throw runtime_error("Bad data: Partial Data received");
 	print_parse_t(*p);
 	return (p);
 }

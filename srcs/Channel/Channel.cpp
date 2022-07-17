@@ -69,7 +69,6 @@ std::string		Channel::get_users_nicks()
 			user_nicks += "@";
 		user_nicks += (*it)->nick;
 	}
-	std::cout << user_nicks << std::endl;
 	return (user_nicks);
 }
 

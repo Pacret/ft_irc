@@ -28,7 +28,6 @@
 
 		Server::~Server()
 {
-	std::cout << "Fermeture du serveur" << std::endl;
 	clean();
 }
 
@@ -38,13 +37,10 @@ void	Server::addClient()
 	struct sockaddr_in client_address;
 	socklen_t len = sizeof(client_address);
 
-	std::cout << "1" << std::endl;
 	if ((fd_client = accept(fd_socket, (struct sockaddr *)&client_address, &len)) == -1)
 		close_server("Error: accept");
-	std::cout << "2" << std::endl;
 	if (fcntl(fd_client, F_SETFL, O_NONBLOCK) == -1) // Non blocking socket
 		close_server("Error: fcntl client");
-	std::cout << "3" << std::endl;
 	struct pollfd pfd;
 	
 	pfd.fd = fd_client;
@@ -52,17 +48,7 @@ void	Server::addClient()
 	pfd.revents = 0;
 	pollfds.push_back(pfd);
 
-	std::cout << "listen: " << fd_socket << std::endl;
-	std::cout << "client: " << fd_client << std::endl;
-	for (unsigned int i = 0; i < pollfds.size(); i++)
-		std::cout << "poll fd:" << pollfds[i].fd  << std::endl;
-	//struct hostent *host;
-
-
 	context->addClient(fd_client, client_address);
-
-	for (unsigned int i = 0; i < pollfds.size(); i++)
-		std::cout << "poll fd:" << pollfds[i].fd  << std::endl;
 
 	log_file << "Client " << inet_ntoa(client_address.sin_addr) << ":" << ntohs(client_address.sin_port) << " fd: " << fd_client << std::endl; 
 }
@@ -106,12 +92,10 @@ void	Server::process()
 			addClient();
 		else
 		{
-			std::cout << "ELSE" << std::endl;
 			for (std::vector<struct pollfd>::iterator it = pollfds.begin(); it != pollfds.end(); ++it)
 			{
 				if ((*it).revents == POLLIN)
 				{
-					std::cout << "POLLIN" << std::endl;
 					get_message(context->getClient((*it).fd));
 				}
 			}
@@ -122,10 +106,7 @@ void	Server::process()
 
 			kill_connection(*it);
 		}
-		//_clients_to_kill.clear();
 		std::vector<Server::clientFd>().swap(_clients_to_kill);
-		std::cout << pollfds[0].revents << std::endl;
-		std::cout << "here\n" << std::endl;
 	}
 }
 
@@ -137,11 +118,10 @@ void	Server::get_message(Client *client)
 	int		clientFd = client->fd;
 
 	std::memset(buff, '\0', BUFFER_SIZE);
-	if ((size = recv(client->fd, &buff, BUFFER_SIZE, 0)) == -1) //?? Should be a while? Need to check max size IRC REQUEST
+	if ((size = recv(client->fd, &buff, BUFFER_SIZE, 0)) == -1)
 		return;
 	if (!size)
 	{
-		std::cout << "!! recv() size == 0 !! client fd == " << client->fd << std::endl;
 		context->deleteClient(client);
 		_clients_to_kill.push_back(clientFd);
 		return;
@@ -156,7 +136,7 @@ void	Server::get_message(Client *client)
 			close_server("Error: test");
 		if (rn == std::string::npos)
 		{
-			std::cout << "No \\r\\n found for now, break" << std::endl;
+			std::cout << "Partial message received..." << std::endl;
 			break;
 		}
 		std::string command = client->buffer.substr(0, rn);
@@ -164,7 +144,6 @@ void	Server::get_message(Client *client)
 		client->buffer.erase(0, rn + 2);
 		if (p->original_msg.size())
 		{
-			std::cout << std::endl;
 			try
 			{
 				Action result = context->parse_command(client, p);
@@ -177,7 +156,7 @@ void	Server::get_message(Client *client)
 				else if (result == CLOSE_SERVER)
 				{
 					delete p;
-					std::cout << "Closeing Server" << std::endl;
+					std::cout << "Closing Server" << std::endl;
 					close_server("");
 				}
 			}
@@ -200,8 +179,6 @@ void	Server::kill_connection(int clientFd)
 	{
 		if ((*it).fd == clientFd)
 		{
-			
-			std::cout << "erase: " << (*it).fd << std::endl;
 			pollfds.erase(it);
 			close(clientFd);
 			return ;

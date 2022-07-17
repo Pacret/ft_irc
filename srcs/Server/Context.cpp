@@ -419,7 +419,6 @@ Action	Context::whois_command(Client *client, struct parse_t *command)
 	if (command->args.size() == 2)
 		servname = command->args[i++];
 	nickmasks = string_split(command->args[i], ",");
-	//TODO: nickmasks get rid of strings after ! and @
 	
 	//Check server name
 	if (!servname.empty() && servname != this->server_name)
@@ -592,8 +591,6 @@ Action		Context::oper_command(Client *client, struct parse_t *command)
 	if (!config.empty() && (opConfig.host == client->get_ip()
 				|| opConfig.host == "" || opConfig.host == "*" ))
 	{
-		std::cout << "config host:" << opConfig.host << std::endl;
-		std::cout << "client ip:" << client->get_ip();
 		if (opConfig.username != command->args[0]
 			|| opConfig.password != command->args[1])
 		{
@@ -783,7 +780,6 @@ Action		Context::nick_command(Client *client, struct parse_t *command)
 	std::map<clientSocket, Client *>::iterator it; 
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
-		std::cout << it->second->nick << std::endl;
 		if (it->second->fd != client->fd && it->second->nick == command->args[0])
 		{
 			if (client->nick == "")
@@ -826,11 +822,6 @@ Action		Context::user_command(Client *client, struct parse_t *command)
 
 	sendToClient(client, std::string(":" + server_name + " NOTICE * :*** Looking up your hostname...\r\n"));
 
-	// if (client->nick_inuse)
-	// {
-		// sendToClient(client, ft_irc::ERR_NICKNAMEINUSE(server_name, "*", client->nick));
-		// return NOPE;
-	// }
 	if (client->nick != "")
 		_send_motd(client);
 	return NOPE;
@@ -863,7 +854,6 @@ bool	Context::_not_enough_params(Client * client, struct parse_t * command, unsi
 	if (command->args.size() < minSize)
 	{
 		sendToClient(client, ft_irc::ERR_NEEDMOREPARAMS(server_name, client->nick, command->cmd));
-		std::cout << "Not enough param" << std::endl;
 		return true;
 	}
 	return false;
@@ -876,7 +866,6 @@ bool	Context::_no_such_channel(Client * client, std::string & chanName)
 	if (it == _channels.end())
 	{
 		sendToClient(client, ft_irc::ERR_NOSUCHCHANNEL(server_name, client->nick, chanName));
-		std::cout << "No such channel" << std::endl;
 		return true;
 	}
 	return false;
@@ -900,7 +889,6 @@ std::string		Context::nbr_visible(Client *client)
 
 	for (std::map<clientSocket, Client *>::iterator it = _clients.begin(); it != _clients.end(); it++)
 	{
-		std::cout << "MODES " << (*it).second->get_mode() << std::endl;
 		if (client != it->second && it->second->get_mode().find("i") == std::string::npos)
 			++i;
 	}
@@ -1011,7 +999,6 @@ void	Context::removeClientFromChannel(Client *client, Channel *channel)
 
 Action	Context::pong_command(Client *client, struct parse_t *p)
 {
-	// std::cout << "PONG Command received" << std::endl;
 	client->get_ip();
 	p->cmd.erase();
 	return NOPE;
@@ -1045,7 +1032,6 @@ std::string	Context::_get_client_channellist(Client * client) const
 			chan_list += "@";
 		chan_list += (*it)->get_name();
 	}
-	std::cout << chan_list << std::endl;
 	return (chan_list);
 }
 
