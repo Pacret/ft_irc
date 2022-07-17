@@ -6,7 +6,7 @@
 /*   By: pbonilla <pbonilla@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/17 12:35:29 by pbonilla         ###   ########.fr       */
+/*   Updated: 2022/07/17 12:49:01 by pbonilla         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,7 +219,7 @@ bool	Server::_load_server_config(std::string configFileNamepath)
 	//Get lines that are not comments
 	for (unsigned long int i = 0; i < tmp.size(); i++)
 	{
-		if (tmp[i][0] != '#')
+		if (!(tmp[i].empty()) && tmp[i][0] != '#')
 			context->config.push_back(tmp[i]);
 	}
 
@@ -228,7 +228,7 @@ bool	Server::_load_server_config(std::string configFileNamepath)
 	for (unsigned long int i = 0; i < context->config.size(); i++)
 	{
 		line_config = string_split(context->config[i], ":");
-		if (!context->config[i].empty() && context->config[i][0] && context->config[i][1] == ':')
+		if (context->config[i][1] == ':')
 		{
 			if (context->config[i][0] == 'O' && line_config.size() > 3)
 			{
