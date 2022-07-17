@@ -27,8 +27,9 @@ Context::Context(std::string & servname, const std::string &port, const std::str
 	_commands["KICK"] = &Context::kick_command;
 
 	// RFC 4.3 Server queries and commands
-	_commands["VERSION"] = &Context::version_command;
-	_commands["TIME"] = &Context::time_command;
+	_commands["version"] = &Context::version_command;
+	_commands["time"] = &Context::time_command;
+	_commands["die"] = &Context::die_command;
 
 	// RFC 4.4 Sending messages
 	_commands["PRIVMSG"] = &Context::priv_msg_command;
@@ -297,6 +298,18 @@ Action		Context::list_command(Client *client, struct parse_t *command)
 		sendToClient(client, std::string(ft_irc::RPL_LISTEND(server_name, client->nick)));
 	}
 	return NOPE;
+}
+
+//DIE
+Action		Context::die_command(Client *client, struct parse_t *p)
+{
+	(void)p;
+	if (client->get_mode().find_first_of("o") == std::string::npos)
+	{
+		sendToClient(client, ft_irc::ERR_NOPRIVILEGES(server_name, client->nick));
+		return NOPE;
+	}
+	return CLOSE_SERVER;
 }
 
 //KICK <channel> <user> [<comment>] 

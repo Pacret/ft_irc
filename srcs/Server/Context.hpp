@@ -111,6 +111,7 @@ public:
 	// RFC 4.3 Server queries and commands
 	Action	version_command(Client *client, struct parse_t *command);
 	Action	time_command(Client *client, parse_t *p);
+	Action	die_command(Client *client, struct parse_t *p);
 
 	// RFC 4.4 Sending messages
 	Action	priv_msg_command(Client *client, struct parse_t *p);

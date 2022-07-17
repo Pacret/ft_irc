@@ -6,7 +6,7 @@
 /*   By: tmerrien <tmerrien@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/18 21:47:26 by pbonilla          #+#    #+#             */
-/*   Updated: 2022/07/17 13:09:00 by tmerrien         ###   ########.fr       */
+/*   Updated: 2022/07/17 15:06:44 by tmerrien         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,11 +166,18 @@ void	Server::get_message(Client *client)
 			std::cout << std::endl;
 			try
 			{
-				if (context->parse_command(client, p) == KILL_CONNECTION)
+				Action result = context->parse_command(client, p);
+				if (result == KILL_CONNECTION)
 				{
 					_clients_to_kill.push_back(clientFd);
 					delete p;
 					return;
+				}
+				else if (result == CLOSE_SERVER)
+				{
+					delete p;
+					std::cout << "Closeing Server" << std::endl;
+					close_server("");
 				}
 			}
 			catch (const std::runtime_error& e)
@@ -278,7 +285,8 @@ void	Server::clean()
 
 void	Server::close_server(const std::string &msg_error)
 {
-	std::cerr << msg_error << std::endl;
+	if (!(msg_error.empty()))
+		std::cerr << msg_error << std::endl;
 	clean();
 	exit(0);
 }
